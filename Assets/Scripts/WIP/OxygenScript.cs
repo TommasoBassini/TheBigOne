@@ -1,38 +1,45 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-//Dovrebbe esserci un bug tra rigenerazione ossigeno e cambio camminata/corsa
+//Dovrebbe esserci un bug tra rigenerazione ossigeno e cambio camminata/corsa (devo chiedere una cosa a Michele)
+//Devo ancora fare in modo che, durante l'ispezione di ogetti/terminali/cose, non vi sia consumo di ossigeno (devo chiedere una cosa a Michele)
+//Devo commentare il codice
 
 public class OxygenScript : MonoBehaviour {
 
-	public bool isInpecting;
+	#region PARAMETERS
+	public bool isInspecting;
 
 	[Header ("Ossigeno Parametri Base")]
-	public float oxygenAmount;
-	public const float MIN_OXYGEN_AMOUNT = 0f;
-	public const float MAX_OXYGEN_AMOUNT = 100f;
+	[Range (0f, 100f)] public float oxygenAmount;
+	[Range (0f, 100f)] public float minOxygenAmount = 0f;
+	[Range (0f, 100f)] public float maxOxygenAmount = 100f;
+
 	[Header ("Ossigeno Parametri Camminata")]
-	public float oxygenWalkingDecadenceSpeed = 5f;
-	public float oxygenWalkingDecadenceAmount = 5f;
+	[Range (0f, 100f)] public float oxygenWalkingDecadenceSpeed = 5f;
+	[Range (0f, 100f)] public float oxygenWalkingDecadenceAmount = 5f;
+
 	[Header ("Ossigeno Parametri Corsa")]
-	public float oxygenRunningDecadenceSpeed = 2f;
-	public float oxygenRunningDecadenceAmount = 8f;
-	[Header ("Ossigeno ParametriRigenerazione")]
-	public float oxygenRegenerationSpeed = 0.5f;
-	public float oxygenRegenerationAmount = 10f;
+	[Range (0f, 100f)] public float oxygenRunningDecadenceSpeed = 2f;
+	[Range (0f, 100f)] public float oxygenRunningDecadenceAmount = 8f;
+
+	[Header ("Ossigeno Parametri Rigenerazione")]
+	[Range (0f, 100f)] public float oxygenRegenerationSpeed = 0.5f;
+	[Range (0f, 100f)] public float oxygenRegenerationAmount = 10f;
+	#endregion
 
 
-	#region MonoBehaviour_Methods
+	#region MONOBEHAVIOUR_METHODS
 	public void Start () {
 
 		this.OxygenRecharge ();
-		this.StartCoroutine_Auto (this.COOxygenWalkingDecadence ());
+		this.StartCoroutine_Auto (this.CO_OxygenWalkingDecadence ());
 
 	}
 
 	public void Update () {
 
-		if (this.oxygenAmount <= MIN_OXYGEN_AMOUNT) {
+		if (this.oxygenAmount <= this.minOxygenAmount) {
 
 			this.StopAllCoroutines ();
 
@@ -42,7 +49,7 @@ public class OxygenScript : MonoBehaviour {
 
 			this.oxygenAmount--;
 			this.StopAllCoroutines ();
-			this.StartCoroutine_Auto (this.COOxygenRunningDecadence ());
+			this.StartCoroutine_Auto (this.CO_OxygenRunningDecadence ());
 
 		}
 
@@ -50,21 +57,21 @@ public class OxygenScript : MonoBehaviour {
 
 			this.oxygenAmount--;
 			this.StopAllCoroutines ();
-			this.StartCoroutine_Auto (this.COOxygenWalkingDecadence ());
+			this.StartCoroutine_Auto (this.CO_OxygenWalkingDecadence ());
 
 		}
 
 		if (Input.GetKeyDown (KeyCode.Space)) {
 
-			this.StartCoroutine_Auto (this.COOxygenRegeneration ());
+			this.StartCoroutine_Auto (this.CO_OxygenRegeneration ());
 
 		}
 
 	}
 	#endregion
 
-	#region Coroutines
-	public IEnumerator COOxygenWalkingDecadence () {
+	#region COROUTINES
+	public IEnumerator CO_OxygenWalkingDecadence () {
 
 		while (true) {
 
@@ -75,7 +82,7 @@ public class OxygenScript : MonoBehaviour {
 
 	}
 
-	public IEnumerator COOxygenRunningDecadence () {
+	public IEnumerator CO_OxygenRunningDecadence () {
 
 		while (true) {
 
@@ -86,7 +93,7 @@ public class OxygenScript : MonoBehaviour {
 
 	}
 
-	public IEnumerator COOxygenRegeneration () {
+	public IEnumerator CO_OxygenRegeneration () {
 
 		int i = 4;
 
@@ -94,18 +101,18 @@ public class OxygenScript : MonoBehaviour {
 
 			yield return new WaitForSeconds (this.oxygenRegenerationSpeed);
 			this.oxygenAmount += this.oxygenRegenerationAmount;
-			if (this.oxygenAmount >= MAX_OXYGEN_AMOUNT)
-				this.oxygenAmount = MAX_OXYGEN_AMOUNT;
+			if (this.oxygenAmount >= this.maxOxygenAmount)
+				this.oxygenAmount = this.maxOxygenAmount;
 
 		} while (--i > 0);
 
 	}
 	#endregion
 
-	#region Methods
-	public void OxygenRecharge (float oxygen = MAX_OXYGEN_AMOUNT) {
+	#region METHODS
+	public void OxygenRecharge (float currentOxygen = 100f) {
 
-		this.oxygenAmount = oxygen;
+		this.oxygenAmount = currentOxygen;
 
 	}
 	#endregion
