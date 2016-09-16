@@ -27,7 +27,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         [SerializeField] private AudioClip m_LandSound;           // the sound played when character touches back on ground.
 
         private Camera m_Camera;
-        private bool m_Jump;
+        //private bool m_Jump;
         private float m_YRotation;
         private Vector2 m_Input;
         private Vector3 m_MoveDir = Vector3.zero;
@@ -38,7 +38,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private float m_StepCycle;
         private float m_NextStep;
         private AudioSource m_AudioSource;
-
+        private bool isCrouched = false;
+        
+      
         // Use this for initialization
         private void Start()
         {
@@ -57,8 +59,29 @@ namespace UnityStandardAssets.Characters.FirstPerson
         // Update is called once per frame
         private void Update()
         {
+            // Crouched control value 
+            if (Input.GetKeyDown(KeyCode.LeftControl))
+            {
+                if (isCrouched)
+                {
+                    m_CharacterController.height = 1.8f;
+                    m_CharacterController.center = new Vector3(0f, 0f, 0f);
+                    m_WalkSpeed = 5;
+                    m_RunSpeed = 10;
+                    m_HeadBob.VerticaltoHorizontalRatio = 2;
+                    isCrouched = false;
+                }
+                else {
+                    isCrouched = true;
+                    m_WalkSpeed = 1;
+                    m_RunSpeed = m_WalkSpeed;
+                    m_HeadBob.VerticaltoHorizontalRatio = 8;
+                    m_CharacterController.height = 1.0f;
+                    m_CharacterController.center = new Vector3(0f, 0.5f, 0);
+                }
+            }
             RotateView();
-            // the jump state needs to read here to make sure it is not missed
+            /* the jump state needs to read here to make sure it is not missed
 
             if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
             {
@@ -72,6 +95,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
 
             m_PreviouslyGrounded = m_CharacterController.isGrounded;
+            
         }
 
 
@@ -79,8 +103,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         {
             m_AudioSource.clip = m_LandSound;
             m_AudioSource.Play();
-            m_NextStep = m_StepCycle + .5f;
-        }
+            m_NextStep = m_StepCycle + .5f;*/
+        } 
 
 
         private void FixedUpdate()
@@ -209,11 +233,19 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
         }
 
-
+        
         private void RotateView()
         {
-            m_MouseLook.LookRotation (transform, m_Camera.transform);
+            float angHorizontal = Input.GetAxis("RightJoystickHorizontal");
+            float angVertical = Input.GetAxis("RightJoystickVertical");
+            //this.transform.eulerAngles = m_Camera.transform.eulerAngles;
+            m_Camera.transform.eulerAngles += new Vector3(0, angHorizontal * 1,0);
+            m_Camera.transform.eulerAngles += new Vector3(angVertical * 1, 0, 0);
+            //Debug.Log(angHorizontal + " " + angVertical);
+          
+            
         }
+
 
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
