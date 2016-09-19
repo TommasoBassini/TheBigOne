@@ -4,7 +4,7 @@ using System.Collections;
 
 public class OxygenScript : MonoBehaviour {
 
-	#region PARAMETERS
+	#region OXYGEN_PARAMETERS
 	[Header ("Riferimento a UI Text")]
 	public Text uiOxygenText;
 
@@ -30,11 +30,11 @@ public class OxygenScript : MonoBehaviour {
 	[Range (0f, 1000f)] public float oxygenRunningDecadenceAmount = 8f;
 
 	[Header ("Ossigeno Parametri Rigenerazione - Da 0f a 1000f")]
-	[Range (0f, 1000f)] public float oxygenRegenerationAmount = 40f;
+	[Range (0f, 1000f)] public float oxygenRegenerationAmount = 20f;
 	#endregion
 
 
-	#region PROPERTIES
+	#region OXYGEN_PROPERTIES
 	public float OxygenAmount {
 
 		set {
@@ -60,7 +60,7 @@ public class OxygenScript : MonoBehaviour {
 	#endregion
 
 
-	#region MONOBEHAVIOUR_METHODS
+	#region OXYGEN_MONOBEHAVIOUR_METHODS
 	public void Start () {
 
 		//Qualora ci sia un restart della scena, è sempre buona regola pulire i flag booleani
@@ -152,7 +152,7 @@ public class OxygenScript : MonoBehaviour {
 	#endregion
 
 
-	#region COROUTINES
+	#region OXYGEN_COROUTINES
 	public IEnumerator CO_OxygenStandingDecadence () {
 
 		while (true) {
