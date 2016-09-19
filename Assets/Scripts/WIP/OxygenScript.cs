@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
-
-//Devo fare la piccola parte grafico/UI (chiedere consiglio a Tommy)
-//Devo commentare il codice
 
 public class OxygenScript : MonoBehaviour {
 
 	#region PARAMETERS
-	protected internal BitArray boooooooooooooooool;
+	[Header ("Riferimento a UI Text")]
+	public Text uiOxygenText;
+
+	[Header ("Flag Booleani")]
 	public bool leftShiftHasBeenPressed;
 	public bool characterIsRunning;
 
@@ -29,7 +30,6 @@ public class OxygenScript : MonoBehaviour {
 	[Range (0f, 1000f)] public float oxygenRunningDecadenceAmount = 8f;
 
 	[Header ("Ossigeno Parametri Rigenerazione - Da 0f a 1000f")]
-	[Range (0f, 1000f)] public float oxygenRegenerationSpeed = 0.5f;
 	[Range (0f, 1000f)] public float oxygenRegenerationAmount = 40f;
 	#endregion
 
@@ -45,6 +45,8 @@ public class OxygenScript : MonoBehaviour {
 				this.oxygenAmount = this.minOxygenAmount;
 			else
 				this.oxygenAmount = value;
+
+			this.uiOxygenText.text = this.oxygenAmount.ToString ("000");
 
 		}
 
@@ -64,6 +66,9 @@ public class OxygenScript : MonoBehaviour {
 		//Qualora ci sia un restart della scena, è sempre buona regola pulire i flag booleani
 		this.leftShiftHasBeenPressed = false;
 		this.characterIsRunning = false;
+
+		//Non so se, al cambio/restart di una scena, sopravvivano le coroutine; non voglio rischiare
+		this.StopAllCoroutines ();
 
 		//La meccanica dell'ossigeno viene inizializzata con un ammontare di ossigeno (sarebbe possibile metterne uno a piacere, in caso di salvataggi)
 		//con decadenza da fermo
@@ -105,15 +110,15 @@ public class OxygenScript : MonoBehaviour {
 					
 					if (this.characterIsRunning) {
 						
-						this.OxygenAmount--;
 						this.StopAllCoroutines ();
+						this.OxygenAmount--;
 						this.StartCoroutine_Auto (this.CO_OxygenRunningDecadence ());
 						Debug.Log ("Sto correndo");
 						
 					} else {
 						
-						this.OxygenAmount--;
 						this.StopAllCoroutines ();
+						this.OxygenAmount--;
 						this.StartCoroutine_Auto (this.CO_OxygenWalkingDecadence ());
 						Debug.Log ("Sto camminando");
 						
@@ -125,9 +130,9 @@ public class OxygenScript : MonoBehaviour {
 				(Input.GetKeyDown (KeyCode.A) || Input.GetKeyUp (KeyCode.A)) || (Input.GetKeyDown (KeyCode.D) || Input.GetKeyUp (KeyCode.D))) {
 				//Se il personaggio non dovesse più muoversi (FERMANDOSI), o dovesse avere degli input, fra loro contrastanti, smetterebbe di muoversi, resettando il proprio stato di camminata/corsa
 				
+				this.StopAllCoroutines ();
 				this.characterIsRunning = false;
 				this.OxygenAmount--;
-				this.StopAllCoroutines ();
 				this.StartCoroutine_Auto (this.CO_OxygenStandingDecadence ());
 				Debug.Log ("Sono fermo");
 				
@@ -135,8 +140,7 @@ public class OxygenScript : MonoBehaviour {
 			
 			if (Input.GetKeyDown (KeyCode.Space)) {
 				//Prima della percezione della chiave utile, andrebbe messa la valutazione della "corretta vicinanza" della postazione al personaggio
-				
-				//this.StartCoroutine_Auto (this.CO_OxygenRegeneration ());
+
 				this.OxygenAmount += this.oxygenRegenerationAmount;
 				Debug.Log ("Ricarico ossigeno");
 				
@@ -181,21 +185,6 @@ public class OxygenScript : MonoBehaviour {
 		}
 
 	}
-
-	/*public IEnumerator CO_OxygenRegeneration () {
-
-		int i = 4;
-
-		do {
-
-			yield return new WaitForSeconds (this.oxygenRegenerationSpeed);
-			this.oxygenAmount += this.oxygenRegenerationAmount;
-			if (this.oxygenAmount >= this.maxOxygenAmount)
-				this.oxygenAmount = this.maxOxygenAmount;
-
-		} while (--i > 0);
-
-	}*/
 	#endregion
 
 }
