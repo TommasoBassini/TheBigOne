@@ -10,14 +10,20 @@ public class ObjectInteract : MonoBehaviour
     private Quaternion lastObjRot;
     private bool isPickuble = false;
     private GameObject pickubleObj;
-    private bool isInspecting = false;
+    public bool isInspecting = false;
 
     public int rotationSpeed;
+    public Image mirino;
 
-	void Start ()
+    public Sprite lente;
+    public Sprite punto;
+
+    public GameObject button;
+    public GameObject panel;
+
+    void Start ()
     {
-        Cursor.SetCursor(null, new Vector2(Screen.width / 2, Screen.height / 2),CursorMode.Auto);
-        Cursor.lockState = CursorLockMode.Locked;
+
 	}
 	
 	void Update ()
@@ -25,11 +31,12 @@ public class ObjectInteract : MonoBehaviour
         RaycastHit hit;
         if (!isInspecting)
         {
-            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 52.5f))
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 2.5f))
             {
-                Debug.Log(hit.collider);
                 if (hit.collider.tag == "Pickuble")
                 {
+                    mirino.sprite = lente;
+
                     isPickuble = true;
                     pickubleObj = hit.collider.gameObject;
                     
@@ -48,13 +55,15 @@ public class ObjectInteract : MonoBehaviour
                 {
                     isPickuble = false;
                     pickubleObj = null;
+                    mirino.sprite = punto;
                 }
 
-                if (hit.collider.transform.gameObject.GetComponent<Button>() != null)
-                {
-                    
-                    hit.collider.transform.gameObject.GetComponent<Button>().Select();
-                }
+            }
+            else
+            {
+                isPickuble = false;
+                pickubleObj = null;
+                mirino.sprite = punto;
             }
 
 
@@ -82,6 +91,26 @@ public class ObjectInteract : MonoBehaviour
                 pickubleObj = null;
                 isInspecting = false;
             }
+
+            if (Input.GetKeyUp(KeyCode.Joystick1Button3) && isInspecting)
+            {
+                ObjectInfo objInfo = pickubleObj.GetComponent<ObjectInfo>();
+
+                if (!objInfo.isScan)
+                {
+                    GameObject newButton = Instantiate(button);
+                    HoloObjectInfo holo = newButton.GetComponent<HoloObjectInfo>();
+                    holo.itemPrefab = objInfo.itemPrefab;
+                    holo.itemImage = objInfo.itemImage;
+                    objInfo.isScan = true;
+                    newButton.transform.SetParent(panel.transform);
+                }
+            }
         }
+    }
+
+    public void HoloInspect(GameObject obj)
+    {
+
     }
 }

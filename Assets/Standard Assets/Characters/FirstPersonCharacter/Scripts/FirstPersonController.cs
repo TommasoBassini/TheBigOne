@@ -39,6 +39,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private float m_NextStep;
         private AudioSource m_AudioSource;
 
+        public int rotationSpeed;
+
         // Use this for initialization
         private void Start()
         {
@@ -57,7 +59,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         // Update is called once per frame
         private void Update()
         {
-            RotateView();
+            //RotateView();
             // the jump state needs to read here to make sure it is not missed
 
             if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
@@ -185,6 +187,36 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
             bool waswalking = m_IsWalking;
 
+            float angH = Input.GetAxis("RightH");
+            float angV = Input.GetAxis("RightV");
+            float cameraAngle = Camera.main.transform.eulerAngles.x;
+            if (Input.GetAxis("RightH") > 0.15f || Input.GetAxis("RightH") < -0.15f)
+            {
+                this.transform.localEulerAngles += new Vector3(0, angH * rotationSpeed, 0);
+            }
+            if (Input.GetAxis("RightV") > 0.15f || Input.GetAxis("RightV") < -0.15f)
+            {
+                float angle = 0;
+                Camera.main.transform.localEulerAngles += new Vector3(angV * rotationSpeed, 0, 0);
+                if (Camera.main.transform.localEulerAngles.x > 270)
+                {
+                    angle = Camera.main.transform.localEulerAngles.x - 360;
+                }
+                else
+                    angle = Camera.main.transform.localEulerAngles.x;
+                Debug.Log(angle);
+
+                if (angle < -70)
+                {
+                    Camera.main.transform.localEulerAngles = new Vector3(290, 0, 0);
+                }
+                else if (angle > 70)
+                {
+                    Camera.main.transform.localEulerAngles = new Vector3(70, 0, 0);
+                }
+                        
+            }
+
 #if !MOBILE_INPUT
             // On standalone builds, walk/run speed is modified by a key press.
             // keep track of whether or not the character is walking or running
@@ -232,4 +264,5 @@ namespace UnityStandardAssets.Characters.FirstPerson
             body.AddForceAtPosition(m_CharacterController.velocity*0.1f, hit.point, ForceMode.Impulse);
         }
     }
+
 }
