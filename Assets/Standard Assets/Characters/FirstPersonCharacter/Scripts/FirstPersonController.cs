@@ -27,7 +27,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         [SerializeField] private AudioClip m_LandSound;           // the sound played when character touches back on ground.
 
         private Camera m_Camera;
-        //private bool m_Jump;
+        private bool m_Jump;
         private float m_YRotation;
         private Vector2 m_Input;
         private Vector3 m_MoveDir = Vector3.zero;
@@ -38,9 +38,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private float m_StepCycle;
         private float m_NextStep;
         private AudioSource m_AudioSource;
-        private bool isCrouched = false;
-        
-      
+
+        public int rotationSpeed;
+
         // Use this for initialization
         private void Start()
         {
@@ -59,29 +59,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         // Update is called once per frame
         private void Update()
         {
-            // Crouched control value 
-            if (Input.GetKeyDown(KeyCode.LeftControl))
-            {
-                if (isCrouched)
-                {
-                    m_CharacterController.height = 1.8f;
-                    m_CharacterController.center = new Vector3(0f, 0f, 0f);
-                    m_WalkSpeed = 5;
-                    m_RunSpeed = 10;
-                    m_HeadBob.VerticaltoHorizontalRatio = 2;
-                    isCrouched = false;
-                }
-                else {
-                    isCrouched = true;
-                    m_WalkSpeed = 1;
-                    m_RunSpeed = m_WalkSpeed;
-                    m_HeadBob.VerticaltoHorizontalRatio = 8;
-                    m_CharacterController.height = 1.0f;
-                    m_CharacterController.center = new Vector3(0f, 0.5f, 0);
-                }
-            }
-            RotateView();
-            /* the jump state needs to read here to make sure it is not missed
+            //RotateView();
+            // the jump state needs to read here to make sure it is not missed
 
             if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
             {
@@ -95,7 +74,6 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
 
             m_PreviouslyGrounded = m_CharacterController.isGrounded;
-            
         }
 
 
@@ -103,8 +81,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         {
             m_AudioSource.clip = m_LandSound;
             m_AudioSource.Play();
-            m_NextStep = m_StepCycle + .5f;*/
-        } 
+            m_NextStep = m_StepCycle + .5f;
+        }
 
 
         private void FixedUpdate()
@@ -209,6 +187,36 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
             bool waswalking = m_IsWalking;
 
+            float angH = Input.GetAxis("RightH");
+            float angV = Input.GetAxis("RightV");
+            float cameraAngle = Camera.main.transform.eulerAngles.x;
+            if (Input.GetAxis("RightH") > 0.15f || Input.GetAxis("RightH") < -0.15f)
+            {
+                this.transform.localEulerAngles += new Vector3(0, angH * rotationSpeed, 0);
+            }
+            if (Input.GetAxis("RightV") > 0.15f || Input.GetAxis("RightV") < -0.15f)
+            {
+                float angle = 0;
+                Camera.main.transform.localEulerAngles += new Vector3(angV * rotationSpeed, 0, 0);
+                if (Camera.main.transform.localEulerAngles.x > 270)
+                {
+                    angle = Camera.main.transform.localEulerAngles.x - 360;
+                }
+                else
+                    angle = Camera.main.transform.localEulerAngles.x;
+                Debug.Log(angle);
+
+                if (angle < -70)
+                {
+                    Camera.main.transform.localEulerAngles = new Vector3(290, 0, 0);
+                }
+                else if (angle > 70)
+                {
+                    Camera.main.transform.localEulerAngles = new Vector3(70, 0, 0);
+                }
+                        
+            }
+
 #if !MOBILE_INPUT
             // On standalone builds, walk/run speed is modified by a key press.
             // keep track of whether or not the character is walking or running
@@ -233,19 +241,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
         }
 
-        
+
         private void RotateView()
         {
-            float angHorizontal = Input.GetAxis("RightJoystickHorizontal");
-            float angVertical = Input.GetAxis("RightJoystickVertical");
-            //this.transform.eulerAngles = m_Camera.transform.eulerAngles;
-            m_Camera.transform.eulerAngles += new Vector3(0, angHorizontal * 1,0);
-            m_Camera.transform.eulerAngles += new Vector3(angVertical * 1, 0, 0);
-            //Debug.Log(angHorizontal + " " + angVertical);
-          
-            
+            m_MouseLook.LookRotation (transform, m_Camera.transform);
         }
-
 
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
@@ -264,4 +264,5 @@ namespace UnityStandardAssets.Characters.FirstPerson
             body.AddForceAtPosition(m_CharacterController.velocity*0.1f, hit.point, ForceMode.Impulse);
         }
     }
+
 }
