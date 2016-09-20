@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using System.Collections;
 using UnityStandardAssets.CrossPlatformInput;
 using UnityStandardAssets.Utility;
 using Random = UnityEngine.Random;
@@ -39,7 +40,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private float m_NextStep;
         private AudioSource m_AudioSource;
         private bool isCrouched = false;
-
+        public Coroutine CrouchingCoroutine;
+        public Coroutine DeCrouchingCoroutine;
         public int rotationSpeed;
 
         // Use this for initialization
@@ -55,18 +57,59 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
         }
-
-
+        // Coroutine for Smooth Crouch_Decrouch
+        IEnumerator CO_Crouching()
+        {
+            while (true)
+            {
+                m_CharacterController.height = Mathf.Lerp(m_CharacterController.height, 1.0f, Time.deltaTime*9);
+                if (m_CharacterController.height <= 1.05f)
+                {
+                    m_CharacterController.height = 1.0f;
+                    yield break;
+                }
+                yield return null;
+            }
+        }
+        IEnumerator CO_DeCrouching()
+        {
+            while (true)
+            {
+                m_CharacterController.height = Mathf.Lerp(m_CharacterController.height, 1.8f, Time.deltaTime*5);
+                if (m_CharacterController.height >= 1.75f)
+                {
+                    m_CharacterController.height = 1.8f;
+                    yield break;
+                }
+                yield return null;
+            }
+        }
         // Update is called once per frame
         private void Update()
         {
-            // Crouched control value 
+            // Lining Control 
+            if (Input.GetKeyDown(KeyCode.Joystick1Button4))
+            {
+                m_Camera.transform.rotation = Quaternion.AngleAxis(30f, this.transform.forward);
+                Debug.Log("sx Bumper");
+            }
+            if (Input.GetKeyDown(KeyCode.Joystick1Button5))
+            {
+                m_Camera.transform.rotation = Quaternion.AngleAxis(-30f, this.transform.forward);
+                Debug.Log("dx Bumper");
+            }
+
+            // Crouched Control value 
             if (Input.GetKeyDown(KeyCode.Joystick1Button2))
             {
                 if (isCrouched)
                 {
-                    m_CharacterController.height = 1.8f;
-                    m_CharacterController.center = new Vector3(0f, 0f, 0f);
+                    if (CrouchingCoroutine != null)
+                    {
+                    StopCoroutine(CrouchingCoroutine);
+                    }
+                    DeCrouchingCoroutine = StartCoroutine_Auto(CO_DeCrouching());
+                    m_CharacterController.center = Vector3.zero;
                     m_WalkSpeed = 5;
                     m_RunSpeed = 10;
                     m_HeadBob.VerticaltoHorizontalRatio = 2;
@@ -77,7 +120,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
                     m_WalkSpeed = 1;
                     m_RunSpeed = m_WalkSpeed;
                     m_HeadBob.VerticaltoHorizontalRatio = 8;
-                    m_CharacterController.height = 1.0f;
+                    if (DeCrouchingCoroutine != null)
+                    {
+                        StopCoroutine(DeCrouchingCoroutine);
+                    }
+                    CrouchingCoroutine = StartCoroutine_Auto(CO_Crouching());                 
                     m_CharacterController.center = new Vector3(0f, 0.5f, 0);
                 }
             }
