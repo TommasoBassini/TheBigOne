@@ -38,6 +38,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private float m_StepCycle;
         private float m_NextStep;
         private AudioSource m_AudioSource;
+        private bool isCrouched = false;
 
         public int rotationSpeed;
 
@@ -59,6 +60,27 @@ namespace UnityStandardAssets.Characters.FirstPerson
         // Update is called once per frame
         private void Update()
         {
+            // Crouched control value 
+            if (Input.GetKeyDown(KeyCode.Joystick1Button2))
+            {
+                if (isCrouched)
+                {
+                    m_CharacterController.height = 1.8f;
+                    m_CharacterController.center = new Vector3(0f, 0f, 0f);
+                    m_WalkSpeed = 5;
+                    m_RunSpeed = 10;
+                    m_HeadBob.VerticaltoHorizontalRatio = 2;
+                    isCrouched = false;
+                }
+                else {
+                    isCrouched = true;
+                    m_WalkSpeed = 1;
+                    m_RunSpeed = m_WalkSpeed;
+                    m_HeadBob.VerticaltoHorizontalRatio = 8;
+                    m_CharacterController.height = 1.0f;
+                    m_CharacterController.center = new Vector3(0f, 0.5f, 0);
+                }
+            }
             //RotateView();
             // the jump state needs to read here to make sure it is not missed
 
