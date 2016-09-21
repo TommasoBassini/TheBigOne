@@ -57,11 +57,11 @@ public class TorchLightScript : MonoBehaviour {
 
 		if (this.torchLightHasBeenTriggered) {
 			
-			this.StartCoroutine_Auto (this.batteryScript.CO_BatteryEnergyDecadence ());
+			this.batteryScript.StartBatteryEnergyDecadence ();
 			this.torchLightHasBeenTriggered = false;
 
 		} else if (!this.torchLight.enabled)
-			this.StopAllCoroutines ();
+			this.batteryScript.StopBatteryEnergyDecadence ();
 
 	}
 	#endregion

@@ -83,4 +83,19 @@ public class BatteryScript : MonoBehaviour {
 	}
 	#endregion
 
+
+	#region BATTERY_METHODS
+	public void StartBatteryEnergyDecadence () {
+
+		this.StartCoroutine_Auto (this.CO_BatteryEnergyDecadence ());
+
+	}
+
+	public void StopBatteryEnergyDecadence () {
+
+		this.StopAllCoroutines ();
+
+	}
+	#endregion
+
 }
