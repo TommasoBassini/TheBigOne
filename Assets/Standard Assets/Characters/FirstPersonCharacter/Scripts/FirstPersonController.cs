@@ -273,7 +273,6 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 }
                 else
                     angle = Camera.main.transform.localEulerAngles.x;
-                Debug.Log(angle);
 
                 if (angle < -70)
                 {
