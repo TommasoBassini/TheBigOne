@@ -4,6 +4,15 @@ using System.Collections;
 
 public class OxygenScript : MonoBehaviour {
 
+	#region OXYGEN_SUBCLASS
+	public class OxygenSaveAndLoadData {
+		
+		public float oxygen;
+		
+	}
+	#endregion
+
+
 	#region OXYGEN_PARAMETERS
 	[Header ("Riferimento a UI Text")]
 	public Text uiOxygenText;
@@ -13,7 +22,7 @@ public class OxygenScript : MonoBehaviour {
 	public bool characterIsRunning;
 
 	[Header ("Ossigeno Parametri Base - Da 0f a 1000f")]
-	[Range (0f, 1000f)] public float oxygenAmount;
+	[Range (0f, 1000f)] public float oxygenAmount = 100f;
 	[Range (0f, 1000f)] public float minOxygenAmount = 0f;
 	[Range (0f, 1000f)] public float maxOxygenAmount = 100f;
 
@@ -31,6 +40,8 @@ public class OxygenScript : MonoBehaviour {
 
 	[Header ("Ossigeno Parametri Rigenerazione - Da 0f a 1000f")]
 	[Range (0f, 1000f)] public float oxygenRegenerationAmount = 20f;
+
+	public OxygenSaveAndLoadData OxygenRef;
 	#endregion
 
 
@@ -40,19 +51,19 @@ public class OxygenScript : MonoBehaviour {
 		set {
 
 			if (value > this.maxOxygenAmount)
-				this.oxygenAmount = this.maxOxygenAmount;
+				this.OxygenRef.oxygen = this.maxOxygenAmount;
 			else if (value < this.minOxygenAmount)
-				this.oxygenAmount = this.minOxygenAmount;
+				this.OxygenRef.oxygen = this.minOxygenAmount;
 			else
-				this.oxygenAmount = value;
+				this.OxygenRef.oxygen = value;
 
-			this.uiOxygenText.text = this.oxygenAmount.ToString ("000");
+			this.uiOxygenText.text = this.OxygenRef.oxygen.ToString ("000");
 
 		}
 
 		get {
 
-			return this.oxygenAmount;
+			return this.OxygenRef.oxygen;
 
 		}
 
@@ -61,6 +72,12 @@ public class OxygenScript : MonoBehaviour {
 
 
 	#region OXYGEN_MONOBEHAVIOUR_METHODS
+	public void Awake () {
+
+		this.OxygenRef = new OxygenSaveAndLoadData ();
+
+	}
+
 	public void Start () {
 
 		//Qualora ci sia un restart della scena, è sempre buona regola pulire i flag booleani
@@ -72,7 +89,7 @@ public class OxygenScript : MonoBehaviour {
 
 		//La meccanica dell'ossigeno viene inizializzata con un ammontare di ossigeno (sarebbe possibile metterne uno a piacere, in caso di salvataggi)
 		//con decadenza da fermo
-		this.OxygenAmount = this.maxOxygenAmount;
+		this.OxygenAmount = this.oxygenAmount;
 		this.StartCoroutine_Auto (this.CO_OxygenStandingDecadence ());
 		
 	}
