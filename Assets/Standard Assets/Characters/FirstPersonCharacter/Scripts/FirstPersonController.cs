@@ -43,6 +43,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         public Coroutine CrouchingCoroutine;
         public Coroutine DeCrouchingCoroutine;
         public int rotationSpeed;
+        bool run = false;
+
 
         // Use this for initialization
         private void Start()
@@ -86,18 +88,23 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
         // Update is called once per frame
         private void Update()
-        {
-            // Lining Control 
-            if (Input.GetKeyDown(KeyCode.Joystick1Button4))
+        { 
+            //If R3 is clicked RUN or WALK
+            if (Input.GetKeyDown(KeyCode.Joystick1Button9) && isCrouched == false)
             {
-                m_Camera.transform.rotation = Quaternion.AngleAxis(30f, this.transform.forward);
-                Debug.Log("sx Bumper");
+                if (run)
+                {
+                    m_WalkSpeed = 5;
+                    run = false;
+                }
+                else
+                {
+                    m_WalkSpeed = m_RunSpeed;
+                    run = true;
+                 }
             }
-            if (Input.GetKeyDown(KeyCode.Joystick1Button5))
-            {
-                m_Camera.transform.rotation = Quaternion.AngleAxis(-30f, this.transform.forward);
-                Debug.Log("dx Bumper");
-            }
+
+           
 
             // Crouched Control value 
             if (Input.GetKeyDown(KeyCode.Joystick1Button2))
@@ -128,10 +135,26 @@ namespace UnityStandardAssets.Characters.FirstPerson
                     m_CharacterController.center = new Vector3(0f, 0.5f, 0);
                 }
             }
-            //RotateView();
-            // the jump state needs to read here to make sure it is not missed
+            // Lining Control 
 
-            if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
+            float angH = Input.GetAxis("RightH");
+            float angV = Input.GetAxis("RightV");
+
+            if (Input.GetKey(KeyCode.Joystick1Button4))
+                {
+                    m_Camera.transform.rotation = Quaternion.AngleAxis(-20f * angH, this.transform.forward);
+                    m_Camera.transform.localPosition = new Vector3(m_Camera.transform.localPosition.x + angH/100, m_Camera.transform.localPosition.y);
+                }
+            else
+                {
+                    m_Camera.transform.rotation = Quaternion.AngleAxis(0, this.transform.forward);
+                }
+            
+                
+            //RotateView();
+            //the jump state needs to read here to make sure it is not missed
+
+                if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
             {
                 StartCoroutine(m_JumpBob.DoBobCycle());
                 PlayLandingSound();
