@@ -41,6 +41,7 @@ public class OxygenScript : MonoBehaviour {
 	[Header ("Ossigeno Parametri Rigenerazione - Da 0f a 1000f")]
 	[Range (0f, 1000f)] public float oxygenRegenerationAmount = 20f;
 
+	public Coroutine oxygenDecadenceCoroutineRef;
 	public OxygenSaveAndLoadData OxygenRef;
 	#endregion
 
@@ -90,7 +91,7 @@ public class OxygenScript : MonoBehaviour {
 		//La meccanica dell'ossigeno viene inizializzata con un ammontare di ossigeno (sarebbe possibile metterne uno a piacere, in caso di salvataggi)
 		//con decadenza da fermo
 		this.OxygenAmount = this.oxygenAmount;
-		this.StartCoroutine_Auto (this.CO_OxygenStandingDecadence ());
+		this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenDecadence (this.oxygenStandingDecadenceSpeed, this.oxygenStandingDecadenceAmount));
 		
 	}
 	
@@ -127,16 +128,16 @@ public class OxygenScript : MonoBehaviour {
 					
 					if (this.characterIsRunning) {
 						
-						this.StopAllCoroutines ();
+						this.StopCoroutine (this.oxygenDecadenceCoroutineRef);
 						this.OxygenAmount--;
-						this.StartCoroutine_Auto (this.CO_OxygenRunningDecadence ());
+						this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenDecadence (this.oxygenRunningDecadenceSpeed, this.oxygenRunningDecadenceAmount));
 						Debug.Log ("Sto correndo");
 						
 					} else {
 						
-						this.StopAllCoroutines ();
+						this.StopCoroutine (this.oxygenDecadenceCoroutineRef);
 						this.OxygenAmount--;
-						this.StartCoroutine_Auto (this.CO_OxygenWalkingDecadence ());
+						this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenDecadence (this.oxygenWalkingDecadenceSpeed, this.oxygenWalkingDecadenceAmount));
 						Debug.Log ("Sto camminando");
 						
 					}
@@ -146,11 +147,11 @@ public class OxygenScript : MonoBehaviour {
 			} else if ((Input.GetKeyDown (KeyCode.W) || Input.GetKeyUp (KeyCode.W)) || (Input.GetKeyDown (KeyCode.S) || Input.GetKeyUp (KeyCode.S)) ||
 				(Input.GetKeyDown (KeyCode.A) || Input.GetKeyUp (KeyCode.A)) || (Input.GetKeyDown (KeyCode.D) || Input.GetKeyUp (KeyCode.D))) {
 				//Se il personaggio non dovesse più muoversi (FERMANDOSI), o dovesse avere degli input, fra loro contrastanti, smetterebbe di muoversi, resettando il proprio stato di camminata/corsa
-				
-				this.StopAllCoroutines ();
+
+				this.StopCoroutine (this.oxygenDecadenceCoroutineRef);
 				this.characterIsRunning = false;
 				this.OxygenAmount--;
-				this.StartCoroutine_Auto (this.CO_OxygenStandingDecadence ());
+				this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenDecadence (this.oxygenStandingDecadenceSpeed, this.oxygenStandingDecadenceAmount));
 				Debug.Log ("Sono fermo");
 				
 			}
@@ -170,34 +171,12 @@ public class OxygenScript : MonoBehaviour {
 
 
 	#region OXYGEN_COROUTINES
-	public IEnumerator CO_OxygenStandingDecadence () {
+	public IEnumerator CO_OxygenDecadence (float oxygenDecadenceSpeed, float oxygenDecadenceAmount) {
 
 		while (true) {
 
-			yield return new WaitForSeconds (this.oxygenStandingDecadenceSpeed);
-			this.OxygenAmount -= this.oxygenStandingDecadenceAmount;
-
-		}
-
-	}
-
-	public IEnumerator CO_OxygenWalkingDecadence () {
-
-		while (true) {
-
-			yield return new WaitForSeconds (this.oxygenWalkingDecadenceSpeed);
-			this.OxygenAmount -= this.oxygenWalkingDecadenceAmount;
-
-		}
-
-	}
-
-	public IEnumerator CO_OxygenRunningDecadence () {
-
-		while (true) {
-
-			yield return new WaitForSeconds (this.oxygenRunningDecadenceSpeed);
-			this.OxygenAmount -= this.oxygenRunningDecadenceAmount;
+			yield return new WaitForSeconds (oxygenDecadenceSpeed);
+			this.OxygenAmount -= oxygenDecadenceAmount;
 
 		}
 

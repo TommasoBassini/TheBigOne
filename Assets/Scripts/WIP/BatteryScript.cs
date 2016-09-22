@@ -30,6 +30,7 @@ public class BatteryScript : MonoBehaviour {
 	[Header ("Batteria Parametri Rigenerazione - Da 0f ad 8f")]
 	[Range (0f, 8f)] public float batteryEnergyRegenerationAmount = 0.2f;
 
+	public Coroutine batteryEnergyDecadenceCoroutineRef;
 	public BatteryEnergySaveAndLoadData energyRef;
 	#endregion
 
@@ -88,12 +89,12 @@ public class BatteryScript : MonoBehaviour {
 
 
 	#region BATTERY_COROUTINES
-	public IEnumerator CO_BatteryEnergyDecadence () {
+	public IEnumerator CO_BatteryEnergyDecadence (float batteryEnergyDecadenceSpeed, float batteryEnergyDecadenceAmount) {
 
 		while (true) {
 
-			yield return new WaitForSeconds (this.batteryEnergyDecadenceSpeed);
-			this.BatteryEnergyAmount -= this.batteryEnergyDecadenceAmount;
+			yield return new WaitForSeconds (batteryEnergyDecadenceSpeed);
+			this.BatteryEnergyAmount -= batteryEnergyDecadenceAmount;
 
 		}
 
@@ -104,13 +105,14 @@ public class BatteryScript : MonoBehaviour {
 	#region BATTERY_METHODS
 	public void StartBatteryEnergyDecadence () {
 
-		this.StartCoroutine_Auto (this.CO_BatteryEnergyDecadence ());
+		this.batteryEnergyDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_BatteryEnergyDecadence (this.batteryEnergyDecadenceSpeed, this.batteryEnergyDecadenceAmount));
 
 	}
 
 	public void StopBatteryEnergyDecadence () {
 
-		this.StopAllCoroutines ();
+		if (this.batteryEnergyDecadenceCoroutineRef != null)
+			this.StopCoroutine (this.batteryEnergyDecadenceCoroutineRef);
 
 	}
 	#endregion
