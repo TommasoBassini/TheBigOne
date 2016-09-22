@@ -59,6 +59,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
         }
+
         // Coroutine for Smooth Crouch_Decrouch
         IEnumerator CO_Crouching()
         {
@@ -142,15 +143,19 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
             if (Input.GetKey(KeyCode.Joystick1Button4))
                 {
-                    m_Camera.transform.rotation = Quaternion.AngleAxis(-20f * angH, this.transform.forward);
-                    m_Camera.transform.localPosition = new Vector3(m_Camera.transform.localPosition.x + angH/100, m_Camera.transform.localPosition.y);
+                    this.transform.rotation = Quaternion.AngleAxis(-40f * angH, this.transform.forward);
                 }
             else
                 {
                     m_Camera.transform.rotation = Quaternion.AngleAxis(0, this.transform.forward);
                 }
             
+            // Check Lining
                 
+
+
+
+             
             //RotateView();
             //the jump state needs to read here to make sure it is not missed
 
