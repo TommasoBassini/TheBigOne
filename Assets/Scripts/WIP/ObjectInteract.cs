@@ -64,7 +64,7 @@ public class ObjectInteract : MonoBehaviour
 
                 if (hit.collider.tag == "Terminal")
                 {
-                    Debug.Log(" jh hn");
+
                 }
             }
             else
