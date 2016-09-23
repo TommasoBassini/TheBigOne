@@ -60,6 +60,7 @@ public class OxygenScript : MonoBehaviour {
 			else
 				this.OxygenRef.oxygen = value;
 
+			this.oxygenAmount = this.OxygenRef.oxygen;
 			this.uiOxygenText.text = this.OxygenRef.oxygen.ToString ("000");
 
 		}
@@ -104,6 +105,8 @@ public class OxygenScript : MonoBehaviour {
 	}
 	
 	public void Update () {
+
+		this.oxygenAmount = this.OxygenAmount;
 		
 		if (this.OxygenAmount == this.minOxygenAmount) {
 

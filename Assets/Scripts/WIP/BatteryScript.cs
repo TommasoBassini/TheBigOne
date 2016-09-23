@@ -49,6 +49,7 @@ public class BatteryScript : MonoBehaviour {
 			else
 				this.energyRef.energy = value;
 
+			this.batteryEnergyAmount = this.energyRef.energy;
 			this.torchLightScript.TorchLightIntensityAmount = this.energyRef.energy;
 			this.uiBatteryText.text = (this.energyRef.energy * 100).ToString ("000");
 
@@ -88,6 +89,8 @@ public class BatteryScript : MonoBehaviour {
 	}
 
 	public void Update () {
+
+		this.batteryEnergyAmount = this.BatteryEnergyAmount;
 
 		if (Input.GetKeyDown (KeyCode.R))
 			this.BatteryEnergyAmount += this.batteryEnergyRegenerationAmount;
