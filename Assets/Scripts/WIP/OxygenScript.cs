@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 using System.Collections;
 
+public delegate void OxygenChange (OxygenScript oxygenScriptReference, float oxygenChangeAmount);
+
 public class OxygenScript : MonoBehaviour {
 
 	#region OXYGEN_SUBCLASS
@@ -72,6 +74,15 @@ public class OxygenScript : MonoBehaviour {
 	#endregion
 
 
+	#region OXYGEN_DELEGATES
+	public OxygenChange OxygenDecrease = delegate (OxygenScript oxygenScriptReference, float oxygenDecreaseAmount) {
+
+		oxygenScriptReference.OxygenAmount -= oxygenDecreaseAmount;
+
+	};
+	#endregion
+
+
 	#region OXYGEN_MONOBEHAVIOUR_METHODS
 	public void Awake () {
 
@@ -91,7 +102,7 @@ public class OxygenScript : MonoBehaviour {
 		//La meccanica dell'ossigeno viene inizializzata con un ammontare di ossigeno (sarebbe possibile metterne uno a piacere, in caso di salvataggi)
 		//con decadenza da fermo
 		this.OxygenAmount = this.oxygenAmount;
-		this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenDecadence (this.oxygenStandingDecadenceSpeed, this.oxygenStandingDecadenceAmount));
+		this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenChange (this.oxygenStandingDecadenceSpeed, this.oxygenStandingDecadenceAmount, this.OxygenDecrease));
 		
 	}
 	
@@ -130,14 +141,14 @@ public class OxygenScript : MonoBehaviour {
 						
 						this.StopCoroutine (this.oxygenDecadenceCoroutineRef);
 						this.OxygenAmount--;
-						this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenDecadence (this.oxygenRunningDecadenceSpeed, this.oxygenRunningDecadenceAmount));
+						this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenChange (this.oxygenRunningDecadenceSpeed, this.oxygenRunningDecadenceAmount, this.OxygenDecrease));
 						Debug.Log ("Sto correndo");
 						
 					} else {
 						
 						this.StopCoroutine (this.oxygenDecadenceCoroutineRef);
 						this.OxygenAmount--;
-						this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenDecadence (this.oxygenWalkingDecadenceSpeed, this.oxygenWalkingDecadenceAmount));
+						this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenChange (this.oxygenWalkingDecadenceSpeed, this.oxygenWalkingDecadenceAmount, this.OxygenDecrease));
 						Debug.Log ("Sto camminando");
 						
 					}
@@ -151,7 +162,7 @@ public class OxygenScript : MonoBehaviour {
 				this.StopCoroutine (this.oxygenDecadenceCoroutineRef);
 				this.characterIsRunning = false;
 				this.OxygenAmount--;
-				this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenDecadence (this.oxygenStandingDecadenceSpeed, this.oxygenStandingDecadenceAmount));
+				this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenChange (this.oxygenStandingDecadenceSpeed, this.oxygenStandingDecadenceAmount, this.OxygenDecrease));
 				Debug.Log ("Sono fermo");
 				
 			}
@@ -171,12 +182,12 @@ public class OxygenScript : MonoBehaviour {
 
 
 	#region OXYGEN_COROUTINES
-	public IEnumerator CO_OxygenDecadence (float oxygenDecadenceSpeed, float oxygenDecadenceAmount) {
+	public IEnumerator CO_OxygenChange (float oxygenChangeSpeed, float oxygenChangeAmount, OxygenChange DelegatedMethod) {
 
 		while (true) {
 
-			yield return new WaitForSeconds (oxygenDecadenceSpeed);
-			this.OxygenAmount -= oxygenDecadenceAmount;
+			yield return new WaitForSeconds (oxygenChangeSpeed);
+			DelegatedMethod (this, oxygenChangeAmount);
 
 		}
 

@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 using System.Collections;
 
+public delegate void BatteryEnergyChange (BatteryScript batteryScriptReference, float batteryEnergyChangeAmount);
+
 public class BatteryScript : MonoBehaviour {
 
 	#region BATTERY_SUBCLASS
@@ -62,6 +64,15 @@ public class BatteryScript : MonoBehaviour {
 	#endregion
 
 
+	#region BATTERY_DELEGATES
+	public BatteryEnergyChange BatteryEnergyDecrease = delegate (BatteryScript batteryScriptReference, float batteryEnergyChangeAmount) {
+
+		batteryScriptReference.BatteryEnergyAmount -= batteryEnergyChangeAmount;
+
+	};
+	#endregion
+
+
 	#region BATTERY_MONOBEHAVIOUR_METHODS
 	public void Awake () {
 
@@ -89,12 +100,12 @@ public class BatteryScript : MonoBehaviour {
 
 
 	#region BATTERY_COROUTINES
-	public IEnumerator CO_BatteryEnergyDecadence (float batteryEnergyDecadenceSpeed, float batteryEnergyDecadenceAmount) {
+	public IEnumerator CO_BatteryEnergyChange (float batteryEnergyChangeSpeed, float batteryEnergyChangeAmount, BatteryEnergyChange DelegatedMethod) {
 
 		while (true) {
 
-			yield return new WaitForSeconds (batteryEnergyDecadenceSpeed);
-			this.BatteryEnergyAmount -= batteryEnergyDecadenceAmount;
+			yield return new WaitForSeconds (batteryEnergyChangeSpeed);
+			DelegatedMethod (this, batteryEnergyChangeAmount);
 
 		}
 
@@ -105,7 +116,7 @@ public class BatteryScript : MonoBehaviour {
 	#region BATTERY_METHODS
 	public void StartBatteryEnergyDecadence () {
 
-		this.batteryEnergyDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_BatteryEnergyDecadence (this.batteryEnergyDecadenceSpeed, this.batteryEnergyDecadenceAmount));
+		this.batteryEnergyDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_BatteryEnergyChange (this.batteryEnergyDecadenceSpeed, this.batteryEnergyDecadenceAmount, this.BatteryEnergyDecrease));
 
 	}
 
