@@ -40,9 +40,6 @@ public class TorchLightScript : MonoBehaviour {
 		this.torchLightHasBeenTriggered = false;
 		this.torchLight.enabled = false;
 
-		//fermo tutte le coroutine ad ogni riavvio di scena (si sa mai)
-		this.StopAllCoroutines ();
-
 	}
 
 	public void Update () {

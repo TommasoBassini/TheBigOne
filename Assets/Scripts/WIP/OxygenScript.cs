@@ -96,9 +96,6 @@ public class OxygenScript : MonoBehaviour {
 		this.leftShiftHasBeenPressed = false;
 		this.characterIsRunning = false;
 
-		//Non so se, al cambio/restart di una scena, sopravvivano le coroutine; non voglio rischiare
-		this.StopAllCoroutines ();
-
 		//La meccanica dell'ossigeno viene inizializzata con un ammontare di ossigeno (sarebbe possibile metterne uno a piacere, in caso di salvataggi)
 		//con decadenza da fermo
 		this.OxygenAmount = this.oxygenAmount;
@@ -124,11 +121,11 @@ public class OxygenScript : MonoBehaviour {
 			this.leftShiftHasBeenPressed = Input.GetKeyDown (KeyCode.LeftShift);
 
 			if ((Input.GetKey (KeyCode.W) ^ Input.GetKey (KeyCode.S)) || (Input.GetKey (KeyCode.A) ^ Input.GetKey (KeyCode.D))) {
-				//Se il personaggio dovesse muoversi, verrebbe eseguito il seguente codice di if
+				//Se il personaggio dovesse muoversi, verrebbe eseguito il seguente codice di if --> Bool? isMov != null
 
 				if (this.leftShiftHasBeenPressed || ((Input.GetKeyDown (KeyCode.W) || Input.GetKeyUp (KeyCode.W)) ^ (Input.GetKeyDown (KeyCode.S) || Input.GetKeyUp (KeyCode.S))) ||
 					((Input.GetKeyDown (KeyCode.A) || Input.GetKeyUp (KeyCode.A)) ^ (Input.GetKeyDown (KeyCode.D) || Input.GetKeyUp (KeyCode.D)))) {
-					//All'infuori del cambio camminata/corsa, tutte le valutazioni sulle chiavi sono utili per simulare (qui dentro) il cambio movimento del pesonaggio
+					//All'infuori del cambio camminata/corsa, tutte le valutazioni sulle chiavi sono utili per simulare (qui dentro) il cambio movimento del pesonaggio --> Valutazione trigger cambio corsa/camminata - trigger inizio movimento
 
 					if (this.leftShiftHasBeenPressed) {
 						//Seconda valutazione seriale del cambio camminata/corsa, motivazione della memorizzazione; il cambio di modalità viene memorizzato in un secondo booleano
@@ -138,6 +135,7 @@ public class OxygenScript : MonoBehaviour {
 					}
 					
 					if (this.characterIsRunning) {
+						//Bool? isMov == true
 						
 						this.StopCoroutine (this.oxygenDecadenceCoroutineRef);
 						this.OxygenAmount--;
@@ -145,6 +143,7 @@ public class OxygenScript : MonoBehaviour {
 						Debug.Log ("Sto correndo");
 						
 					} else {
+						//Bool? isMov == false
 						
 						this.StopCoroutine (this.oxygenDecadenceCoroutineRef);
 						this.OxygenAmount--;
@@ -157,7 +156,7 @@ public class OxygenScript : MonoBehaviour {
 				
 			} else if ((Input.GetKeyDown (KeyCode.W) || Input.GetKeyUp (KeyCode.W)) || (Input.GetKeyDown (KeyCode.S) || Input.GetKeyUp (KeyCode.S)) ||
 				(Input.GetKeyDown (KeyCode.A) || Input.GetKeyUp (KeyCode.A)) || (Input.GetKeyDown (KeyCode.D) || Input.GetKeyUp (KeyCode.D))) {
-				//Se il personaggio non dovesse più muoversi (FERMANDOSI), o dovesse avere degli input, fra loro contrastanti, smetterebbe di muoversi, resettando il proprio stato di camminata/corsa
+				//Se il personaggio non dovesse più muoversi (FERMANDOSI), o dovesse avere degli input, fra loro contrastanti, smetterebbe di muoversi, resettando il proprio stato di camminata/corsa --> Valutazione trigger della fermata
 
 				this.StopCoroutine (this.oxygenDecadenceCoroutineRef);
 				this.characterIsRunning = false;

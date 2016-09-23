@@ -82,9 +82,6 @@ public class BatteryScript : MonoBehaviour {
 
 	public void Start () {
 
-		//fermo tutte le coroutine ad ogni riavvio di scena (si sa mai)
-		this.StopAllCoroutines ();
-
 		//Si può assegnare qualsiasi altro valore in caso di salvataggi od altra occasione
 		this.BatteryEnergyAmount = this.batteryEnergyAmount;
 
