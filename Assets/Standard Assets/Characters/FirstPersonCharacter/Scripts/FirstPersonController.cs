@@ -44,6 +44,12 @@ namespace UnityStandardAssets.Characters.FirstPerson
         public Coroutine DeCrouchingCoroutine;
         public int rotationSpeed;
         bool run = false;
+        public bool isLining = false;
+        public bool chkForLining = false;
+        public bool chkForLiningRight = false;
+        public bool chkForLiningLeft = false;
+        public int rayDistLining = 1;
+
 
 
         // Use this for initialization
@@ -89,7 +95,34 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
         // Update is called once per frame
         private void Update()
-        { 
+        {
+            // Raycast to check lining
+            RaycastHit hit;
+            Ray checkRayRight = new Ray(this.transform.position, Vector3.right);
+            Ray checkRayLeft = new Ray(this.transform.position, Vector3.left);
+            Debug.DrawRay(this.transform.position, Vector3.right * rayDistLining, Color.red);
+            Debug.DrawRay(this.transform.position, Vector3.left * rayDistLining, Color.red);
+
+            if (Physics.Raycast(checkRayLeft, out hit, 2))
+            
+            {
+                Debug.Log("No Lining Left!");
+                chkForLiningLeft = true;
+                
+            } else if (Physics.Raycast(checkRayRight, out hit, 2))
+            {
+                Debug.Log("No Lining Right!");
+                chkForLiningRight = true;
+            }
+            else
+            {
+                Debug.Log("Lining ON");
+                chkForLiningLeft = false;
+                chkForLiningRight = false;
+
+            }
+
+
             //If R3 is clicked RUN or WALK
             if (Input.GetKeyDown(KeyCode.Joystick1Button9) && isCrouched == false)
             {
@@ -104,8 +137,6 @@ namespace UnityStandardAssets.Characters.FirstPerson
                     run = true;
                  }
             }
-
-           
 
             // Crouched Control value 
             if (Input.GetKeyDown(KeyCode.Joystick1Button2))
@@ -132,30 +163,36 @@ namespace UnityStandardAssets.Characters.FirstPerson
                     {
                         StopCoroutine(DeCrouchingCoroutine);
                     }
-                    CrouchingCoroutine = StartCoroutine_Auto(CO_Crouching());                 
-                    m_CharacterController.center = new Vector3(0f, 0.5f, 0);
+                    CrouchingCoroutine = StartCoroutine_Auto(CO_Crouching());
+                    m_CharacterController.center = new Vector3(m_CharacterController.center.x, 0.5f, m_CharacterController.center.z);
                 }
             }
+            
             // Lining Control 
-
             float angH = Input.GetAxis("RightH");
             float angV = Input.GetAxis("RightV");
-
+          
             if (Input.GetKey(KeyCode.Joystick1Button4))
+            {
+                if (chkForLiningLeft == true && angH > 0)
                 {
                     this.transform.rotation = Quaternion.AngleAxis(-40f * angH, this.transform.forward);
+                    isLining = true;
                 }
-            else
+                else if (chkForLiningRight == true && angH < 0)
                 {
-                    m_Camera.transform.rotation = Quaternion.AngleAxis(0, this.transform.forward);
+                    this.transform.rotation = Quaternion.AngleAxis(-40f * angH, this.transform.forward);
+                    isLining = true;
                 }
+                else if (chkForLiningLeft == false && chkForLiningRight == false) { 
+                    this.transform.rotation = Quaternion.AngleAxis(-40f * angH, this.transform.forward);
+                    isLining = true;
+                }
+            } else {
+                this.transform.rotation = Quaternion.AngleAxis(0, this.transform.forward);
+                isLining = false;
+            }
             
-            // Check Lining
-                
-
-
-
-             
             //RotateView();
             //the jump state needs to read here to make sure it is not missed
 
