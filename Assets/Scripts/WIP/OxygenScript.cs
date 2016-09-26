@@ -2,9 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public delegate void OxygenChange (OxygenScript oxygenScriptReference, float oxygenChangeAmount);
-
-public class OxygenScript : MonoBehaviour {
+public class OxygenScript : TimerScript {
 
 	#region OXYGEN_SUBCLASS
 	public class OxygenSaveAndLoadData {
@@ -40,54 +38,61 @@ public class OxygenScript : MonoBehaviour {
 	[Range (0f, 1000f)] public float oxygenRunningDecadenceSpeed = 2f;
 	[Range (0f, 1000f)] public float oxygenRunningDecadenceAmount = 8f;
 
-	[Header ("Ossigeno Parametri Rigenerazione - Da 0f a 1000f")]
-	[Range (0f, 1000f)] public float oxygenRegenerationAmount = 20f;
+	[Header ("Ossigeno Parametro Step Per Rigenerazione Breve - Da 0 a 10")]
+	[Range (0, 100)] public int oxygenRegenerationSteps = 20;
 
-	public Coroutine oxygenDecadenceCoroutineRef;
-	public OxygenSaveAndLoadData OxygenRef;
+	[Header ("Ossigeno Parametri Rigenerazione Breve - Da 0f a 1000f")]
+	[Range (0f, 1000f)] public float oxygenSmallRegenerationSpeed = 0.1f;
+	[Range (0f, 1000f)] public float oxygenSmallRegenerationAmount = 1f;
+
+	[Header ("Ossigeno Parametri Rigenerazione Completa")]
+	[Range (0f, 1000f)] public float oxygenCompleteRegenerationSpeed = 0.1f;
+	[Range (0f, 1000f)] public float oxygenCompleteRegenerationAmount = 5f;
+
+	public Coroutine[] oxygenCoroutine;
+	public OxygenSaveAndLoadData OxygenReference;
 	#endregion
 
 
 	#region OXYGEN_PROPERTIES
 	public float OxygenAmount {
-
+		
 		set {
+			
+			if (value > this.maxOxygenAmount) {
 
-			if (value > this.maxOxygenAmount)
-				this.OxygenRef.oxygen = this.maxOxygenAmount;
-			else if (value < this.minOxygenAmount)
-				this.OxygenRef.oxygen = this.minOxygenAmount;
+				if (this.oxygenCoroutine [1] != null)
+					this.StopCoroutine (this.oxygenCoroutine [1]);
+				
+				this.OxygenReference.oxygen = this.maxOxygenAmount;
+				
+			} else if (value < this.minOxygenAmount)
+				this.OxygenReference.oxygen = this.minOxygenAmount;
 			else
-				this.OxygenRef.oxygen = value;
-
-			this.oxygenAmount = this.OxygenRef.oxygen;
-			this.uiOxygenText.text = this.OxygenRef.oxygen.ToString ("000");
-
+				this.OxygenReference.oxygen = value;
+			
+			this.oxygenAmount = this.OxygenReference.oxygen;
+			this.uiOxygenText.text = this.OxygenReference.oxygen.ToString ("000");
+			
 		}
-
+		
 		get {
-
-			return this.OxygenRef.oxygen;
-
+			
+			return this.OxygenReference.oxygen;
+			
 		}
-
+		
 	}
-	#endregion
-
-
-	#region OXYGEN_DELEGATES
-	public OxygenChange OxygenDecrease = delegate (OxygenScript oxygenScriptReference, float oxygenDecreaseAmount) {
-
-		oxygenScriptReference.OxygenAmount -= oxygenDecreaseAmount;
-
-	};
 	#endregion
 
 
 	#region OXYGEN_MONOBEHAVIOUR_METHODS
 	public void Awake () {
 
-		this.OxygenRef = new OxygenSaveAndLoadData ();
+		this.oxygenCoroutine = new Coroutine[2];
+
+		if (this.OxygenReference == null)
+			this.OxygenReference = new OxygenSaveAndLoadData ();
 
 	}
 
@@ -100,13 +105,13 @@ public class OxygenScript : MonoBehaviour {
 		//La meccanica dell'ossigeno viene inizializzata con un ammontare di ossigeno (sarebbe possibile metterne uno a piacere, in caso di salvataggi)
 		//con decadenza da fermo
 		this.OxygenAmount = this.oxygenAmount;
-		this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenChange (this.oxygenStandingDecadenceSpeed, this.oxygenStandingDecadenceAmount, this.OxygenDecrease));
+		this.oxygenCoroutine [0] = this.StartCoroutine_Auto (this.CO_TimerCoroutine (this.oxygenStandingDecadenceSpeed, this.oxygenStandingDecadenceAmount, this.DelegatedMethod [0]));
 		
 	}
 	
 	public void Update () {
 
-		this.oxygenAmount = this.OxygenAmount;
+		this.OxygenAmount = this.OxygenAmount;
 		
 		if (this.OxygenAmount == this.minOxygenAmount) {
 
@@ -139,18 +144,18 @@ public class OxygenScript : MonoBehaviour {
 					
 					if (this.characterIsRunning) {
 						//Bool? isMov == true
-						
-						this.StopCoroutine (this.oxygenDecadenceCoroutineRef);
+
+						this.StopCoroutine (this.oxygenCoroutine [0]);
 						this.OxygenAmount--;
-						this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenChange (this.oxygenRunningDecadenceSpeed, this.oxygenRunningDecadenceAmount, this.OxygenDecrease));
+						this.oxygenCoroutine [0] = this.StartCoroutine_Auto (this.CO_TimerCoroutine (this.oxygenRunningDecadenceSpeed, this.oxygenRunningDecadenceAmount, this.DelegatedMethod [0]));
 						Debug.Log ("Sto correndo");
 						
 					} else {
 						//Bool? isMov == false
-						
-						this.StopCoroutine (this.oxygenDecadenceCoroutineRef);
+
+						this.StopCoroutine (this.oxygenCoroutine [0]);
 						this.OxygenAmount--;
-						this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenChange (this.oxygenWalkingDecadenceSpeed, this.oxygenWalkingDecadenceAmount, this.OxygenDecrease));
+						this.oxygenCoroutine [0] = this.StartCoroutine_Auto (this.CO_TimerCoroutine (this.oxygenWalkingDecadenceSpeed, this.oxygenWalkingDecadenceAmount, this.DelegatedMethod [0]));
 						Debug.Log ("Sto camminando");
 						
 					}
@@ -161,10 +166,10 @@ public class OxygenScript : MonoBehaviour {
 				(Input.GetKeyDown (KeyCode.A) || Input.GetKeyUp (KeyCode.A)) || (Input.GetKeyDown (KeyCode.D) || Input.GetKeyUp (KeyCode.D))) {
 				//Se il personaggio non dovesse più muoversi (FERMANDOSI), o dovesse avere degli input, fra loro contrastanti, smetterebbe di muoversi, resettando il proprio stato di camminata/corsa --> Valutazione trigger della fermata
 
-				this.StopCoroutine (this.oxygenDecadenceCoroutineRef);
+				this.StopCoroutine (this.oxygenCoroutine [0]);
 				this.characterIsRunning = false;
 				this.OxygenAmount--;
-				this.oxygenDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_OxygenChange (this.oxygenStandingDecadenceSpeed, this.oxygenStandingDecadenceAmount, this.OxygenDecrease));
+				this.oxygenCoroutine [0] = this.StartCoroutine_Auto (this.CO_TimerCoroutine (this.oxygenStandingDecadenceSpeed, this.oxygenStandingDecadenceAmount, this.DelegatedMethod [0]));
 				Debug.Log ("Sono fermo");
 				
 			}
@@ -172,27 +177,26 @@ public class OxygenScript : MonoBehaviour {
 			if (Input.GetKeyDown (KeyCode.Space)) {
 				//Prima della percezione della chiave utile, andrebbe messa la valutazione della "corretta vicinanza" della postazione al personaggio
 
-				this.OxygenAmount += this.oxygenRegenerationAmount;
-				Debug.Log ("Ricarico ossigeno");
+				if (this.oxygenCoroutine [1] != null)
+					this.StopCoroutine (this.oxygenCoroutine [1]);
+
+				this.oxygenCoroutine [1] = this.StartCoroutine_Auto (this.CO_TimerCoroutine (this.oxygenRegenerationSteps, this.oxygenSmallRegenerationSpeed, this.oxygenSmallRegenerationAmount, this.DelegatedMethod [1]));
+				Debug.Log ("Ricarico poco ossigeno");
 				
+			}
+
+			if (Input.GetKeyDown (KeyCode.LeftControl)) {
+
+				if (this.oxygenCoroutine [1] != null)
+					this.StopCoroutine (this.oxygenCoroutine [1]);
+
+				this.oxygenCoroutine [1] = this.StartCoroutine_Auto (this.CO_TimerCoroutine (this.oxygenSmallRegenerationSpeed, this.oxygenSmallRegenerationAmount, this.DelegatedMethod [1]));
+				Debug.Log ("Ricarico tutto l'ossigeno");
+
 			}
 			
 		}
 		
-	}
-	#endregion
-
-
-	#region OXYGEN_COROUTINES
-	public IEnumerator CO_OxygenChange (float oxygenChangeSpeed, float oxygenChangeAmount, OxygenChange DelegatedMethod) {
-
-		while (true) {
-
-			yield return new WaitForSeconds (oxygenChangeSpeed);
-			DelegatedMethod (this, oxygenChangeAmount);
-
-		}
-
 	}
 	#endregion
 
