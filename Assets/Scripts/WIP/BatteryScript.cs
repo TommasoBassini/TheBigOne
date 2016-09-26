@@ -27,38 +27,51 @@ public class BatteryScript : TimerScript {
 	[Range (0f, 8f)] public float batteryEnergyDecadenceSpeed = 2f;
 	[Range (0f, 8f)] public float batteryEnergyDecadenceAmount = 0.02f;
 
-	[Header ("Batteria Parametri Rigenerazione - Da 0f ad 8f")]
-	[Range (0f, 8f)] public float batteryEnergyRegenerationAmount = 0.2f;
+	[Header ("Batteria Parametro Step Per Rigenerazione Breve - Da 0 a 100")]
+	[Range (0, 100)] public int batteryEnergyRegenerationSteps = 20;
 
-	public Coroutine batteryEnergyDecadenceCoroutineRef;
-	public BatteryEnergySaveAndLoadData energyRef;
+	[Header ("Batteria Parametri Rigenerazione Breve - Da 0f ad 8f")]
+	[Range (0f, 8f)] public float batteryEnergySmallRegenerationSpeed = 0.1f;
+	[Range (0f, 8f)] public float batteryEnergySmallRegenerationAmount = 0.01f;
+
+	[Header ("Batteria Parametri Rigenerazione Completa - Da 0f ad 8f")]
+	[Range (0f, 8f)] public float batteryEnergyCompleteRegenerationSpeed = 0.1f;
+	[Range (0f, 8f)] public float batteryenergyCompleteRegenerationAmount = 0.05f;
+
+	public Coroutine[] batteryEnergyCoroutine;
+	public BatteryEnergySaveAndLoadData energyReference;
 	#endregion
 
 
 	#region BATTERY_PROPERTIES
 	public float BatteryEnergyAmount {
-
+		
 		set {
+			
+			if (value > this.maxBatteryEnergyAmount) {
 
-			if (value > this.maxBatteryEnergyAmount)
-				this.energyRef.energy = this.maxBatteryEnergyAmount;
-			else if (value < this.minBatteryEnergyAmount)
-				this.energyRef.energy = this.minBatteryEnergyAmount;
+				if (this.batteryEnergyCoroutine [1] != null)
+					this.StopCoroutine (this.batteryEnergyCoroutine [1]);
+				
+				this.energyReference.energy = this.maxBatteryEnergyAmount;
+				
+			} else if (value < this.minBatteryEnergyAmount)
+				this.energyReference.energy = this.minBatteryEnergyAmount;
 			else
-				this.energyRef.energy = value;
-
-			this.batteryEnergyAmount = this.energyRef.energy;
-			this.torchLightScript.TorchLightIntensityAmount = this.energyRef.energy;
-			this.uiBatteryText.text = (this.energyRef.energy * 100).ToString ("000");
-
+				this.energyReference.energy = value;
+			
+			this.batteryEnergyAmount = this.energyReference.energy;
+			this.torchLightScript.TorchLightIntensityAmount = this.energyReference.energy;
+			this.uiBatteryText.text = (this.energyReference.energy * 100).ToString ("000");
+			
 		}
-
+		
 		get {
-
-			return this.energyRef.energy;
-
+			
+			return this.energyReference.energy;
+			
 		}
-
+		
 	}
 	#endregion
 
@@ -66,7 +79,10 @@ public class BatteryScript : TimerScript {
 	#region BATTERY_MONOBEHAVIOUR_METHODS
 	public void Awake () {
 
-		this.energyRef = new BatteryEnergySaveAndLoadData ();
+		this.batteryEnergyCoroutine = new Coroutine[2];
+
+		if (this.energyReference == null)
+			this.energyReference = new BatteryEnergySaveAndLoadData ();
 
 	}
 
@@ -79,10 +95,27 @@ public class BatteryScript : TimerScript {
 
 	public void Update () {
 
-		this.batteryEnergyAmount = this.BatteryEnergyAmount;
+		this.BatteryEnergyAmount = this.batteryEnergyAmount;
 
-		if (Input.GetKeyDown (KeyCode.R))
-			this.BatteryEnergyAmount += this.batteryEnergyRegenerationAmount;
+		if (Input.GetKeyDown (KeyCode.R)) {
+
+			if (this.batteryEnergyCoroutine [1] != null)
+				this.StopCoroutine (this.batteryEnergyCoroutine [1]);
+
+			this.batteryEnergyCoroutine [1] = this.StartCoroutine_Auto (this.CO_TimerCoroutine (this.batteryEnergyRegenerationSteps, this.batteryEnergySmallRegenerationSpeed, this.batteryEnergySmallRegenerationAmount, this.DelegatedMethod [1]));
+			Debug.Log ("Ricarico poca batteria");
+
+		}
+
+		if (Input.GetKeyDown (KeyCode.Y)) {
+
+			if (this.batteryEnergyCoroutine [1] != null)
+				this.StopCoroutine (this.batteryEnergyCoroutine [1]);
+
+			this.batteryEnergyCoroutine [1] = this.StartCoroutine_Auto (this.CO_TimerCoroutine (this.batteryEnergyCompleteRegenerationSpeed, this.batteryenergyCompleteRegenerationAmount, this.DelegatedMethod [1]));
+			Debug.Log ("Ricarico tutta la batteria");
+
+		}
 
 	}
 	#endregion
@@ -91,14 +124,15 @@ public class BatteryScript : TimerScript {
 	#region BATTERY_METHODS
 	public void StartBatteryEnergyDecadence () {
 
-		this.batteryEnergyDecadenceCoroutineRef = this.StartCoroutine_Auto (this.CO_TimerCoroutine (this.batteryEnergyDecadenceSpeed, this.batteryEnergyDecadenceAmount, this.DelegatedMethod [0]));
+		this.BatteryEnergyAmount -= 0.01f;
+		this.batteryEnergyCoroutine [0] = this.StartCoroutine_Auto (this.CO_TimerCoroutine (this.batteryEnergyDecadenceSpeed, this.batteryEnergyDecadenceAmount, this.DelegatedMethod [0]));
 
 	}
 
 	public void StopBatteryEnergyDecadence () {
 
-		if (this.batteryEnergyDecadenceCoroutineRef != null)
-			this.StopCoroutine (this.batteryEnergyDecadenceCoroutineRef);
+		this.StopCoroutine (this.batteryEnergyCoroutine [0]);
+		this.BatteryEnergyAmount -= 0.01f;
 
 	}
 	#endregion

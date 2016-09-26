@@ -9,7 +9,8 @@ public class TorchLightScript : MonoBehaviour {
 	public BatteryScript batteryScript;
 
 	[Header ("Flag Booleani")]
-	public bool torchLightHasBeenTriggered;
+	public bool torchLightHasBeenTriggeredOn;
+	public bool torchLightHasBeenTriggeredOff;
 	#endregion
 
 
@@ -18,8 +19,8 @@ public class TorchLightScript : MonoBehaviour {
 
 		set {
 
-			this.torchLight.intensity = this.batteryScript.BatteryEnergyAmount;
-			this.torchLight.bounceIntensity = this.batteryScript.BatteryEnergyAmount;
+			this.torchLight.intensity = value;
+			this.torchLight.bounceIntensity = value;
 
 		}
 
@@ -37,29 +38,38 @@ public class TorchLightScript : MonoBehaviour {
 	public void Start () {
 
 		//Solita pulizia dei booleani
-		this.torchLightHasBeenTriggered = false;
+		this.torchLightHasBeenTriggeredOn = false;
+		this.torchLightHasBeenTriggeredOff = false;
 		this.torchLight.enabled = false;
 
 	}
 
 	public void Update () {
-
+		
 		if (Input.GetKeyDown (KeyCode.T)) {
 			//Attivazione-disattivazione torcia; qualora venisse abilitata, si memorizza un booleano di trigger
-
+			
 			if (this.torchLight.enabled = !this.torchLight.enabled)
-				this.torchLightHasBeenTriggered = true;
-
+				this.torchLightHasBeenTriggeredOn = true;
+			else
+				this.torchLightHasBeenTriggeredOff = true;
+			
 		}
-
-		if (this.torchLightHasBeenTriggered) {
+		
+		if (this.torchLightHasBeenTriggeredOn) {
 			
 			this.batteryScript.StartBatteryEnergyDecadence ();
-			this.torchLightHasBeenTriggered = false;
-
-		} else if (!this.torchLight.enabled)
+			this.torchLightHasBeenTriggeredOn = false;
+			
+		}
+		
+		if (this.torchLightHasBeenTriggeredOff) {
+			
 			this.batteryScript.StopBatteryEnergyDecadence ();
-
+			this.torchLightHasBeenTriggeredOff = false;
+			
+		}
+		
 	}
 	#endregion
 

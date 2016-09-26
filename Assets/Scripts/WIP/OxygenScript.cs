@@ -38,14 +38,14 @@ public class OxygenScript : TimerScript {
 	[Range (0f, 1000f)] public float oxygenRunningDecadenceSpeed = 2f;
 	[Range (0f, 1000f)] public float oxygenRunningDecadenceAmount = 8f;
 
-	[Header ("Ossigeno Parametro Step Per Rigenerazione Breve - Da 0 a 10")]
+	[Header ("Ossigeno Parametro Step Per Rigenerazione Breve - Da 0 a 100")]
 	[Range (0, 100)] public int oxygenRegenerationSteps = 20;
 
 	[Header ("Ossigeno Parametri Rigenerazione Breve - Da 0f a 1000f")]
 	[Range (0f, 1000f)] public float oxygenSmallRegenerationSpeed = 0.1f;
 	[Range (0f, 1000f)] public float oxygenSmallRegenerationAmount = 1f;
 
-	[Header ("Ossigeno Parametri Rigenerazione Completa")]
+	[Header ("Ossigeno Parametri Rigenerazione Completa - Da 0f a 1000f")]
 	[Range (0f, 1000f)] public float oxygenCompleteRegenerationSpeed = 0.1f;
 	[Range (0f, 1000f)] public float oxygenCompleteRegenerationAmount = 5f;
 
@@ -111,7 +111,7 @@ public class OxygenScript : TimerScript {
 	
 	public void Update () {
 
-		this.OxygenAmount = this.OxygenAmount;
+		this.OxygenAmount = this.oxygenAmount;
 		
 		if (this.OxygenAmount == this.minOxygenAmount) {
 
@@ -190,7 +190,7 @@ public class OxygenScript : TimerScript {
 				if (this.oxygenCoroutine [1] != null)
 					this.StopCoroutine (this.oxygenCoroutine [1]);
 
-				this.oxygenCoroutine [1] = this.StartCoroutine_Auto (this.CO_TimerCoroutine (this.oxygenSmallRegenerationSpeed, this.oxygenSmallRegenerationAmount, this.DelegatedMethod [1]));
+				this.oxygenCoroutine [1] = this.StartCoroutine_Auto (this.CO_TimerCoroutine (this.oxygenCompleteRegenerationSpeed, this.oxygenCompleteRegenerationAmount, this.DelegatedMethod [1]));
 				Debug.Log ("Ricarico tutto l'ossigeno");
 
 			}

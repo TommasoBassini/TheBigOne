@@ -6,7 +6,7 @@ public class DoorBaseScript : MonoBehaviour {
 	#region DOOR_BASE_SUBCLASS
 	public class DoorBaseSaveAndLoadData {
 
-		public BitArray doorStatuses;
+		public bool[] doorStatuses;
 
 	}
 	#endregion
@@ -19,27 +19,22 @@ public class DoorBaseScript : MonoBehaviour {
 	public bool doorIsWorking;
 	public bool doorIsOpen;
 
-	public DoorBaseSaveAndLoadData doorBaseRef;
+	public DoorBaseSaveAndLoadData doorBaseReference;
 	#endregion
 
 
 	#region DOOR_BASE_PROPERTIES
-	public BitArray DoorStatuses {
+	public bool[] DoorStatuses {
 
 		set {
 
-			this.doorIsPowered = value [3];
-			this.doorIsUnLocked = value [2];
-			this.doorIsWorking = value [1];
-			this.doorIsOpen = value [0];
-
-			this.doorBaseRef.doorStatuses = value;
+			this.doorBaseReference.doorStatuses = value;
 
 		}
 
 		get {
 
-			return this.doorBaseRef.doorStatuses;
+			return this.doorBaseReference.doorStatuses;
 
 		}
 
@@ -50,18 +45,20 @@ public class DoorBaseScript : MonoBehaviour {
 	#region DOOR_BASE_MONOBEHAVIOUR_METHODS
 	public void Awake () {
 
-		this.doorBaseRef = new DoorBaseSaveAndLoadData ();
+		if (this.doorBaseReference == null)
+			this.doorBaseReference = new DoorBaseSaveAndLoadData ();
 
 	}
 
 	public void Start () {
 
-		this.DoorStatuses = new BitArray (new bool [] {
-			this.doorIsOpen,
-			this.doorIsWorking,
-			this.doorIsUnLocked,
-			this.doorIsPowered
-		});
+		if (this.DoorStatuses == null)
+			this.DoorStatuses = new bool [] {
+				this.doorIsOpen,				//0
+				this.doorIsWorking,				//1
+				this.doorIsUnLocked,			//2
+				this.doorIsPowered				//3
+			};
 
 	}
 
