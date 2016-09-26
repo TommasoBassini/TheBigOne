@@ -81,14 +81,15 @@ public class DoorBaseScript : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.Alpha3))
 			this.DoorStatuses [1] = !this.DoorStatuses [1];
 
-		if (Input.GetKeyDown (KeyCode.Alpha4))
-			this.DoorStatuses [0] = !this.DoorStatuses [0];
 
 		if (this.DoorStatuses [3]) {
 
 			if (this.DoorStatuses [2]) {
 
 				if (this.DoorStatuses [1]) {
+					
+					if (Input.GetKeyDown (KeyCode.Alpha4))
+						this.DoorStatuses [0] = !this.DoorStatuses [0];
 
 					if (this.DoorStatuses [0]) {
 
