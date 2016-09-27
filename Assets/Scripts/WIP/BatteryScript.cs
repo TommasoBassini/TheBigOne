@@ -76,6 +76,33 @@ public class BatteryScript : TimerScript {
 	#endregion
 
 
+	#region BATTERY_DELEGATES
+	public TimedDelegatedMethod[] DelegatedMethod = new TimedDelegatedMethod[] {
+
+		delegate (TimerScript timerScriptReference, float changeAmount) {
+
+			if (timerScriptReference is BatteryScript) {
+
+				(timerScriptReference as BatteryScript).BatteryEnergyAmount -= changeAmount;
+
+			} else Debug.LogError ("ERRORE RICONOSCIMENTO TIPO SCRIPT, DELEGATO 0, BATTERIA");
+
+		},
+
+		delegate (TimerScript timerScriptReference, float changeAmount) {
+
+			if (timerScriptReference is BatteryScript) {
+
+				(timerScriptReference as BatteryScript).BatteryEnergyAmount += changeAmount;
+
+			} else Debug.LogError ("ERRORE RICONOSCIMENTO TIPO SCRIPT, DELEGATO 1, BATTERIA");
+
+		}
+
+	};
+	#endregion
+
+
 	#region BATTERY_MONOBEHAVIOUR_METHODS
 	public void Awake () {
 

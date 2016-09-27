@@ -4,7 +4,7 @@ using System.Collections;
 public delegate void TimedDelegatedMethod (TimerScript timerScriptReference, float changeAmount);
 
 public abstract class TimerScript : MonoBehaviour {
-
+	/*
 	#region TIMER_DELEGATES
 	public TimedDelegatedMethod[] DelegatedMethod = new TimedDelegatedMethod[] {
 
@@ -38,7 +38,7 @@ public abstract class TimerScript : MonoBehaviour {
 
 	};
 	#endregion
-
+	*/
 
 	#region TIMER_COROUTINES
 	public IEnumerator CO_TimerCoroutine (float characteristicChangeSpeed, float characteristicChangeAmount, TimedDelegatedMethod DelegatedMethod) {

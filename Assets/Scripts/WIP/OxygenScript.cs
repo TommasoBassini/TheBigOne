@@ -86,6 +86,33 @@ public class OxygenScript : TimerScript {
 	#endregion
 
 
+	#region OXYGEN_DELEGATES
+	public TimedDelegatedMethod[] DelegatedMethod = new TimedDelegatedMethod[] {
+
+		delegate (TimerScript timerScriptReference, float changeAmount) {
+
+			if (timerScriptReference is OxygenScript) {
+
+				(timerScriptReference as OxygenScript).OxygenAmount -= changeAmount;
+
+			} else Debug.LogError ("ERRORE RICONOSCIMENTO TIPO SCRIPT, DELEGATO 0, OSSIGENO");
+
+		},
+
+		delegate (TimerScript timerScriptReference, float changeAmount) {
+
+			if (timerScriptReference is OxygenScript) {
+
+				(timerScriptReference as OxygenScript).OxygenAmount += changeAmount;
+
+			} else Debug.LogError ("ERRORE RICONOSCIMENTO TIPO SCRIPT, DELEGATO 1, OSSIGENO");
+
+		}
+
+	};
+	#endregion
+
+
 	#region OXYGEN_MONOBEHAVIOUR_METHODS
 	public void Awake () {
 
