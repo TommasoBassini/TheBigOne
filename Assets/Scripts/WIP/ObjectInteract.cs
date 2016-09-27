@@ -30,6 +30,9 @@ public class ObjectInteract : MonoBehaviour
 
     public Camera uiCamera;
 
+    public float fl;
+    public float flo;
+
     void Start ()
     {
         cameraPos = Camera.main.transform.position;
@@ -80,8 +83,8 @@ public class ObjectInteract : MonoBehaviour
                         cameraRot = Camera.main.transform.rotation;
                         cameraPos = Camera.main.transform.position;
 
-                        Camera.main.transform.position = hit.collider.transform.position + (hit.collider.transform.up * 1f);
-                        Camera.main.transform.LookAt(hit.collider.transform.position + new Vector3(0,0.16f,0));
+                        Camera.main.transform.position = hit.collider.transform.position + (hit.collider.transform.up * ((hit.collider.transform.localScale.z *0.9f)));
+                        Camera.main.transform.LookAt(hit.collider.transform.position + new Vector3(0, 0.006f, 0));
                         GetComponent<FirstPersonController>().enabled = false;
                         hit.collider.transform.GetChild(0).GetChild(1).GetComponent<Button>().Select();
                     }
