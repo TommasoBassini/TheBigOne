@@ -43,6 +43,14 @@ namespace UnityStandardAssets.Characters.FirstPerson
         public Coroutine CrouchingCoroutine;
         public Coroutine DeCrouchingCoroutine;
         public int rotationSpeed;
+        bool run = false;
+        public bool isLining = false;
+        public bool chkForLining = false;
+        public bool chkForLiningRight = false;
+        public bool chkForLiningLeft = false;
+        public int rayDistLining = 1;
+
+
 
         // Use this for initialization
         private void Start()
@@ -57,6 +65,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
         }
+
         // Coroutine for Smooth Crouch_Decrouch
         IEnumerator CO_Crouching()
         {
@@ -87,16 +96,46 @@ namespace UnityStandardAssets.Characters.FirstPerson
         // Update is called once per frame
         private void Update()
         {
-            // Lining Control 
-            if (Input.GetKeyDown(KeyCode.Joystick1Button4))
+            // Raycast to check lining
+            RaycastHit hit;
+            Ray checkRayRight = new Ray(this.transform.position, Vector3.right);
+            Ray checkRayLeft = new Ray(this.transform.position, Vector3.left);
+            Debug.DrawRay(this.transform.position, Vector3.right * rayDistLining, Color.red);
+            Debug.DrawRay(this.transform.position, Vector3.left * rayDistLining, Color.red);
+
+            if (Physics.Raycast(checkRayLeft, out hit, 2))
+            
             {
-                m_Camera.transform.rotation = Quaternion.AngleAxis(30f, this.transform.forward);
-                Debug.Log("sx Bumper");
+                Debug.Log("No Lining Left!");
+                chkForLiningLeft = true;
+                
+            } else if (Physics.Raycast(checkRayRight, out hit, 2))
+            {
+                Debug.Log("No Lining Right!");
+                chkForLiningRight = true;
             }
-            if (Input.GetKeyDown(KeyCode.Joystick1Button5))
+            else
             {
-                m_Camera.transform.rotation = Quaternion.AngleAxis(-30f, this.transform.forward);
-                Debug.Log("dx Bumper");
+                Debug.Log("Lining ON");
+                chkForLiningLeft = false;
+                chkForLiningRight = false;
+
+            }
+
+
+            //If R3 is clicked RUN or WALK
+            if (Input.GetKeyDown(KeyCode.Joystick1Button9) && isCrouched == false)
+            {
+                if (run)
+                {
+                    m_WalkSpeed = 5;
+                    run = false;
+                }
+                else
+                {
+                    m_WalkSpeed = m_RunSpeed;
+                    run = true;
+                 }
             }
 
             // Crouched Control value 
@@ -124,14 +163,40 @@ namespace UnityStandardAssets.Characters.FirstPerson
                     {
                         StopCoroutine(DeCrouchingCoroutine);
                     }
-                    CrouchingCoroutine = StartCoroutine_Auto(CO_Crouching());                 
-                    m_CharacterController.center = new Vector3(0f, 0.5f, 0);
+                    CrouchingCoroutine = StartCoroutine_Auto(CO_Crouching());
+                    m_CharacterController.center = new Vector3(m_CharacterController.center.x, 0.5f, m_CharacterController.center.z);
                 }
             }
+            
+            // Lining Control 
+            float angH = Input.GetAxis("RightH");
+            float angV = Input.GetAxis("RightV");
+          
+            if (Input.GetKey(KeyCode.Joystick1Button4))
+            {
+                if (chkForLiningLeft == true && angH > 0)
+                {
+                    this.transform.rotation = Quaternion.AngleAxis(-40f * angH, this.transform.forward);
+                    isLining = true;
+                }
+                else if (chkForLiningRight == true && angH < 0)
+                {
+                    this.transform.rotation = Quaternion.AngleAxis(-40f * angH, this.transform.forward);
+                    isLining = true;
+                }
+                else if (chkForLiningLeft == false && chkForLiningRight == false) { 
+                    this.transform.rotation = Quaternion.AngleAxis(-40f * angH, this.transform.forward);
+                    isLining = true;
+                }
+            } else {
+                this.transform.rotation = Quaternion.AngleAxis(0, this.transform.forward);
+                isLining = false;
+            }
+            
             //RotateView();
-            // the jump state needs to read here to make sure it is not missed
+            //the jump state needs to read here to make sure it is not missed
 
-            if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
+                if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
             {
                 StartCoroutine(m_JumpBob.DoBobCycle());
                 PlayLandingSound();
