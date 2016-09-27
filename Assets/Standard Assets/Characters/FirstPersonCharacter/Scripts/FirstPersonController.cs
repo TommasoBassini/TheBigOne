@@ -43,6 +43,14 @@ namespace UnityStandardAssets.Characters.FirstPerson
         public Coroutine CrouchingCoroutine;
         public Coroutine DeCrouchingCoroutine;
         public int rotationSpeed;
+        bool run = false;
+        public bool isLining = false;
+        public bool chkForLining = false;
+        public bool isWallRight = false;
+        public bool isWallLeft = false;
+        public float rayDistLining = 1;
+
+        public Vector3 rot;
 
         // Use this for initialization
         private void Start()
@@ -57,6 +65,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
         }
+
         // Coroutine for Smooth Crouch_Decrouch
         IEnumerator CO_Crouching()
         {
@@ -87,16 +96,42 @@ namespace UnityStandardAssets.Characters.FirstPerson
         // Update is called once per frame
         private void Update()
         {
-            // Lining Control 
-            if (Input.GetKeyDown(KeyCode.Joystick1Button4))
+            // Raycast to check lining
+            RaycastHit hit;
+            Ray checkRayRight = new Ray(this.transform.position + new Vector3(0,1,0), transform.right);
+            Ray checkRayLeft = new Ray(this.transform.position + new Vector3(0, 1, 0), -transform.right);
+            Debug.DrawRay(this.transform.position + new Vector3(0, 1, 0), transform.right * rayDistLining , Color.red);
+            Debug.DrawRay(this.transform.position + new Vector3(0, 1, 0), -transform.right * rayDistLining, Color.red);
+
+            if (Physics.Raycast(checkRayLeft, out hit, rayDistLining))
+
             {
-                m_Camera.transform.rotation = Quaternion.AngleAxis(30f, this.transform.forward);
-                Debug.Log("sx Bumper");
+                isWallLeft = true;
+
+            } else if (Physics.Raycast(checkRayRight, out hit, rayDistLining))
+            {
+                isWallRight = true;
             }
-            if (Input.GetKeyDown(KeyCode.Joystick1Button5))
+            else
             {
-                m_Camera.transform.rotation = Quaternion.AngleAxis(-30f, this.transform.forward);
-                Debug.Log("dx Bumper");
+                isWallLeft = false;
+                isWallRight = false;
+            }
+
+
+            //If R3 is clicked RUN or WALK
+            if (Input.GetKeyDown(KeyCode.Joystick1Button9) && isCrouched == false)
+            {
+                if (run)
+                {
+                    m_WalkSpeed = 5;
+                    run = false;
+                }
+                else
+                {
+                    m_WalkSpeed = m_RunSpeed;
+                    run = true;
+                }
             }
 
             // Crouched Control value 
@@ -106,7 +141,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 {
                     if (CrouchingCoroutine != null)
                     {
-                    StopCoroutine(CrouchingCoroutine);
+                        StopCoroutine(CrouchingCoroutine);
                     }
                     DeCrouchingCoroutine = StartCoroutine_Auto(CO_DeCrouching());
                     m_CharacterController.center = Vector3.zero;
@@ -124,12 +159,38 @@ namespace UnityStandardAssets.Characters.FirstPerson
                     {
                         StopCoroutine(DeCrouchingCoroutine);
                     }
-                    CrouchingCoroutine = StartCoroutine_Auto(CO_Crouching());                 
-                    m_CharacterController.center = new Vector3(0f, 0.5f, 0);
+                    CrouchingCoroutine = StartCoroutine_Auto(CO_Crouching());
+                    m_CharacterController.center = new Vector3(m_CharacterController.center.x, 0.36f, m_CharacterController.center.z);
                 }
             }
+
+            // Lining Control 
+            if (Input.GetKeyDown(KeyCode.Joystick1Button4))
+            {
+                rot = transform.eulerAngles;
+                isLining = true;
+            }
+
+            if (isLining)
+            {
+                float angH = Input.GetAxis("RightH");
+                float f = -40f * angH;
+
+                if (isWallLeft)
+                    f = Mathf.Clamp(f, -40, 0);
+                else if (isWallRight)
+                    f = Mathf.Clamp(f, 0, 40);
+
+                this.transform.eulerAngles = new Vector3(rot.x, rot.y, rot.z + f);           
+                    
+            }
+            if (Input.GetKeyUp(KeyCode.Joystick1Button4))
+            {
+                isLining = false;
+                this.transform.eulerAngles = rot;
+            }
             //RotateView();
-            // the jump state needs to read here to make sure it is not missed
+            //the jump state needs to read here to make sure it is not missed
 
             if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
             {
@@ -256,34 +317,38 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
             bool waswalking = m_IsWalking;
 
-            float angH = Input.GetAxis("RightH");
-            float angV = Input.GetAxis("RightV");
-            float cameraAngle = Camera.main.transform.eulerAngles.x;
-            if (Input.GetAxis("RightH") > 0.15f || Input.GetAxis("RightH") < -0.15f)
+            if (!isLining)
             {
-                this.transform.localEulerAngles += new Vector3(0, angH * rotationSpeed, 0);
-            }
-            if (Input.GetAxis("RightV") > 0.15f || Input.GetAxis("RightV") < -0.15f)
-            {
-                float angle = 0;
-                Camera.main.transform.localEulerAngles += new Vector3(angV * rotationSpeed, 0, 0);
-                if (Camera.main.transform.localEulerAngles.x > 270)
+                float angH = Input.GetAxis("RightH");
+                float angV = Input.GetAxis("RightV");
+                float cameraAngle = Camera.main.transform.eulerAngles.x;
+                if (Input.GetAxis("RightH") > 0.15f || Input.GetAxis("RightH") < -0.15f)
                 {
-                    angle = Camera.main.transform.localEulerAngles.x - 360;
+                    this.transform.localEulerAngles += new Vector3(0, angH * rotationSpeed, 0);
                 }
-                else
-                    angle = Camera.main.transform.localEulerAngles.x;
+                if (Input.GetAxis("RightV") > 0.15f || Input.GetAxis("RightV") < -0.15f)
+                {
+                    float angle = 0;
+                    Camera.main.transform.localEulerAngles += new Vector3(angV * rotationSpeed, 0, 0);
+                    if (Camera.main.transform.localEulerAngles.x > 270)
+                    {
+                        angle = Camera.main.transform.localEulerAngles.x - 360;
+                    }
+                    else
+                        angle = Camera.main.transform.localEulerAngles.x;
 
-                if (angle < -70)
-                {
-                    Camera.main.transform.localEulerAngles = new Vector3(290, 0, 0);
+                    if (angle < -70)
+                    {
+                        Camera.main.transform.localEulerAngles = new Vector3(290, 0, 0);
+                    }
+                    else if (angle > 70)
+                    {
+                        Camera.main.transform.localEulerAngles = new Vector3(70, 0, 0);
+                    }
+
                 }
-                else if (angle > 70)
-                {
-                    Camera.main.transform.localEulerAngles = new Vector3(70, 0, 0);
-                }
-                        
             }
+
 
 #if !MOBILE_INPUT
             // On standalone builds, walk/run speed is modified by a key press.
