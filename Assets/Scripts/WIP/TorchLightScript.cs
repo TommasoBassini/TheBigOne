@@ -46,7 +46,8 @@ public class TorchLightScript : MonoBehaviour {
 
 	public void Update () {
 		
-		if (Input.GetKeyDown (KeyCode.T)) {
+		if (Input.GetKeyDown (KeyCode.Joystick1Button2) && batteryScript.batteryEnergyAmount > 0)
+        {
 			//Attivazione-disattivazione torcia; qualora venisse abilitata, si memorizza un booleano di trigger
 			
 			if (this.torchLight.enabled = !this.torchLight.enabled)
@@ -55,7 +56,13 @@ public class TorchLightScript : MonoBehaviour {
 				this.torchLightHasBeenTriggeredOff = true;
 			
 		}
-		
+
+        if (batteryScript.batteryEnergyAmount <= 0)
+        {
+            this.torchLight.enabled = false;
+            this.torchLightHasBeenTriggeredOff = true;
+        }
+
 		if (this.torchLightHasBeenTriggeredOn) {
 			
 			this.batteryScript.StartBatteryEnergyDecadence ();

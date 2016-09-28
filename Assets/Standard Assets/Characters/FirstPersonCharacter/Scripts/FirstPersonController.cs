@@ -11,7 +11,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
     [RequireComponent(typeof (AudioSource))]
     public class FirstPersonController : MonoBehaviour
     {
-        [SerializeField] private bool m_IsWalking;
+        public bool m_IsWalking = false;
         [SerializeField] private float m_WalkSpeed;
         [SerializeField] private float m_RunSpeed;
         [SerializeField] [Range(0f, 1f)] private float m_RunstepLenghten;
@@ -43,12 +43,17 @@ namespace UnityStandardAssets.Characters.FirstPerson
         public Coroutine CrouchingCoroutine;
         public Coroutine DeCrouchingCoroutine;
         public int rotationSpeed;
-        bool run = false;
         public bool isLining = false;
         public bool chkForLining = false;
         public bool isWallRight = false;
         public bool isWallLeft = false;
         public float rayDistLining = 1;
+
+        public bool run = false;
+
+        public bool walking = false;
+        public bool previousWalking = false;
+        public bool isChangeWalking = false;
 
         public Vector3 rot;
 
@@ -104,11 +109,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
             Debug.DrawRay(this.transform.position + new Vector3(0, 1, 0), -transform.right * rayDistLining, Color.red);
 
             if (Physics.Raycast(checkRayLeft, out hit, rayDistLining))
-
             {
                 isWallLeft = true;
 
-            } else if (Physics.Raycast(checkRayRight, out hit, rayDistLining))
+            }
+            else if (Physics.Raycast(checkRayRight, out hit, rayDistLining))
             {
                 isWallRight = true;
             }
@@ -135,7 +140,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
 
             // Crouched Control value 
-            if (Input.GetKeyDown(KeyCode.Joystick1Button2))
+            if (Input.GetKeyDown(KeyCode.Joystick1Button1))
             {
                 if (isCrouched)
                 {
@@ -150,7 +155,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
                     m_HeadBob.VerticaltoHorizontalRatio = 2;
                     isCrouched = false;
                 }
-                else {
+                else
+                {
                     isCrouched = true;
                     m_WalkSpeed = 1;
                     m_RunSpeed = m_WalkSpeed;
@@ -314,6 +320,25 @@ namespace UnityStandardAssets.Characters.FirstPerson
             // Read input
             float horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
             float vertical = CrossPlatformInputManager.GetAxis("Vertical");
+
+            if (horizontal == 0 && vertical == 0)
+            {
+                walking = false;
+                run = false;
+            }
+            else
+                walking = true;
+
+            if (previousWalking != walking)
+            {
+                isChangeWalking = true;
+            }
+            else
+            {
+                isChangeWalking = false;
+            }
+
+            previousWalking = walking;
 
             bool waswalking = m_IsWalking;
 
