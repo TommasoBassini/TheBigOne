@@ -61,7 +61,7 @@ public class BatteryScript : TimerScript {
 				this.energyReference.energy = value;
 			
 			this.batteryEnergyAmount = this.energyReference.energy;
-			this.torchLightScript.TorchLightIntensityAmount = this.energyReference.energy;
+			//this.torchLightScript.TorchLightIntensityAmount = this.energyReference.energy;
 			this.uiBatteryText.text = (this.energyReference.energy * 100).ToString ("000");
 			
 		}
