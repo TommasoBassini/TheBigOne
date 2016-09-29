@@ -29,6 +29,7 @@ public class ObjectInteract : MonoBehaviour
 
     public GameObject inspect;
 
+    public Button dummyButton;
     void Start ()
     {
         cameraPos = Camera.main.transform.position;
@@ -40,7 +41,7 @@ public class ObjectInteract : MonoBehaviour
         {
             RaycastHit hit;
 
-            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 2.5f))
+            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 3f))
             {
                 if (hit.collider.tag == "Pickuble")
                 {
@@ -86,6 +87,15 @@ public class ObjectInteract : MonoBehaviour
                         canvasMain.GetComponent<SelectCanvasButton>().firstSelected.Select();
                     }
                 }
+
+                if (hit.collider.tag == "ActionObj")
+                {
+                    if (Input.GetKeyUp(KeyCode.Joystick1Button0))
+                    {
+                        hit.collider.gameObject.GetComponent<ActionObj>().DoStuff();
+
+                    }
+                }
             }
             else
             {
@@ -113,7 +123,7 @@ public class ObjectInteract : MonoBehaviour
                     inspect.transform.Rotate(new Vector3(-angV * rotationSpeed, 0, 0));
                 }
 
-                if (Input.GetKeyUp(KeyCode.Joystick1Button0) && isInspecting)
+                if (Input.GetKeyUp(KeyCode.Joystick1Button1) && isInspecting)
                 {
                     GetComponent<FirstPersonController>().enabled = true;
                     pickubleObj.transform.position = lastObjPos;
@@ -121,6 +131,7 @@ public class ObjectInteract : MonoBehaviour
                     pickubleObj.transform.SetParent(null);
                     pickubleObj = null;
                     isInspecting = false;
+                    isInteracting = false;
                 }
 
                 if (Input.GetKeyUp(KeyCode.Joystick1Button3) && isInspecting)
@@ -146,8 +157,9 @@ public class ObjectInteract : MonoBehaviour
                     GetComponent<FirstPersonController>().enabled = true;
                     Camera.main.transform.rotation = cameraRot;
                     Camera.main.transform.position = cameraPos;
+                    dummyButton.Select();
                     isTerminal = false;
-                    isInspecting = false;
+                    isInteracting = false;
                 }
             }
         }

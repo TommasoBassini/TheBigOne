@@ -7,6 +7,8 @@ public class TerminalCode : MonoBehaviour
     public string currentPin;
     public Text pinText;
 
+    public GameObject panelToUnlock;
+
     public void StampNumber (string n)
     {
         currentPin = currentPin + n;
@@ -18,6 +20,9 @@ public class TerminalCode : MonoBehaviour
         if (currentPin == unlockPin)
         {
             Debug.Log("Sblocco Porta");
+            panelToUnlock.SetActive(true);
+            panelToUnlock.GetComponentInChildren<Button>().Select();
+            this.gameObject.SetActive(false);
         }
         else
         {
