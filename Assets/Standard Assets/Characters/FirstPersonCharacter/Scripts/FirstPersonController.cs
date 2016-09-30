@@ -180,15 +180,18 @@ namespace UnityStandardAssets.Characters.FirstPerson
             if (isLining)
             {
                 float angH = Input.GetAxis("RightH");
-                float f = -40f * angH;
+                float f = -40f * Mathf.Lerp(0,angH,1);
 
                 if (isWallLeft)
                     f = Mathf.Clamp(f, -40, 0);
                 else if (isWallRight)
                     f = Mathf.Clamp(f, 0, 40);
 
-                this.transform.eulerAngles = new Vector3(rot.x, rot.y, rot.z + f);           
-                    
+                //float fl = Mathf.LerpAngle(0, f, Time.time/2);
+                
+                this.transform.eulerAngles = new Vector3(rot.x, rot.y, rot.z + f);
+                //this.transform.eulerAngles = Vector3.Lerp(rot.x, rot.y, rot.z + fl);
+
             }
             if (Input.GetKeyUp(KeyCode.Joystick1Button4))
             {
@@ -223,35 +226,38 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void FixedUpdate()
         {
-            float speed;
-            GetInput(out speed);
-            // always move along the camera forward as it is the direction that it being aimed at
-            Vector3 desiredMove = transform.forward*m_Input.y + transform.right*m_Input.x;
-
-            // get a normal for the surface that is being touched to move along it
-            RaycastHit hitInfo;
-            Physics.SphereCast(transform.position, m_CharacterController.radius, Vector3.down, out hitInfo,
-                               m_CharacterController.height/2f, Physics.AllLayers, QueryTriggerInteraction.Ignore);
-            desiredMove = Vector3.ProjectOnPlane(desiredMove, hitInfo.normal).normalized;
-
-            m_MoveDir.x = desiredMove.x*speed;
-            m_MoveDir.z = desiredMove.z*speed;
-
-
-            if (m_CharacterController.isGrounded)
+            if (!isLining)
             {
-                m_MoveDir.y = -m_StickToGroundForce;
-            }
-            else
-            {
-                m_MoveDir += Physics.gravity*m_GravityMultiplier*Time.fixedDeltaTime;
-            }
-            m_CollisionFlags = m_CharacterController.Move(m_MoveDir*Time.fixedDeltaTime);
+                float speed;
+                GetInput(out speed);
+                // always move along the camera forward as it is the direction that it being aimed at
+                Vector3 desiredMove = transform.forward * m_Input.y + transform.right * m_Input.x;
 
-            ProgressStepCycle(speed);
-            UpdateCameraPosition(speed);
+                // get a normal for the surface that is being touched to move along it
+                RaycastHit hitInfo;
+                Physics.SphereCast(transform.position, m_CharacterController.radius, Vector3.down, out hitInfo,
+                                   m_CharacterController.height / 2f, Physics.AllLayers, QueryTriggerInteraction.Ignore);
+                desiredMove = Vector3.ProjectOnPlane(desiredMove, hitInfo.normal).normalized;
 
-            m_MouseLook.UpdateCursorLock();
+                m_MoveDir.x = desiredMove.x * speed;
+                m_MoveDir.z = desiredMove.z * speed;
+
+
+                if (m_CharacterController.isGrounded)
+                {
+                    m_MoveDir.y = -m_StickToGroundForce;
+                }
+                else
+                {
+                    m_MoveDir += Physics.gravity * m_GravityMultiplier * Time.fixedDeltaTime;
+                }
+                m_CollisionFlags = m_CharacterController.Move(m_MoveDir * Time.fixedDeltaTime);
+
+                ProgressStepCycle(speed);
+                UpdateCameraPosition(speed);
+
+                m_MouseLook.UpdateCursorLock();
+            }
         }
 
 
@@ -318,6 +324,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private void GetInput(out float speed)
         {
             // Read input
+
             float horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
             float vertical = CrossPlatformInputManager.GetAxis("Vertical");
 
@@ -341,9 +348,6 @@ namespace UnityStandardAssets.Characters.FirstPerson
             previousWalking = walking;
 
             bool waswalking = m_IsWalking;
-
-            if (!isLining)
-            {
                 float angH = Input.GetAxis("RightH");
                 float angV = Input.GetAxis("RightV");
                 float cameraAngle = Camera.main.transform.eulerAngles.x;
@@ -371,7 +375,6 @@ namespace UnityStandardAssets.Characters.FirstPerson
                         Camera.main.transform.localEulerAngles = new Vector3(70, 0, 0);
                     }
 
-                }
             }
 
 
