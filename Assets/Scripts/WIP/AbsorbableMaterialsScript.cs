@@ -145,6 +145,7 @@ public abstract class AbsorbableMaterialsScript : TimerScript {
 
 	public virtual void Update () {
 
+		//Se nessun materiale è stato assorbito && il materiale specifico non è stato assorbito && esso non è in corso di assorbimento, valutazione Input di solo assorbimento
 		if (!AbsorbableMaterialsScript.characterHasAbsorbedOneMaterial && !this.characterHasAbsorbedMaterial && !this.characterIsAbsorbingMaterial) {
 
 			if (Input.GetKeyDown (KeyCode.K)) {
@@ -156,6 +157,7 @@ public abstract class AbsorbableMaterialsScript : TimerScript {
 
 			}
 
+			//Altrimenti, se il materiale specifco è stato assorbito && esso non è in corso di rilascio, valutazione Input di solo rilascio
 		} else if (this.characterHasAbsorbedMaterial && !this.characterIsReleasingMaterial) {
 
 			if (Input.GetKeyDown (KeyCode.L)) {

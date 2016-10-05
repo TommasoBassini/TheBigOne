@@ -21,12 +21,16 @@ public class TitaniumMaterialScript : AbsorbableMaterialsScript {
 
 	public override void Update () {
 
+		//Due IF di Debug; simulo la vicinanza al contenitore od all'oggetto riparabile
+		//Sarebbero da porsi delle condizioni (suppongo IF-ESLE) in merito alla vicinanza fisica rispetto al personaggio
 		if (Input.GetKeyDown (KeyCode.O))
 			this.characterIsNearTitaniumCase = !this.characterIsNearTitaniumCase;
 
 		if (Input.GetKeyDown (KeyCode.P))
 			this.characterIsNearTitaniumMendable = !this.characterIsNearTitaniumMendable;
 
+		//Se nessun materiale è stato assorbito && si è vicini ad un contenitore di Titanio, valutazione condizioni del padre
+		//Altrimenti, se almeno un materiale è stato assorbito && si è vicini ad un oggetto riparabile in Titanio, valutazione condizioni del padre
 		if (!TitaniumMaterialScript.characterHasAbsorbedOneMaterial && this.characterIsNearTitaniumCase)
 			base.Update ();
 		else if (TitaniumMaterialScript.characterHasAbsorbedOneMaterial && this.characterIsNearTitaniumMendable)
