@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class AbsorbableMaterialsScript : TimerScript {
-
-	//Decidere come sarà salvabile/caricabile, se salvabile/caricabile, il parametro del materiale assorbito
-
+public abstract class AbsorbableMaterialsScript : TimerScript {
 
 	#region ABSORBABLE_MATERIALS_PARAMETERS
+	public static bool characterHasAbsorbedOneMaterial = false;
+
 	[Header ("Flag Booleani")]
 	public bool characterHasAbsorbedMaterial;
 	public bool characterIsAbsorbingMaterial;
@@ -88,6 +87,9 @@ public class AbsorbableMaterialsScript : TimerScript {
 					absorbableMaterialsScriptRecast.characterHasAbsorbedMaterial = false;
 					absorbableMaterialsScriptRecast.characterIsReleasingMaterial = false;
 					absorbableMaterialsScriptRecast.AbsorbingMaterialCurrentlyElapsed = 0f;
+
+					AbsorbableMaterialsScript.characterHasAbsorbedOneMaterial = false;
+
 					absorbableMaterialsScriptRecast.StopCoroutine (absorbableMaterialsScriptRecast.absorbableMaterialCoroutine);
 
 				}
@@ -101,8 +103,8 @@ public class AbsorbableMaterialsScript : TimerScript {
 	#endregion
 
 
-	#region ABSORBABLE_MATERIALS_METHODS
-	public void Start () {
+	#region ABSORBABLE_MATERIALS_MONOBEHAVIOUR_METHODS
+	public virtual void Start () {
 
 		this.characterHasAbsorbedMaterial = false;
 		this.characterIsAbsorbingMaterial = false;
@@ -110,11 +112,13 @@ public class AbsorbableMaterialsScript : TimerScript {
 
 	}
 
-	public void Update () {
+	public virtual void Update () {
 
-		if (!this.characterHasAbsorbedMaterial && !this.characterIsAbsorbingMaterial) {
+		if (!AbsorbableMaterialsScript.characterHasAbsorbedOneMaterial && !this.characterHasAbsorbedMaterial && !this.characterIsAbsorbingMaterial) {
 
 			if (Input.GetKeyDown (KeyCode.K)) {
+
+				AbsorbableMaterialsScript.characterHasAbsorbedOneMaterial = true;
 
 				this.characterIsAbsorbingMaterial = true;
 				this.absorbableMaterialCoroutine = this.StartCoroutine_Auto (this.CO_TimerCoroutine (this.absorbingMaterialAbsorbingSpeed, this.absorbingMaterialAbsorbingAmount, this.DelegatedMethod [0]));
