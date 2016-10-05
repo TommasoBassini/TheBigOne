@@ -35,7 +35,7 @@ public class ObjectInteract : MonoBehaviour
         cameraPos = Camera.main.transform.position;
 	}
 	
-	void Update ()
+	void FixedUpdate ()
     {
         if (!isInteracting)
         {

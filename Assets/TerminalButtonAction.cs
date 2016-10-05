@@ -11,4 +11,19 @@ public class TerminalButtonAction : MonoBehaviour
         door.doorIsUnLocked = true;
         door.UnlockDoor();
     }
+
+    public void ChangePanel(GameObject panelToShow)
+    {
+        SelectCanvasButton canvas = GetComponent<SelectCanvasButton>();
+        canvas.activePanel.SetActive(false);
+        panelToShow.SetActive(true);
+        canvas.activePanel = panelToShow;
+
+        Button[] buttons = panelToShow.GetComponentsInChildren<Button>();
+
+        if (buttons.Length > 0)
+        {
+            buttons[0].Select();
+        }
+    }
 }
