@@ -3,8 +3,17 @@ using System.Collections;
 
 public abstract class AbsorbableMaterialsScript : TimerScript {
 
+	#region ABSORBABLE_MATERIALS_SUBCLASS
+	public class AbsorbableMaterialsSaveAndLoadData {
+
+		public bool materialIsAbsorbed;
+
+	}
+	#endregion
+
+
 	#region ABSORBABLE_MATERIALS_PARAMETERS
-	public static bool characterHasAbsorbedOneMaterial = false;
+	public static bool characterHasAbsorbedOneMaterial;
 
 	[Header ("Flag Booleani")]
 	public bool characterHasAbsorbedMaterial;
@@ -20,10 +29,22 @@ public abstract class AbsorbableMaterialsScript : TimerScript {
 	[Range (0f, 100f)] public float absorbingMaterialMaxAbsorbableAmount = 100f;
 
 	public Coroutine absorbableMaterialCoroutine;
+	public AbsorbableMaterialsSaveAndLoadData absorbedMaterialReference;
 	#endregion
 
 
 	#region ABSORBABLE_MATERIALS_PROPERTIES
+	public bool CharacterHasAbsorbedMaterial {
+
+		set {
+
+			this.characterHasAbsorbedMaterial = value;
+			this.absorbedMaterialReference.materialIsAbsorbed = value;
+
+		}
+
+	}
+
 	public float AbsorbingMaterialCurrentlyElapsed {
 
 		set {
@@ -60,7 +81,7 @@ public abstract class AbsorbableMaterialsScript : TimerScript {
 				
 				if (absorbableMaterialsScriptRecast.AbsorbingMaterialCurrentlyElapsed == absorbableMaterialsScriptRecast.absorbingMaterialMaxAbsorbableAmount) {
 					
-					absorbableMaterialsScriptRecast.characterHasAbsorbedMaterial = true;
+					absorbableMaterialsScriptRecast.CharacterHasAbsorbedMaterial = true;
 					absorbableMaterialsScriptRecast.characterIsAbsorbingMaterial = false;
 					absorbableMaterialsScriptRecast.AbsorbingMaterialCurrentlyElapsed = 0f;
 					absorbableMaterialsScriptRecast.StopCoroutine (absorbableMaterialsScriptRecast.absorbableMaterialCoroutine);
@@ -84,7 +105,7 @@ public abstract class AbsorbableMaterialsScript : TimerScript {
 
 				if (absorbableMaterialsScriptRecast.AbsorbingMaterialCurrentlyElapsed == absorbableMaterialsScriptRecast.absorbingMaterialMaxAbsorbableAmount) {
 
-					absorbableMaterialsScriptRecast.characterHasAbsorbedMaterial = false;
+					absorbableMaterialsScriptRecast.CharacterHasAbsorbedMaterial = false;
 					absorbableMaterialsScriptRecast.characterIsReleasingMaterial = false;
 					absorbableMaterialsScriptRecast.AbsorbingMaterialCurrentlyElapsed = 0f;
 
@@ -104,7 +125,17 @@ public abstract class AbsorbableMaterialsScript : TimerScript {
 
 
 	#region ABSORBABLE_MATERIALS_MONOBEHAVIOUR_METHODS
+	public void Awake () {
+
+		if (this.absorbedMaterialReference == null)
+			this.absorbedMaterialReference = new AbsorbableMaterialsSaveAndLoadData ();
+
+	}
+
 	public virtual void Start () {
+
+		if (this.absorbedMaterialReference.materialIsAbsorbed)
+			AbsorbableMaterialsScript.characterHasAbsorbedOneMaterial = true;
 
 		this.characterHasAbsorbedMaterial = false;
 		this.characterIsAbsorbingMaterial = false;
