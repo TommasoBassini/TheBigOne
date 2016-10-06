@@ -81,6 +81,8 @@ public abstract class AbsorbableMaterialsScript : TimerScript {
 				
 				if (absorbableMaterialsScriptRecast.AbsorbingMaterialCurrentlyElapsed == absorbableMaterialsScriptRecast.absorbingMaterialMaxAbsorbableAmount) {
 					
+					AbsorbableMaterialsScript.characterHasAbsorbedOneMaterial = true;
+					
 					absorbableMaterialsScriptRecast.CharacterHasAbsorbedMaterial = true;
 					absorbableMaterialsScriptRecast.characterIsAbsorbingMaterial = false;
 					absorbableMaterialsScriptRecast.AbsorbingMaterialCurrentlyElapsed = 0f;
@@ -105,12 +107,11 @@ public abstract class AbsorbableMaterialsScript : TimerScript {
 
 				if (absorbableMaterialsScriptRecast.AbsorbingMaterialCurrentlyElapsed == absorbableMaterialsScriptRecast.absorbingMaterialMaxAbsorbableAmount) {
 
+					AbsorbableMaterialsScript.characterHasAbsorbedOneMaterial = false;
+					
 					absorbableMaterialsScriptRecast.CharacterHasAbsorbedMaterial = false;
 					absorbableMaterialsScriptRecast.characterIsReleasingMaterial = false;
 					absorbableMaterialsScriptRecast.AbsorbingMaterialCurrentlyElapsed = 0f;
-
-					AbsorbableMaterialsScript.characterHasAbsorbedOneMaterial = false;
-
 					absorbableMaterialsScriptRecast.StopCoroutine (absorbableMaterialsScriptRecast.absorbableMaterialCoroutine);
 
 				}
@@ -149,12 +150,10 @@ public abstract class AbsorbableMaterialsScript : TimerScript {
 
 	public virtual void Update () {
 
-		//Se nessun materiale è stato assorbito && il materiale specifico non è stato assorbito && esso non è in corso di assorbimento, valutazione Input di solo assorbimento
-		if (!AbsorbableMaterialsScript.characterHasAbsorbedOneMaterial && !this.characterHasAbsorbedMaterial && !this.characterIsAbsorbingMaterial) {
+		//Se nessun materiale è stato assorbito && esso non è in corso di assorbimento, valutazione Input di solo assorbimento
+		if (!AbsorbableMaterialsScript.characterHasAbsorbedOneMaterial && !this.characterIsAbsorbingMaterial) {
 
 			if (Input.GetKeyDown (KeyCode.K)) {
-
-				AbsorbableMaterialsScript.characterHasAbsorbedOneMaterial = true;
 
 				this.characterIsAbsorbingMaterial = true;
 				this.absorbableMaterialCoroutine = this.StartCoroutine_Auto (this.CO_TimerCoroutine (this.absorbingMaterialAbsorbingSpeed, this.absorbingMaterialAbsorbingAmount, this.DelegatedMethod [0]));
