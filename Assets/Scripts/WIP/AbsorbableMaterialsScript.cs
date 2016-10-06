@@ -134,10 +134,14 @@ public abstract class AbsorbableMaterialsScript : TimerScript {
 
 	public virtual void Start () {
 
-		if (this.absorbedMaterialReference.materialIsAbsorbed)
+		if (this.absorbedMaterialReference.materialIsAbsorbed) {
+			
 			AbsorbableMaterialsScript.characterHasAbsorbedOneMaterial = true;
+			this.characterHasAbsorbedMaterial = true;
 
-		this.characterHasAbsorbedMaterial = false;
+		} else
+			this.characterHasAbsorbedMaterial = false;
+		
 		this.characterIsAbsorbingMaterial = false;
 		this.characterIsReleasingMaterial = false;
 

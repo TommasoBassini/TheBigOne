@@ -31,10 +31,17 @@ public class TitaniumMaterialScript : AbsorbableMaterialsScript {
 
 		//Se nessun materiale è stato assorbito && si è vicini ad un contenitore di Titanio, valutazione condizioni del padre
 		//Altrimenti, se almeno un materiale è stato assorbito && si è vicini ad un oggetto riparabile in Titanio, valutazione condizioni del padre
-		if (!TitaniumMaterialScript.characterHasAbsorbedOneMaterial && this.characterIsNearTitaniumCase)
-			base.Update ();
-		else if (TitaniumMaterialScript.characterHasAbsorbedOneMaterial && this.characterIsNearTitaniumMendable)
-			base.Update ();
+		if (!TitaniumMaterialScript.characterHasAbsorbedOneMaterial) {
+
+			if (this.characterIsNearTitaniumCase)
+				base.Update ();
+
+		} else {
+
+			if (this.characterIsNearTitaniumMendable)
+				base.Update ();
+
+		}
 
 	}
 	#endregion

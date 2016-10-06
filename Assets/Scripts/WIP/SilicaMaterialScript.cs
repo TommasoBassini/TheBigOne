@@ -31,10 +31,17 @@ public class SilicaMaterialScript : AbsorbableMaterialsScript {
 		
 		//Se nessun materiale è stato assorbito && si è vicini ad un contenitore di Silice, valutazione condizioni del padre
 		//Altrimenti, se almeno un materiale è stato assorbito && si è vicini ad un oggetto riparabile in Silice, valutazione condizioni del padre
-		if (!SilicaMaterialScript.characterHasAbsorbedOneMaterial && this.characterIsNearSilicaCase)
-			base.Update ();
-		else if (SilicaMaterialScript.characterHasAbsorbedOneMaterial && this.characterIsNearSilicaMendable)
-			base.Update ();
+		if (!SilicaMaterialScript.characterHasAbsorbedOneMaterial) {
+
+			if (this.characterIsNearSilicaCase)
+				base.Update ();
+
+		} else {
+
+			if (this.characterIsNearSilicaMendable)
+				base.Update ();
+
+		}
 
 	}
 	#endregion
