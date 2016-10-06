@@ -48,6 +48,14 @@ namespace UnityStandardAssets.Characters.FirstPerson
         public bool isWallRight = false;
         public bool isWallLeft = false;
         public float rayDistLining = 1;
+        private Vector3 velocity = Vector3.zero;
+        public float smoothTime = 0.3f;
+        Vector3 liningAngle;
+        float velocityF = 0f;
+        float liningF;
+        private float xvelocity;
+        private float yvelocity;
+        private float zvelocity;
 
         public bool run = false;
 
@@ -179,19 +187,18 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
             if (isLining)
             {
+               
                 float angH = Input.GetAxis("RightH");
-                float f = -40f * Mathf.Lerp(0,angH,1);
-
+                float f = -40f * angH;
+                
                 if (isWallLeft)
                     f = Mathf.Clamp(f, -40, 0);
                 else if (isWallRight)
                     f = Mathf.Clamp(f, 0, 40);
 
-                //float fl = Mathf.LerpAngle(0, f, Time.time/2);
-                
-                this.transform.eulerAngles = new Vector3(rot.x, rot.y, rot.z + f);
-                //this.transform.eulerAngles = Vector3.Lerp(rot.x, rot.y, rot.z + fl);
-
+                liningF = Mathf.SmoothDamp(liningF, f, ref velocityF, smoothTime);
+                liningAngle = new Vector3(rot.x, rot.y, rot.z + liningF);
+                this.transform.localEulerAngles = liningAngle;
             }
             if (Input.GetKeyUp(KeyCode.Joystick1Button4))
             {
