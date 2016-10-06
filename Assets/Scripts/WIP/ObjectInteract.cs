@@ -30,27 +30,39 @@ public class ObjectInteract : MonoBehaviour
     public GameObject inspect;
 
     public Button dummyButton;
+
+    private Ray interactionRay;
+    public float dropDistance;
+
     void Start ()
     {
         cameraPos = Camera.main.transform.position;
 	}
-	
-	void FixedUpdate ()
+
+    void FixedUpdate()
+    {
+        interactionRay = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+    }
+
+    void Update()
+    {
+        CheckInteract();
+    }
+
+    void CheckInteract()
     {
         if (!isInteracting)
         {
             RaycastHit hit;
 
-            if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 3f))
+            if (Physics.Raycast(interactionRay, out hit, dropDistance))
             {
                 if (hit.collider.tag == "Pickuble")
                 {
                     mirino.sprite = lente;
-
                     isPickuble = true;
                     pickubleObj = hit.collider.gameObject;
 
-                    Debug.DrawLine(Camera.main.transform.position, hit.collider.transform.position);
                     if (Input.GetKeyUp(KeyCode.Joystick1Button0))
                     {
                         isInteracting = true;
@@ -58,7 +70,8 @@ public class ObjectInteract : MonoBehaviour
                         lastObjPos = hit.collider.gameObject.transform.position;
                         lastObjRot = hit.collider.gameObject.transform.rotation;
                         GetComponent<FirstPersonController>().enabled = false;
-                        pickubleObj.transform.position = Camera.main.transform.position + (Camera.main.transform.forward * 1f);
+                        inspect.transform.localPosition = new Vector3 (0,0,0.2f) + new Vector3(0,0,(1 * pickubleObj.transform.gameObject.GetComponent<IspectionNear>().near)); 
+                        pickubleObj.transform.position = inspect.transform.position;
                         pickubleObj.transform.SetParent(inspect.transform);
                     }
                     return;
@@ -76,11 +89,11 @@ public class ObjectInteract : MonoBehaviour
                     {
                         isInteracting = true;
                         isTerminal = true;
-
+                        mirino.enabled = false;
                         cameraRot = Camera.main.transform.rotation;
                         cameraPos = Camera.main.transform.position;
 
-                        Camera.main.transform.position = hit.collider.transform.position + (hit.collider.transform.forward * ((hit.collider.transform.localScale.y *0.172f)));
+                        Camera.main.transform.position = hit.collider.transform.position + (hit.collider.transform.forward * ((hit.collider.transform.localScale.y * 0.172f)));
                         Camera.main.transform.LookAt(hit.collider.transform.position + new Vector3(0, 0.006f, 0));
                         GetComponent<FirstPersonController>().enabled = false;
                         GameObject canvasMain = hit.collider.transform.FindChild("Main").gameObject;
@@ -103,8 +116,6 @@ public class ObjectInteract : MonoBehaviour
                 pickubleObj = null;
                 mirino.sprite = punto;
             }
-
-
         }
 
         if (isInteracting)
@@ -154,6 +165,7 @@ public class ObjectInteract : MonoBehaviour
             {
                 if (Input.GetKeyUp(KeyCode.Joystick1Button1))
                 {
+                    mirino.enabled = true;
                     GetComponent<FirstPersonController>().enabled = true;
                     Camera.main.transform.rotation = cameraRot;
                     Camera.main.transform.position = cameraPos;
@@ -170,3 +182,4 @@ public class ObjectInteract : MonoBehaviour
 
     }
 }
+
