@@ -339,6 +339,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             {
                 walking = false;
                 run = false;
+                m_WalkSpeed = 5;
             }
             else
                 walking = true;
