@@ -140,11 +140,17 @@ public class BatteryScript : TimerScript {
 				this.StopCoroutine (this.batteryEnergyCoroutine [1]);
 
 			this.batteryEnergyCoroutine [1] = this.StartCoroutine_Auto (this.CO_TimerCoroutine (this.batteryEnergyCompleteRegenerationSpeed, this.batteryenergyCompleteRegenerationAmount, this.DelegatedMethod [1]));
-			Debug.Log ("Ricarico tutta la batteria");
-
 		}
 
 	}
+
+    public void FullBattery()
+    {
+        if (this.batteryEnergyCoroutine[1] != null)
+            this.StopCoroutine(this.batteryEnergyCoroutine[1]);
+
+        this.batteryEnergyCoroutine[1] = this.StartCoroutine_Auto(this.CO_TimerCoroutine(this.batteryEnergyCompleteRegenerationSpeed, this.batteryenergyCompleteRegenerationAmount, this.DelegatedMethod[1]));
+    }
 	#endregion
 
 

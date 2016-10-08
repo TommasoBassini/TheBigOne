@@ -34,6 +34,7 @@ public class ObjectInteract : MonoBehaviour
     private Ray interactionRay;
     public float dropDistance;
 
+    public GameObject torcia;
     void Start ()
     {
         cameraPos = Camera.main.transform.position;
@@ -98,6 +99,7 @@ public class ObjectInteract : MonoBehaviour
                         GetComponent<FirstPersonController>().enabled = false;
                         GameObject canvasMain = hit.collider.transform.FindChild("Main").gameObject;
                         canvasMain.GetComponent<SelectCanvasButton>().firstSelected.Select();
+                        torcia.SetActive(false);
                     }
                 }
 
@@ -170,6 +172,7 @@ public class ObjectInteract : MonoBehaviour
                     Camera.main.transform.rotation = cameraRot;
                     Camera.main.transform.position = cameraPos;
                     dummyButton.Select();
+                    torcia.SetActive(true);
                     isTerminal = false;
                     isInteracting = false;
                 }
