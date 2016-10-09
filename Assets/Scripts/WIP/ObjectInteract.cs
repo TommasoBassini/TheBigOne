@@ -64,7 +64,7 @@ public class ObjectInteract : MonoBehaviour
                     isPickuble = true;
                     pickubleObj = hit.collider.gameObject;
 
-                    if (Input.GetKeyUp(KeyCode.Joystick1Button0))
+                    if (Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E))
                     {
                         isInteracting = true;
                         isInspecting = true;
@@ -86,7 +86,7 @@ public class ObjectInteract : MonoBehaviour
 
                 if (hit.collider.tag == "Terminal")
                 {
-                    if (Input.GetKeyUp(KeyCode.Joystick1Button0))
+                    if (Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E))
                     {
                         isInteracting = true;
                         isTerminal = true;
@@ -105,7 +105,7 @@ public class ObjectInteract : MonoBehaviour
 
                 if (hit.collider.tag == "ActionObj")
                 {
-                    if (Input.GetKeyUp(KeyCode.Joystick1Button0))
+                    if (Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E))
                     {
                         hit.collider.gameObject.GetComponent<ActionObj>().DoStuff();
 
@@ -136,7 +136,7 @@ public class ObjectInteract : MonoBehaviour
                     inspect.transform.Rotate(new Vector3(-angV * rotationSpeed, 0, 0));
                 }
 
-                if (Input.GetKeyUp(KeyCode.Joystick1Button1) && isInspecting)
+                if (Input.GetKeyUp(KeyCode.Joystick1Button1) && isInspecting || Input.GetKeyDown(KeyCode.Escape))
                 {
                     GetComponent<FirstPersonController>().enabled = true;
                     pickubleObj.transform.position = lastObjPos;
@@ -147,7 +147,7 @@ public class ObjectInteract : MonoBehaviour
                     isInteracting = false;
                 }
 
-                if (Input.GetKeyUp(KeyCode.Joystick1Button3) && isInspecting)
+                if (Input.GetKeyUp(KeyCode.Joystick1Button3) && isInspecting || Input.GetKeyDown(KeyCode.Escape))
                 {
                     ObjectInfo objInfo = pickubleObj.GetComponent<ObjectInfo>();
 
@@ -165,7 +165,7 @@ public class ObjectInteract : MonoBehaviour
 
             if (isTerminal)
             {
-                if (Input.GetKeyUp(KeyCode.Joystick1Button1))
+                if (Input.GetKeyUp(KeyCode.Joystick1Button1) || Input.GetKeyDown(KeyCode.Escape))
                 {
                     mirino.enabled = true;
                     GetComponent<FirstPersonController>().enabled = true;

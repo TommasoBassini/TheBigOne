@@ -205,7 +205,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 isLining = false;
                 this.transform.eulerAngles = rot;
             }
-            //RotateView();
+            RotateView();
             //the jump state needs to read here to make sure it is not missed
 
             if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
