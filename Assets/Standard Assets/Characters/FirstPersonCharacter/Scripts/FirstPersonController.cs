@@ -203,9 +203,12 @@ namespace UnityStandardAssets.Characters.FirstPerson
             if (Input.GetKeyUp(KeyCode.Joystick1Button4))
             {
                 isLining = false;
+                liningF = 0.0f;
+                liningAngle = Vector3.zero;
                 this.transform.eulerAngles = rot;
             }
-            RotateView();
+            //RotateView();
+
             //the jump state needs to read here to make sure it is not missed
 
             if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
@@ -339,7 +342,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
             {
                 walking = false;
                 run = false;
-                m_WalkSpeed = 5;
+                if (!isCrouched)
+                    m_WalkSpeed = 5;
+                else
+                    m_WalkSpeed = 1;
+
             }
             else
                 walking = true;

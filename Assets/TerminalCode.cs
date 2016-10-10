@@ -26,6 +26,9 @@ public class TerminalCode : MonoBehaviour
         {
             panelToUnlock.SetActive(true);
             panelToUnlock.GetComponentInChildren<Button>().Select();
+            currentPin = "";
+            passText = "";
+            pinText.text = "Inserire codice";
             this.gameObject.SetActive(false);
         }
         else
