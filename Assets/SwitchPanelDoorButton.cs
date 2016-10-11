@@ -9,22 +9,28 @@ public class SwitchPanelDoorButton : MonoBehaviour
     public GameObject terminalMain;
     private SwitchEnergyTerminal terminalSwitch;
 
+    
+    private int nInList = 0;
+
     void Start()
     {
         terminalSwitch = terminalMain.GetComponent<SwitchEnergyTerminal>();
         terminalSwitch.terminalSwitch += DoorOn_Off;
+        bool door = false;
+        terminalSwitch.isDoors.Add(door);
+        nInList = terminalSwitch.isDoors.Count -1;
     }
 
     public void SwitchDoorButton()
     {
         terminalSwitch.ResetAllBool();
-        terminalSwitch.isDoor = true;
+        terminalSwitch.isDoors[nInList] = true;
         terminalSwitch.terminalSwitch();
     }
 
     void DoorOn_Off()
     {
-        switch (terminalSwitch.isDoor)
+        switch (terminalSwitch.isDoors[nInList])
         {
             case (true):
                 {

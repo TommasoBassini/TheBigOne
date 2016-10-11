@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class SwitchEnergyTerminal : MonoBehaviour
 {
@@ -8,12 +9,17 @@ public class SwitchEnergyTerminal : MonoBehaviour
 
 
     public bool isLight;
-    public bool isDoor;
+    public List<bool> isDoors = new List<bool>();
 
 
     public void ResetAllBool()
     {
         isLight = false;
-        isDoor = false;
+
+        for (int i = 0; i < isDoors.Count; i++)
+        {
+            isDoors[i] = false;
+        }
     }
+
 }
