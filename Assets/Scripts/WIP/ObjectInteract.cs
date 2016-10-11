@@ -100,6 +100,7 @@ public class ObjectInteract : MonoBehaviour
 
                         Camera.main.transform.position = hit.collider.transform.position + (hit.collider.transform.forward * ((hit.collider.transform.localScale.y * 0.172f)));
                         Camera.main.transform.LookAt(hit.collider.transform.position + new Vector3(0, 0.006f, 0));
+
                         GetComponent<FirstPersonController>().enabled = false;
                         activeCanvas = hit.collider.transform.FindChild("Main").gameObject;
                         activeCanvas.GetComponent<SelectCanvasButton>().firstSelected.Select();
@@ -164,6 +165,7 @@ public class ObjectInteract : MonoBehaviour
 
                 if (Input.GetKeyUp(KeyCode.Joystick1Button1) && isInspecting || Input.GetKeyDown(KeyCode.Escape))
                 {
+                    
                     GetComponent<FirstPersonController>().enabled = true;
                     pickubleObj.transform.position = lastObjPos;
                     pickubleObj.transform.rotation = lastObjRot;
@@ -215,9 +217,9 @@ public class ObjectInteract : MonoBehaviour
         }
     }
 
-    public void HoloInspect(GameObject obj)
+    public void ShowCursor()
     {
-
+        Cursor.visible = true;
     }
 }
 

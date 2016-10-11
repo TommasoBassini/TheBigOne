@@ -8,6 +8,13 @@ public class EnergyManage : MonoBehaviour
 
     public Light[] lights;
     public DoorBaseScript door;
+    public GameObject luci;
+
+    void Start()
+    {
+        lights = luci.GetComponentsInChildren<Light>();
+        
+    }
 
     public void Ligth()
     {

@@ -17,7 +17,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         [SerializeField] [Range(0f, 1f)] private float m_RunstepLenghten;
         [SerializeField] private float m_StickToGroundForce;
         [SerializeField] private float m_GravityMultiplier;
-        [SerializeField] private MouseLook m_MouseLook;
+        [SerializeField] public MouseLook m_MouseLook;
         [SerializeField] private bool m_UseFovKick;
         [SerializeField] private FOVKick m_FovKick = new FOVKick();
         [SerializeField] private bool m_UseHeadBob;
@@ -64,7 +64,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         public bool isChangeWalking = false;
 
         public Vector3 rot;
-
+        public bool isJoystick = false;
         // Use this for initialization
         private void Start()
         {
@@ -77,6 +77,12 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_NextStep = m_StepCycle/2f;
             m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
+            if (Input.GetJoystickNames().Length == 0)
+            {
+                isJoystick = false;
+            }
+            else
+                isJoystick = true;
         }
 
         // Coroutine for Smooth Crouch_Decrouch
@@ -148,7 +154,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
 
             // Crouched Control value 
-            if (Input.GetKeyDown(KeyCode.Joystick1Button1))
+            if (Input.GetKeyDown(KeyCode.Joystick1Button1) || Input.GetKeyDown(KeyCode.LeftShift))
             {
                 if (isCrouched)
                 {
@@ -179,7 +185,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
 
             // Lining Control 
-            if (Input.GetKeyDown(KeyCode.Joystick1Button4))
+            if (Input.GetKeyDown(KeyCode.Joystick1Button4) || Input.GetKeyDown(KeyCode.LeftControl))
             {
                 rot = transform.eulerAngles;
                 isLining = true;
@@ -187,8 +193,15 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
             if (isLining)
             {
-               
-                float angH = Input.GetAxis("RightH");
+                float angH;
+                if (!isJoystick)
+                {
+                    angH = Input.GetAxis("RightH");
+
+                }
+                else
+                    angH = Input.GetAxis("Horizontal");
+
                 float f = -40f * angH;
                 
                 if (isWallLeft)
@@ -207,8 +220,10 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 liningAngle = Vector3.zero;
                 this.transform.eulerAngles = rot;
             }
-            //RotateView();
-
+            if (!isJoystick)
+            {
+                RotateView();
+            }
             //the jump state needs to read here to make sure it is not missed
 
             if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
