@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class DoorBaseScript : MonoBehaviour {
+public class DoorBaseScript : MonoBehaviour
+{
 
 	#region DOOR_BASE_SUBCLASS
 	public class DoorBaseSaveAndLoadData {
@@ -19,6 +20,7 @@ public class DoorBaseScript : MonoBehaviour {
 	public bool doorIsWorking;
 	public bool doorIsOpen;
 
+    public GameObject[] buttons;
 	public DoorBaseSaveAndLoadData doorBaseReference;
 	#endregion
 
@@ -43,11 +45,10 @@ public class DoorBaseScript : MonoBehaviour {
 
 
 	#region DOOR_BASE_MONOBEHAVIOUR_METHODS
-	public void Awake () {
-
+	public void Awake ()
+    {
 		if (this.doorBaseReference == null)
 			this.doorBaseReference = new DoorBaseSaveAndLoadData ();
-
 	}
 
 	public void Start () {
@@ -62,61 +63,32 @@ public class DoorBaseScript : MonoBehaviour {
 
 	}
 
-	public void Update () {
-
-		this.doorIsPowered = this.DoorStatuses [3];
-		this.doorIsUnLocked = this.DoorStatuses [2];
-		this.doorIsWorking = this.DoorStatuses [1];
-		this.doorIsOpen = this.DoorStatuses [0];
-
-		if (Input.GetKeyDown (KeyCode.Alpha1))
-			this.DoorStatuses [3] = !this.DoorStatuses [3];
-
-		if (Input.GetKeyDown (KeyCode.Alpha2))
-			this.DoorStatuses [2] = !this.DoorStatuses [2];
-
-		if (Input.GetKeyDown (KeyCode.Alpha3))
-			this.DoorStatuses [1] = !this.DoorStatuses [1];
-
-
-		if (this.DoorStatuses [3]) {
-
-			if (this.DoorStatuses [2]) {
-
-				if (this.DoorStatuses [1]) {
-					
-					if (Input.GetKeyDown (KeyCode.Alpha4))
-						this.DoorStatuses [0] = !this.DoorStatuses [0];
-
-					if (this.DoorStatuses [0]) {
-
-						Debug.Log ("Sono aperta");
-
-					} else {
-
-						Debug.Log ("Non sono aperta");
-
-					}
-
-				} else {
-
-					Debug.Log ("Non sono funzionante");
-
-				}
-
-			} else {
-
-				Debug.Log ("Non sono sbloccata");
-
-			}
-
-		} else {
-
-			Debug.Log ("Non sono alimentata");
-
-		}
-
-	}
 	#endregion
 
+    public void UnlockDoor()
+    {
+        UpdateButtons();
+        doorIsUnLocked = true;
+    }
+
+    public void UpdateButtons()
+    {
+        foreach (var item in buttons)
+        {
+            MeshRenderer mr = item.GetComponent<MeshRenderer>();
+            Material mat = mr.material;
+            if (!doorIsUnLocked)
+            {
+                mat.SetColor("_Color", Color.red);
+            }
+            if (doorIsUnLocked)
+            {
+                mat.SetColor("_Color", Color.yellow);
+            }
+            if (doorIsUnLocked && doorIsOpen)
+            {
+                mat.SetColor("_Color", Color.green);
+            }
+        }
+    }
 }
