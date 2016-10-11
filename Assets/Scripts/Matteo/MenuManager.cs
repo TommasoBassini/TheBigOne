@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour {
 
@@ -32,6 +33,7 @@ public class MenuManager : MonoBehaviour {
     public void StartGame()
     {
         //gameManager.SetLevel(0);
+        SceneManager.LoadScene("Prototype");
     }
 
     public void Options()
@@ -62,7 +64,11 @@ public class MenuManager : MonoBehaviour {
     {
         if (pnlAskToQuit.activeInHierarchy)
         {
-            Application.Quit();
+            #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+            #else
+                Application.Quit();
+            #endif
         }
         else
         {
@@ -99,6 +105,11 @@ public class MenuManager : MonoBehaviour {
         if (isLooping)
         {
             imgBgCool.GetComponent<Image>().color = Color.Lerp(new Color(1, 1, 1, 0), Color.white, Mathf.PingPong((Time.time - startWaitTime) / (waitBetweenBgs / 2), 1));
+        }
+
+        if (Input.GetButton("Cancel"))
+        {
+            Back();
         }
     }
 }
