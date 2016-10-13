@@ -207,7 +207,10 @@ public class OxygenScript : TimerScript {
                 this.OxygenAmount -= 0.25f;
                 this.oxygenCoroutine[0] = this.StartCoroutine_Auto(this.CO_TimerCoroutine(this.oxygenStandingDecadenceSpeed, this.oxygenStandingDecadenceAmount, this.DelegatedMethod[0]));
             }
+            //else if()
+            ///{
 
+           // }
 
             if (Input.GetKeyDown(KeyCode.Space))
             {

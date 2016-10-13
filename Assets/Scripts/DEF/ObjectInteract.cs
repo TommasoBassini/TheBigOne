@@ -37,17 +37,20 @@ public class ObjectInteract : MonoBehaviour
     public float dropDistance;
 
     public GameObject torcia;
+
     void Start ()
     {
+        //Setta la posizione della telecamera all'inizio del gioco
         cameraPos = Camera.main.transform.position;
 	}
 
     void FixedUpdate()
     {
-        CheckInteract();
-
+        // Ray per l'interazione con gli oggetti dal centro dello schermo
         interactionRay = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
-        Debug.DrawRay(interactionRay.origin, interactionRay.direction, Color.red);
+
+        // Viene chiamato il metodo per controllare l'interazione con gli oggetti interagibili
+        CheckInteract();
     }
 
     void CheckInteract()
@@ -82,7 +85,6 @@ public class ObjectInteract : MonoBehaviour
                         pickubleObj.transform.SetParent(inspect.transform);
                     }
                 }
-
 
                 // SE L'OGGETTO DEL RAYCAST E' Terminal
                 if (hit.collider.CompareTag("Terminal"))
