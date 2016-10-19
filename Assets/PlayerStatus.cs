@@ -2,12 +2,21 @@
 using System.Collections;
 
 [System.Serializable]
-class Permessi
+public class Permessi
 {
     [Header ("Permessi medici")]
-    public bool isScannerMedic = false;
-    public bool isAemOssigeno = false;
-    public bool isIemMedico = false;
+    public bool hasScannerMedic = false;
+    public bool hasAemOssigeno = false;
+    public bool hasIemMedico = false;
+
+    [Header("Permessi ingegnere")]
+    public bool hasScannerEngineer = false;
+    public bool hasAemMaterial = false;
+    public bool hasIemEngineer = false;
+
+    [Header("Permessi Guardia")]
+    public bool hasScanner = false;
+    public bool hasIemSicurezza = false;
 }
 
 public class PlayerStatus : MonoBehaviour
@@ -15,16 +24,58 @@ public class PlayerStatus : MonoBehaviour
     public int medicLvl;
     public int engineerLvl;
     public int guardLvl;
+    public Permessi permessi;
 
 
-
-    public void MedicLvlUp()
+    public void MedicLvlUp(int n)
     {
-        medicLvl++;
+        medicLvl = n;
         switch (medicLvl)
         {
-            default:
-                break;
+            case 1:
+                {
+                    permessi.hasAemOssigeno = true;
+                    permessi.hasScannerMedic = true;
+                    break;
+                }
+            case 2:
+                {
+                    permessi.hasIemMedico = true;
+                    break;
+                }
+        }
+    }
+
+    public void EngineerLvlUp(int n)
+    {
+        engineerLvl = n;
+        switch (engineerLvl)
+        {
+            case 1:
+                {
+                    permessi.hasScannerEngineer = true;
+                    permessi.hasIemSicurezza = true;
+                    break;
+                }
+        }
+    }
+
+    public void GuardLvlUp(int n)
+    {
+        guardLvl = n;
+        switch (guardLvl)
+        {
+            case 1:
+                {
+                    permessi.hasScanner = true;
+                    permessi.hasAemMaterial = true;
+                    break;
+                }
+            case 2:
+                {
+                    permessi.hasIemEngineer = true;
+                    break;
+                }
         }
     }
 }

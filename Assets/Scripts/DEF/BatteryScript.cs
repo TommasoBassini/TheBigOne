@@ -5,8 +5,8 @@ using System.Collections;
 public class BatteryScript : TimerScript {
 
 	#region BATTERY_SUBCLASS
-	public class BatteryEnergySaveAndLoadData {
-
+	public class BatteryEnergySaveAndLoadData
+    {
 		public float energy;
 
 	}
@@ -16,7 +16,8 @@ public class BatteryScript : TimerScript {
 	#region BATTERY_PARAMETERS
 	[Header ("Riferimenti")]
 	public Text uiBatteryText;
-	public TorchLightScript torchLightScript;
+    public Text menuBatteryText;
+    public TorchLightScript torchLightScript;
 
 	[Header ("Batteria Parametri Base - Da 0f ad 8f")]
 	[Range (0f, 8f)] public float batteryEnergyAmount = 1f;
@@ -63,10 +64,11 @@ public class BatteryScript : TimerScript {
 			this.batteryEnergyAmount = this.energyReference.energy;
 			//this.torchLightScript.TorchLightIntensityAmount = this.energyReference.energy;
 			this.uiBatteryText.text = (this.energyReference.energy * 100).ToString ("000");
-			
-		}
-		
-		get {
+            this.menuBatteryText.text = (this.energyReference.energy * 100).ToString("000");
+
+        }
+
+        get {
 			
 			return this.energyReference.energy;
 			
@@ -77,16 +79,17 @@ public class BatteryScript : TimerScript {
 
 
 	#region BATTERY_DELEGATES
-	public TimedDelegatedMethod[] DelegatedMethod = new TimedDelegatedMethod[] {
-
-		delegate (TimerScript timerScriptReference, float changeAmount) {
-
-			if (timerScriptReference is BatteryScript) {
+	public TimedDelegatedMethod[] DelegatedMethod = new TimedDelegatedMethod[] 
+    {
+		delegate (TimerScript timerScriptReference, float changeAmount) 
+        {
+			if (timerScriptReference is BatteryScript)
+            {
 
 				(timerScriptReference as BatteryScript).BatteryEnergyAmount -= changeAmount;
-
-			} else Debug.LogError ("ERRORE RICONOSCIMENTO TIPO SCRIPT, DELEGATO 0, BATTERIA");
-
+                
+			}
+            else Debug.LogError ("ERRORE RICONOSCIMENTO TIPO SCRIPT, DELEGATO 0, BATTERIA");
 		},
 
 		delegate (TimerScript timerScriptReference, float changeAmount) {

@@ -17,8 +17,9 @@ public class OxygenScript : TimerScript {
 	#region OXYGEN_PARAMETERS
 	[Header ("Riferimento a UI Text")]
 	public Text uiOxygenText;
+    public Text menuOxygenText;
 
-	[Header ("Flag Booleani")]
+    [Header ("Flag Booleani")]
 	public bool leftShiftHasBeenPressed;
 	public bool characterIsRunning;
 
@@ -75,10 +76,10 @@ public class OxygenScript : TimerScript {
 			
 			this.oxygenAmount = this.OxygenReference.oxygen;
 			this.uiOxygenText.text = this.OxygenReference.oxygen.ToString ("000");
-			
-		}
-		
-		get {
+            this.menuOxygenText.text = this.OxygenReference.oxygen.ToString("000");
+        }
+
+        get {
 			
 			return this.OxygenReference.oxygen;
 			
