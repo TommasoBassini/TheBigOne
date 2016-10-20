@@ -1,25 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
-public class AI_Drone : ThreeStateMachine <AI_DroneGuarding, AI_DroneDefending, AI_DroneFallingIntoLine> {
+public class AI_Drone : FiniteStateMachine <IAI_ImplementedStrategy> {
 
-	public EnemyReference <AI_DroneGuarding, AI_DroneDefending, AI_DroneFallingIntoLine> droneReference;
+	public EnemyReference <IAI_ImplementedStrategy> droneReference;
 
 
 	#region DRONE_MONOBEHAVIOUR_METHODS
 	public void Awake () {
 
-		this.droneReference = new EnemyReference <AI_DroneGuarding, AI_DroneDefending, AI_DroneFallingIntoLine> ();
+		this.droneReference = new EnemyReference <IAI_ImplementedStrategy> ();
 
-		this.droneReference.enemyGuarding = this.GetComponent <AI_DroneGuarding> ();
-		this.droneReference.enemyDefending = this.GetComponent <AI_DroneDefending> ();
-		this.droneReference.enemyFallingIntoLine = this.GetComponent <AI_DroneFallingIntoLine> ();
+		this.droneReference.enemyStrategyList = new List <IAI_ImplementedStrategy> ();
+
+		this.droneReference.enemyStrategyList.Add (this.GetComponent <AI_DroneGuarding> ());
+		this.droneReference.enemyStrategyList.Add (this.GetComponent <AI_DroneDefending> ());
+		this.droneReference.enemyStrategyList.Add (this.GetComponent <AI_DroneFallingIntoLine> ());
 
 	}
 
 	public void Update () {
 
-		this.ThreeStateMachineMethod (this.droneReference);
+		this.FiniteStateMachineMethod (this.droneReference);
 
 		this.droneReference.enemyStrategyState = this.droneReference.enemyImplementedStrategy.ExecuteImplementedStrategy ();
 
