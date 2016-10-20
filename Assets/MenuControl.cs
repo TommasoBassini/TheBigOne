@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityStandardAssets.Characters.FirstPerson;
+using System.Collections.Generic;
 
 public class MenuControl : MonoBehaviour
 {
@@ -11,6 +12,17 @@ public class MenuControl : MonoBehaviour
     public Button[] buttons;
     public int nMenu = 0;
     public bool isSubMenu = false;
+
+    public GameObject reportsPanel;
+    private List<GameObject> reportButtons = new List<GameObject>();
+
+    void Start()
+    {
+        foreach (Transform item in reportsPanel.transform)
+        {
+            reportButtons.Add(item.gameObject);
+        }
+    }
 
     void Update ()
     {
@@ -70,5 +82,19 @@ public class MenuControl : MonoBehaviour
     {
         isSubMenu = true;
         buttonToSelect.Select();
+    }
+
+    public void RefreshReport()
+    {
+        for (int i = 0; i < ReportManager.reportState.Count; i++)
+        {
+            if (ReportManager.reportState[i].discovered)
+            {
+                reportButtons[ReportManager.reportState[i].indexInList].GetComponentInChildren<Text>().text = ReportManager.reportState[i].Titolo;
+                PODReportButton podReportButton = reportButtons[ReportManager.reportState[i].indexInList].GetComponent<PODReportButton>();
+                podReportButton.Titolo = ReportManager.reportState[i].Titolo;
+                podReportButton.text = ReportManager.reportState[i].text;
+            }
+        }
     }
 }
