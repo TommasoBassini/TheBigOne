@@ -92,8 +92,9 @@ public class MenuControl : MonoBehaviour
             {
                 reportButtons[ReportManager.reportState[i].indexInList].GetComponentInChildren<Text>().text = ReportManager.reportState[i].Titolo;
                 PODReportButton podReportButton = reportButtons[ReportManager.reportState[i].indexInList].GetComponent<PODReportButton>();
-                podReportButton.Titolo = ReportManager.reportState[i].Titolo;
+                podReportButton.Titolo = ReportManager.reportState[i].titolo;
                 podReportButton.text = ReportManager.reportState[i].text;
+                podReportButton.isUnlocked = true;
             }
         }
     }

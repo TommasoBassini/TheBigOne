@@ -4,14 +4,23 @@ using UnityEngine.UI;
 
 public class ReportButton : MonoBehaviour
 {
-    public TextAsset text;
     public Text textBox;
-    public string Titolo;
     public Scrollbar scrool;
     public RectTransform content;
 
     public int indexInList;
     public bool discovered = false;
+
+    [Header("Per i designers")]
+    [Tooltip("Mettere qui il txt del testo del report")]
+    public TextAsset text;
+    [Tooltip("Scrivere qui il titolo del report")]
+    public string titolo;
+    [Tooltip("Scrivere qui l'autore del report")]
+    public string autore;
+    [Tooltip("Scrivere qui il luogo del ritrovamento del report")]
+    public string luogo;
+
 
     void Start()
     {
