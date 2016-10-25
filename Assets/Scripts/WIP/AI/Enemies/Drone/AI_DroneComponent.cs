@@ -4,25 +4,54 @@ using System.Collections;
 public class AI_DroneComponent : MonoBehaviour {
 
 	#region DRONE_PARAMETERS
+	[Header ("Boolean Flags")]
+
+	[Tooltip ("Enables/Disables path randomization; by default, is disabled")]
 	public bool isPathRandomized;
+	[Tooltip ("DO NOT TOUCH!")]
 	public bool droneIsFallingIntoLine;
+	[Tooltip ("DO NOT TOUCH!")]
 	public bool playerInSight;							// Whether or not the player is currently sighted
 
+
+	[Header ("Variables")]
+
+	[Tooltip ("DO NOT TOUCH! Ask programmers for utilization")]
 	public int destPoint;
 
-	public float fieldOfViewAngle = 110f;               // Number of degrees, centred on forward, for the enemy see
+	[Tooltip ("Determines the plane angle in wich the enemy could spot the player (from 0f to 360f)")]
+	[Range (0f, 360f)] public float fieldOfViewAngle = 110f;               // Number of degrees, centred on forward, for the enemy see
+	[Tooltip ("Determines the SQUARED attack distance of the enemy (from 0f to 100f)")]
+	[Range (0f, 100f)] public float attackDistance = 5f;
+	[Tooltip ("DO NOT TOUCH!")]
 	public float angle;
 
-	public Vector3 direction;
 
+	[Header ("Structs")]
+
+	[Tooltip ("DO NOT TOUCH!")]
+	public Vector3 direction;
+	[Tooltip ("DO NOT TOUCH!")]
 	public RaycastHit hit;
 
-    public NavMeshAgent agent;
 
+	[Header ("Classes")]
+
+	[Tooltip ("DO NOT TOUCH!")]
+    public NavMeshAgent agent;
+	[Tooltip ("DO NOT TOUCH!")]
     public SphereCollider col;                         // Reference to the sphere collider trigger component
 
+
+	[Header ("GameObjects")]
+
+	[Tooltip ("DO NOT TOUCH!")]
     public GameObject player;							// Reference to the player
 
+
+	[Header ("Patrolling Points")]
+
+	[Tooltip ("First, set the number; second, manually assign any GameObject desidered to be a patrolling point (Transforms will be automatically taken)")]
     public Transform[] points;
 	#endregion
 
@@ -71,8 +100,15 @@ public class AI_DroneComponent : MonoBehaviour {
 					// ... and if the raycast hits the player...
 					if (this.hit.collider.gameObject == this.player) {
 						
-						// ... the player is in sight.
+						// ... the player is in sight...
 						this.playerInSight = true;
+
+						if (this.direction.sqrMagnitude < this.attackDistance) {
+
+							// ... and may be attacked.
+							Debug.LogWarning ("Shooting!");
+
+						}
 
 					}
 

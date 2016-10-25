@@ -3,6 +3,7 @@ using System.Collections;
 
 public class AI_DroneDefending : MonoBehaviour, IAI_ImplementedStrategy {
 
+	[Tooltip ("DO NOT TOUCH!")]
     public AI_DroneComponent droneComponents;
 
 

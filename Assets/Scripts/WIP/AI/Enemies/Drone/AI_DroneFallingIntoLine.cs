@@ -3,6 +3,7 @@ using System.Collections;
 
 public class AI_DroneFallingIntoLine : MonoBehaviour, IAI_ImplementedStrategy {
 
+	[Tooltip ("DO NOT TOUCH!")]
     public AI_DroneComponent droneComponents;
 
 
@@ -18,15 +19,20 @@ public class AI_DroneFallingIntoLine : MonoBehaviour, IAI_ImplementedStrategy {
 	#region DRONE_METHODS
     public bool ReturnToPatrol () {
 
-		if (this.droneComponents.destPoint == 0) {
-			
-			this.droneComponents.destPoint = this.droneComponents.points.Length - 1;
+		if (!this.droneComponents.isPathRandomized) {
 
-		} else {
-
-			this.droneComponents.destPoint--;
-
+			if (this.droneComponents.destPoint == 0) {
+				
+				this.droneComponents.destPoint = this.droneComponents.points.Length - 1;
+				
+			} else {
+				
+				this.droneComponents.destPoint--;
+				
+			}
+				
 		}
+
 
         this.droneComponents.agent.destination = this.droneComponents.points [this.droneComponents.destPoint].position;
         return true;
