@@ -8,12 +8,7 @@ public class AI_SentinelDefending : MonoBehaviour, IAI_ImplementedStrategy {
 
 		Debug.Log ("Sentinel is in <<Defending>>");
 
-		if (Input.GetKeyDown (KeyCode.B)) {
-
-			Debug.Log ("Sentinel switches from <<Defending>> to <<Falling Into Line>>");
-			return StrategyState.FallingIntoLine;
-
-		} else if (Input.GetKeyDown (KeyCode.E)) {
+		if (Input.GetKeyDown (KeyCode.E)) {
 
 			Debug.Log ("Sentinel switches from <<Defending>> to <<Scanning>>");
 			return StrategyState.Scanning;

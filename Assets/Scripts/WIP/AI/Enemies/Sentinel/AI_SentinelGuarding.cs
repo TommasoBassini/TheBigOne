@@ -13,6 +13,11 @@ public class AI_SentinelGuarding : MonoBehaviour, IAI_ImplementedStrategy {
 			Debug.Log ("Sentinel switches from <<Guarding>> to <<Defending>>");
 			return StrategyState.Defending;
 
+		} else if (Input.GetKeyDown (KeyCode.M)) {
+
+			Debug.Log ("Sentinel switches from <<Guarding>> to <<Inspecting>>");
+			return StrategyState.Inspecting;
+
 		} else {
 
 			Debug.Log ("Sentinel does not change strategy");

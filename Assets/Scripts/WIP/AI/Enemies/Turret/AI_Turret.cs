@@ -2,15 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class AI_Turret : FiniteStateMachine <IAI_ImplementedStrategy> {
+public class AI_Turret : FiniteStateMachine {
 
-	public EnemyReference <IAI_ImplementedStrategy> turretReference;
+	public EnemyReference turretReference;
 
 
 	#region TURRET_MONOBEHAVIOUR_METHODS
 	public void Awake () {
 
-		this.turretReference = new EnemyReference <IAI_ImplementedStrategy> ();
+		this.turretReference = new EnemyReference ();
 
 		this.turretReference.enemyStrategyList = new List <IAI_ImplementedStrategy> ();
 

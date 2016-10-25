@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public abstract class FiniteStateMachine <TAI> : MonoBehaviour where TAI : IAI_ImplementedStrategy {
+public abstract class FiniteStateMachine : MonoBehaviour {
 
-	public void FiniteStateMachineMethod (EnemyReference <TAI> enemyReference) {
+	public void FiniteStateMachineMethod (EnemyReference enemyReference) {
 		
 	 	int state = 1;
 
@@ -20,7 +20,7 @@ public abstract class FiniteStateMachine <TAI> : MonoBehaviour where TAI : IAI_I
 
 			}
 
-		} while (++state < enemyReference.enemyStrategyList.Count + 1);
+		} while (++state <= enemyReference.enemyStrategyList.Count);
 
 		Debug.LogError (this.ToString () + " does not understand wich strategy it should use!");
 		return;

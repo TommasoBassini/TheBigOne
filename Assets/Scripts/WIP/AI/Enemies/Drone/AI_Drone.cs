@@ -2,15 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class AI_Drone : FiniteStateMachine <IAI_ImplementedStrategy> {
+public class AI_Drone : FiniteStateMachine {
 
-	public EnemyReference <IAI_ImplementedStrategy> droneReference;
+	public EnemyReference droneReference;
 
 
 	#region DRONE_MONOBEHAVIOUR_METHODS
 	public void Awake () {
 
-		this.droneReference = new EnemyReference <IAI_ImplementedStrategy> ();
+		this.droneReference = new EnemyReference ();
 
 		this.droneReference.enemyStrategyList = new List <IAI_ImplementedStrategy> ();
 
