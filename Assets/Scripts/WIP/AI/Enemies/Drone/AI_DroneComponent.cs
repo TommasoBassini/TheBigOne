@@ -56,7 +56,7 @@ public class AI_DroneComponent : MonoBehaviour {
 	#endregion
 
 
-	#region DRONE_MONOBEHAVIOR_METHODS
+	#region DRONE_MONOBEHAVIOUR_METHODS
     public void Awake() {
 
 		this.agent = this.GetComponent <NavMeshAgent> ();

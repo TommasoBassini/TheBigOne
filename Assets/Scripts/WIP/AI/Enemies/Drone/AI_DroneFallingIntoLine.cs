@@ -47,11 +47,8 @@ public class AI_DroneFallingIntoLine : MonoBehaviour, IAI_ImplementedStrategy {
 		Debug.Log ("Drone is in <<Falling Into Line>>");
 
 
-        if (!this.droneComponents.droneIsFallingIntoLine) {
-			
+        if (!this.droneComponents.droneIsFallingIntoLine)
             this.droneComponents.droneIsFallingIntoLine = this.ReturnToPatrol ();
-
-        }
 
 
 		if (this.droneComponents.playerInSight) {
