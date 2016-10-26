@@ -89,6 +89,7 @@ public class ObjectInteract : MonoBehaviour
                 // SE L'OGGETTO DEL RAYCAST E' Terminal
                 if (hit.collider.CompareTag("Terminal"))
                 {
+
                     if (Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E))
                     {
                         isInteracting = true;
@@ -130,6 +131,7 @@ public class ObjectInteract : MonoBehaviour
 
                     if (interactedObject.tag == "Terminal")
                     {
+                        Debug.Log("jfdn");
                         actionImage.sprite = interactSprite;
                         actionImage.gameObject.SetActive(true);
                     }
@@ -219,9 +221,5 @@ public class ObjectInteract : MonoBehaviour
         }
     }
 
-    public void ShowCursor()
-    {
-        Cursor.visible = true;
-    }
 }
 

@@ -6,7 +6,7 @@ public class PODReportButton : MonoBehaviour
 {
 
     public TextAsset text;
-    public string Titolo;
+    public string titolo;
     public Text textBox;
     public Scrollbar scrool;
     public RectTransform content;
@@ -15,16 +15,22 @@ public class PODReportButton : MonoBehaviour
     public GameObject panelReport;
     public bool isUnlocked = false;
 
-
+    public Text autoreText;
+    public string autore;
+    public Text luogoText;
+    public string luogo;
 
     public void ShowReport()
     {
         if (isUnlocked)
         {
+            FindObjectOfType<MenuControl>().isShowReport = true;
             panelReports.SetActive(false);
             panelReport.SetActive(true);
 
             textBox.text = text.text;
+            autoreText.text = autore;
+            luogoText.text = luogo;
             content.sizeDelta = new Vector2(11.23f, textBox.preferredHeight + 10);
             scrool.value = 1;
             buttonPlayAudio.Select();

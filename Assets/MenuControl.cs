@@ -9,10 +9,13 @@ public class MenuControl : MonoBehaviour
     private bool isMenu = false;
     public GameObject pnlMenu;
     public GameObject[] panels;
+    public GameObject panelShowReport;
     public Button[] buttons;
     public int nMenu = 0;
+    public int nButtonReport = 0;
     public bool isSubMenu = false;
-
+    public bool isShowReport = false;
+    public bool isShowScan = false;
     public GameObject reportsPanel;
     private List<GameObject> reportButtons = new List<GameObject>();
 
@@ -54,9 +57,21 @@ public class MenuControl : MonoBehaviour
             {
                 if (isSubMenu)
                 {
-                    buttons[nMenu].Select();
-                    isSubMenu = false;
-                    return;
+                    if (isShowReport)
+                    {
+                        isShowReport = false;
+                        panelShowReport.SetActive(false);
+                        panels[nMenu].SetActive(true);
+                        reportButtons[nButtonReport].GetComponent<Button>().Select();
+                        return;
+                    }
+
+                    if (!isShowReport && !isShowScan)
+                    {
+                        buttons[nMenu].Select();
+                        isSubMenu = false;
+                        return;
+                    }
                 }
                 else
                 {
@@ -92,7 +107,9 @@ public class MenuControl : MonoBehaviour
             {
                 reportButtons[ReportManager.reportState[i].indexInList].GetComponentInChildren<Text>().text = ReportManager.reportState[i].titolo;
                 PODReportButton podReportButton = reportButtons[ReportManager.reportState[i].indexInList].GetComponent<PODReportButton>();
-                podReportButton.Titolo = ReportManager.reportState[i].titolo;
+                podReportButton.titolo = ReportManager.reportState[i].titolo;
+                podReportButton.autore = ReportManager.reportState[i].autore;
+                podReportButton.luogo = ReportManager.reportState[i].luogo;
                 podReportButton.text = ReportManager.reportState[i].text;
                 podReportButton.isUnlocked = true;
             }

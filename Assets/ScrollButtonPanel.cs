@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+
 public class ScrollButtonPanel : MonoBehaviour
 {
     public int nButtons = 0;
@@ -8,15 +9,13 @@ public class ScrollButtonPanel : MonoBehaviour
     public Scrollbar scroll;
     void Start()
     {
-        nButtons = this.transform.childCount;
+        nButtons = this.transform.childCount -1;
     }
 
     public void RefreshScroll(int n)
     {
-        n++;
-        float perc = n / nButtons;
-        scroll.value = 1.0f - (n / nButtons);
-        Debug.Log(perc);
-
+        float perc = (float)n / nButtons;
+        FindObjectOfType<MenuControl>().nButtonReport = n;
+        scroll.value = 1.0f - perc;
     }
 }
