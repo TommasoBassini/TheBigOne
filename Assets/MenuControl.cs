@@ -90,7 +90,7 @@ public class MenuControl : MonoBehaviour
         {
             if (ReportManager.reportState[i].discovered)
             {
-                reportButtons[ReportManager.reportState[i].indexInList].GetComponentInChildren<Text>().text = ReportManager.reportState[i].Titolo;
+                reportButtons[ReportManager.reportState[i].indexInList].GetComponentInChildren<Text>().text = ReportManager.reportState[i].titolo;
                 PODReportButton podReportButton = reportButtons[ReportManager.reportState[i].indexInList].GetComponent<PODReportButton>();
                 podReportButton.Titolo = ReportManager.reportState[i].titolo;
                 podReportButton.text = ReportManager.reportState[i].text;

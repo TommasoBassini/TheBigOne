@@ -37,4 +37,9 @@ public class PODReportButton : MonoBehaviour
         float angV = Input.GetAxis("Vertical");
         scrool.value += angV * Time.deltaTime;
     }
+
+    public void Refresh()
+    {
+        transform.GetComponentInParent<ScrollButtonPanel>().RefreshScroll(this.transform.GetSiblingIndex());
+    }
 }
