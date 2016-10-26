@@ -105,11 +105,11 @@ public class AI_SentinelComponent : MonoBehaviour {
 			
 			this.HearingCollision (this.player.run, this.runCol, other);
 
-			if (!this.playerHasBeenHeard)
+			if (!this.playerHasBeenHeard && !this.player.isCrouched)
 				this.HearingCollision (this.player.walking, this.walkCol, other);
 
-			//if (!this.playerHasBeenHeard)
-			//	this.HearingCollision (this.player.IsCrouched, this.crouchCol, other);	Rendere pubblico il booleano
+			if (!this.playerHasBeenHeard)
+				this.HearingCollision (this.player.isCrouched, this.crouchCol, other);
 
 			// By default the player is not in sight.
 			this.playerInSight = false;
@@ -153,12 +153,12 @@ public class AI_SentinelComponent : MonoBehaviour {
 		// If the player leaves the trigger zone...
 		if (other.gameObject == this.player.gameObject) {
 
-			//this.HearingExit (this.player.IsCrouched, this.crouchCol, other);
+			this.HearingExit (this.player.isCrouched, this.crouchCol, other);
 
-			//if (this.playerHasBeenHeard)
-			this.HearingExit (this.player.walking, this.walkCol, other);
+			if (!this.playerHasBeenHeard && !this.player.isCrouched)
+			    this.HearingExit (this.player.walking, this.walkCol, other);
 
-			if (this.playerHasBeenHeard)
+			if (!this.playerHasBeenHeard)
 				this.HearingExit (this.player.run, this.runCol, other);
 
 			if ((other.transform.position - this.transform.position).sqrMagnitude > Mathf.Pow (this.viewCol.radius, 2f)) {
@@ -195,7 +195,7 @@ public class AI_SentinelComponent : MonoBehaviour {
 
 		SphereCollider spCol = new SphereCollider ();
 
-		spCol.radius = 0f;
+		spCol = sphereColliders [0];
 
 
 		foreach (SphereCollider sphereCollider in sphereColliders) {
@@ -259,9 +259,17 @@ public class AI_SentinelComponent : MonoBehaviour {
 				// ... the player cannot be heard.
 				this.playerHasBeenHeard = false;
 
-			}
+            }
+            else
+            {
+                this.playerHasBeenHeard = true;
+            }
 
-		}
+        }
+        else
+        {
+            this.playerHasBeenHeard = false;
+        }
 
 	}
 	#endregion
