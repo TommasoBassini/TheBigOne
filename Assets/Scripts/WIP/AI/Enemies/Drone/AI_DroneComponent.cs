@@ -60,9 +60,7 @@ public class AI_DroneComponent : MonoBehaviour {
     public void Awake() {
 
 		this.agent = this.GetComponent <NavMeshAgent> ();
-
         this.col = this.GetComponent <SphereCollider> ();
-
         this.player = GameObject.FindGameObjectWithTag ("Player");
 
     }

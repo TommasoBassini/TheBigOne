@@ -21,15 +21,11 @@ public class AI_DroneFallingIntoLine : MonoBehaviour, IAI_ImplementedStrategy {
 
 		if (!this.droneComponents.isPathRandomized) {
 
-			if (this.droneComponents.destPoint == 0) {
-				
+			if (this.droneComponents.destPoint == 0)
 				this.droneComponents.destPoint = this.droneComponents.points.Length - 1;
-				
-			} else {
-				
+			
+			else
 				this.droneComponents.destPoint--;
-				
-			}
 				
 		}
 

@@ -12,7 +12,7 @@ public class AI_SentinelComponent : MonoBehaviour {
 	[Tooltip ("DO NOT TOUCH!")]
 	public bool sentinelHasEnlargedItsHearingColliders;
 	[Tooltip ("DO NOT TOUCH!")]
-	public bool sentinelStartsScanning;
+	public bool sentinelIsScanning;
 	[Tooltip ("DO NOT TOUCH!")]
 	public bool sentinelEndsScanning;
 	[Tooltip ("DO NOT TOUCH!")]
@@ -88,7 +88,7 @@ public class AI_SentinelComponent : MonoBehaviour {
 	public void Start () {
 
 		this.sentinelHasEnlargedItsHearingColliders = false;
-		this.sentinelStartsScanning = false;
+		this.sentinelIsScanning = false;
 		this.sentinelEndsScanning = false;
 		this.sentinelIsFallingIntoLine = false;
 		this.playerHasBeenHeard = false;

@@ -29,15 +29,12 @@ public class AI_SentinelFallingIntoLine : MonoBehaviour, IAI_ImplementedStrategy
 
 	public bool ReturnToPatrol () {
 
-		if (this.sentinelComponents.destPoint == 0) {
-			
+		if (this.sentinelComponents.destPoint == 0)
 			this.sentinelComponents.destPoint = this.sentinelComponents.points.Length - 1;
-			
-		} else {
-			
+		
+		else
 			this.sentinelComponents.destPoint--;
-			
-		}
+		
 
 		this.sentinelComponents.agent.destination = this.sentinelComponents.points [this.sentinelComponents.destPoint].position;
 		return true;

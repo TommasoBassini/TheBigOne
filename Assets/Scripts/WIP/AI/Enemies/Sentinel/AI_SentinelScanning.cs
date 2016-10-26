@@ -18,14 +18,26 @@ public class AI_SentinelScanning : MonoBehaviour, IAI_ImplementedStrategy {
 
 
 	#region SENTINEL_METHODS
-	public void EnlargeHearingCollidersRadius () {
+	public bool EnlargeHearingCollidersRadius () {
 
-		this.sentinelComponents.sentinelStartsScanning = false;
 		this.sentinelComponents.sentinelHasEnlargedItsHearingColliders = true;
 
 		this.sentinelComponents.runCol.radius *= 2f;
 		this.sentinelComponents.walkCol.radius *= 2f;
 		this.sentinelComponents.crouchCol.radius *= 2f;
+
+		return true;
+
+	}
+
+
+	public void StopScanning () {
+
+		if (this.scanningCoroutine != null)
+			this.StopCoroutine (this.scanningCoroutine);
+
+		this.sentinelComponents.sentinelEndsScanning = false;
+		this.sentinelComponents.sentinelIsScanning = false;
 
 	}
 	#endregion
@@ -47,9 +59,9 @@ public class AI_SentinelScanning : MonoBehaviour, IAI_ImplementedStrategy {
 		Debug.Log ("Sentinel is in <<Scanning>>");
 
 
-		if (this.sentinelComponents.sentinelStartsScanning) {
+		if (!this.sentinelComponents.sentinelIsScanning) {
 			
-			this.EnlargeHearingCollidersRadius ();
+			this.sentinelComponents.sentinelIsScanning = this.EnlargeHearingCollidersRadius ();
 			this.scanningCoroutine = this.StartCoroutine_Auto (this.CO_ScanningCoroutine ());
 
 		}
@@ -60,33 +72,19 @@ public class AI_SentinelScanning : MonoBehaviour, IAI_ImplementedStrategy {
 		if (this.sentinelComponents.playerInSight) {
 
 			Debug.Log ("Sentinel switches from <<Scanning>> to <<Defending>>");
-
-			if (this.scanningCoroutine != null) {
-				
-				this.StopCoroutine (this.scanningCoroutine);
-				this.sentinelComponents.sentinelEndsScanning = false;
-
-			}
-
+			this.StopScanning ();
 			return StrategyState.Defending;
 
 		} else if (this.sentinelComponents.playerHasBeenHeard) {
 			
 			Debug.Log ("Sentinel switches from <<Scanning>> to <<Inspecting>>");
-
-			if (this.scanningCoroutine != null) {
-
-				this.StopCoroutine (this.scanningCoroutine);
-				this.sentinelComponents.sentinelEndsScanning = false;
-
-			}
-
+			this.StopScanning ();
 			return StrategyState.Inspecting;
 
 		} else if (this.sentinelComponents.sentinelEndsScanning) {
 
 			Debug.Log ("Sentinel switches from <<Scanning>> to <<Falling Into Line>>");
-			this.sentinelComponents.sentinelEndsScanning = false;
+			this.StopScanning ();
 			return StrategyState.FallingIntoLine;
 
 		} else {

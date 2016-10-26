@@ -67,7 +67,6 @@ public class AI_SentinelDefending : MonoBehaviour, IAI_ImplementedStrategy {
 		if (!this.sentinelComponents.playerInSight) {
 
 			Debug.Log ("Sentinel switches from <<Defending>> to <<Scanning>>");
-			this.sentinelComponents.sentinelStartsScanning = true;
 			return StrategyState.Scanning;
 
 		} else {

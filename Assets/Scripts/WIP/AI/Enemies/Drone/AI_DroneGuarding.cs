@@ -66,16 +66,12 @@ public class AI_DroneGuarding : MonoBehaviour, IAI_ImplementedStrategy {
 		
 		if (this.droneComponents.agent.remainingDistance < 0.5f) {
 			
-			if (this.droneComponents.isPathRandomized) {
-				
+			if (this.droneComponents.isPathRandomized)
 				this.GoToNextPointRandomized ();
-				
-			} else {
-				
-				this.GoToNextPointOrdered ();
-				
-			}
 			
+			else
+				this.GoToNextPointOrdered ();
+
 		}
 		
 		
