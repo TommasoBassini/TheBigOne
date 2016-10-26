@@ -77,9 +77,7 @@ public class AI_SentinelComponent : MonoBehaviour {
 	public void Awake() {
 
 		this.agent = this.GetComponent <NavMeshAgent> ();
-
 		this.InitializeSphereColliders (out this.runCol, out this.walkCol, out this.viewCol, out this.crouchCol);
-
 		this.player = GameObject.FindGameObjectWithTag ("Player").GetComponent <FirstPersonController> ();
 
 	}
@@ -106,8 +104,12 @@ public class AI_SentinelComponent : MonoBehaviour {
 		if (other.gameObject == this.player.gameObject) {
 			
 			this.HearingCollision (this.player.run, this.runCol, other);
-			this.HearingCollision (this.player.walking, this.walkCol, other);
-			//this.HearingCollision (this.player.IsCrouched, this.crouchCol, other);	Rendere pubblico il booleano
+
+			if (!this.playerHasBeenHeard)
+				this.HearingCollision (this.player.walking, this.walkCol, other);
+
+			//if (!this.playerHasBeenHeard)
+			//	this.HearingCollision (this.player.IsCrouched, this.crouchCol, other);	Rendere pubblico il booleano
 
 			// By default the player is not in sight.
 			this.playerInSight = false;
@@ -138,6 +140,31 @@ public class AI_SentinelComponent : MonoBehaviour {
 					}
 
 				}
+
+			}
+
+		}
+
+	}
+
+
+	public void OnTriggerExit (Collider other) {
+
+		// If the player leaves the trigger zone...
+		if (other.gameObject == this.player.gameObject) {
+
+			//this.HearingExit (this.player.IsCrouched, this.crouchCol, other);
+
+			//if (this.playerHasBeenHeard)
+			this.HearingExit (this.player.walking, this.walkCol, other);
+
+			if (this.playerHasBeenHeard)
+				this.HearingExit (this.player.run, this.runCol, other);
+
+			if ((other.transform.position - this.transform.position).sqrMagnitude > Mathf.Pow (this.viewCol.radius, 2f)) {
+
+				// ... the player is not in sight.
+				this.playerInSight = false;
 
 			}
 
@@ -218,6 +245,22 @@ public class AI_SentinelComponent : MonoBehaviour {
 				
 			}
 			
+		}
+
+	}
+
+
+	public void HearingExit (bool playerIsInRightState, SphereCollider col, Collider other) {
+
+		if (playerIsInRightState) {
+
+			if ((other.transform.position - this.transform.position).sqrMagnitude > Mathf.Pow (col.radius, 2f)) {
+
+				// ... the player cannot be heard.
+				this.playerHasBeenHeard = false;
+
+			}
+
 		}
 
 	}

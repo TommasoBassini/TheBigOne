@@ -13,19 +13,6 @@ public class AI_DroneDefending : MonoBehaviour, IAI_ImplementedStrategy {
         this.droneComponents = this.GetComponent <AI_DroneComponent> ();
 
     }
-
-
-    public void OnTriggerExit (Collider other) {
-		
-        // If the player leaves the trigger zone...
-		if (other.gameObject == this.droneComponents.player) {
-			
-			// ... the player is not in sight.
-			this.droneComponents.playerInSight = false;
-
-		}
-
-    }
 	#endregion
 
 

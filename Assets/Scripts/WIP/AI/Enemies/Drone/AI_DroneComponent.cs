@@ -117,6 +117,19 @@ public class AI_DroneComponent : MonoBehaviour {
 		}
 
 	}
+
+
+	public void OnTriggerExit (Collider other) {
+
+		// If the player leaves the trigger zone...
+		if (other.gameObject == this.player) {
+
+			// ... the player is not in sight.
+			this.playerInSight = false;
+
+		}
+
+	}
 	#endregion
 
 }

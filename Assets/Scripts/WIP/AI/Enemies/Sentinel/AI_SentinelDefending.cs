@@ -13,23 +13,6 @@ public class AI_SentinelDefending : MonoBehaviour, IAI_ImplementedStrategy {
 		this.sentinelComponents = this.GetComponent <AI_SentinelComponent> ();
 
 	}
-
-
-	public void OnTriggerExit (Collider other) {
-
-		// If the player leaves the trigger zone...
-		if (other.gameObject == this.sentinelComponents.player.gameObject) {
-
-			if ((other.transform.position - this.transform.position).sqrMagnitude > Mathf.Pow (this.sentinelComponents.viewCol.radius, 2f)) {
-
-				// ... the player is not in sight.
-				this.sentinelComponents.playerInSight = false;
-
-			}
-
-		}
-
-	}
 	#endregion
 
 

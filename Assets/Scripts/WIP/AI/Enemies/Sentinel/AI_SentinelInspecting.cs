@@ -40,7 +40,7 @@ public class AI_SentinelInspecting : MonoBehaviour, IAI_ImplementedStrategy {
 			Debug.Log ("Sentinel switches from <<Inspecting>> to <<Defending>>");
 			return StrategyState.Defending;
 
-		} else if (this.sentinelComponents.sentinelHasEnlargedItsHearingColliders) {
+		} else if (this.sentinelComponents.sentinelHasEnlargedItsHearingColliders && this.sentinelComponents.agent.remainingDistance < 0.5f) {
 
 			Debug.Log ("Sentinel switches from <<Inspecting>> to <<Scanning>>");
 			return StrategyState.Scanning;
