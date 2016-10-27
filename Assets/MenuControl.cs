@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class MenuControl : MonoBehaviour
 {
-    private bool isMenu = false;
+    public bool isMenu = false;
     public GameObject pnlMenu;
     public GameObject[] panels;
     public GameObject panelShowReport;
@@ -19,69 +19,78 @@ public class MenuControl : MonoBehaviour
     public GameObject reportsPanel;
     private List<GameObject> reportButtons = new List<GameObject>();
 
+    private ObjectInteract player;
+
+    public GameObject mirino;
+    public GameObject scansPanel;
     void Start()
     {
         foreach (Transform item in reportsPanel.transform)
         {
             reportButtons.Add(item.gameObject);
         }
+        player = FindObjectOfType<ObjectInteract>();
     }
 
-    void Update ()
+    void Update()
     {
+
         if (Input.GetKeyDown(KeyCode.Joystick1Button3))
         {
-            if (!isMenu)
+            if (!player.isInteracting)
             {
-                isMenu = true;
-                FindObjectOfType<FirstPersonController>().enabled = false;
-                pnlMenu.SetActive(true);
-                panels[0].SetActive(true);
-                buttons[0].Select();
-                return;
-            }
-            else
-            {
-                isMenu = false;
-                FindObjectOfType<FirstPersonController>().enabled = true;
-                pnlMenu.SetActive(false);
-                panels[nMenu].SetActive(false);
-                nMenu = 0;
-                return;
-            }
-        }
-
-        if (isMenu)
-        {
-            if (Input.GetKeyDown(KeyCode.Joystick1Button1))
-            {
-                if (isSubMenu)
+                if (!isMenu)
                 {
-                    if (isShowReport)
-                    {
-                        isShowReport = false;
-                        panelShowReport.SetActive(false);
-                        panels[nMenu].SetActive(true);
-                        reportButtons[nButtonReport].GetComponent<Button>().Select();
-                        return;
-                    }
-
-                    if (!isShowReport && !isShowScan)
-                    {
-                        buttons[nMenu].Select();
-                        isSubMenu = false;
-                        return;
-                    }
+                    isMenu = true;
+                    FindObjectOfType<FirstPersonController>().enabled = false;
+                    mirino.SetActive(false);
+                    pnlMenu.SetActive(true);
+                    panels[0].SetActive(true);
+                    buttons[0].Select();
+                    return;
                 }
                 else
                 {
                     isMenu = false;
                     FindObjectOfType<FirstPersonController>().enabled = true;
+                    mirino.SetActive(true);
                     pnlMenu.SetActive(false);
                     panels[nMenu].SetActive(false);
                     nMenu = 0;
                     return;
                 }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Joystick1Button1) && isMenu)
+        {
+            if (isSubMenu)
+            {
+                if (isShowReport)
+                {
+                    isShowReport = false;
+                    panelShowReport.SetActive(false);
+                    panels[nMenu].SetActive(true);
+                    reportButtons[nButtonReport].GetComponent<Button>().Select();
+                    return;
+                }
+
+                if (!isShowReport && !isShowScan)
+                {
+                    buttons[nMenu].Select();
+                    isSubMenu = false;
+                    return;
+                }
+            }
+            else
+            {
+                isMenu = false;
+                FindObjectOfType<FirstPersonController>().enabled = true;
+                mirino.SetActive(true);
+                pnlMenu.SetActive(false);
+                panels[nMenu].SetActive(false);
+                nMenu = 0;
+                return;
             }
         }
     }
@@ -113,6 +122,16 @@ public class MenuControl : MonoBehaviour
                 podReportButton.text = ReportManager.reportState[i].text;
                 podReportButton.isUnlocked = true;
             }
+        }
+    }
+
+
+    public void SelectScanButton()
+    {
+        if (scansPanel.transform.GetChild(0) != null)
+        {
+            Button buttonToSelect = scansPanel.transform.GetChild(0).GetComponent<Button>();
+            buttonToSelect.Select();
         }
     }
 }

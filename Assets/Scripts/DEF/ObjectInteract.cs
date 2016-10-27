@@ -38,10 +38,13 @@ public class ObjectInteract : MonoBehaviour
 
     public GameObject torcia;
 
+    public ScanButtonManager scan;
+    private MenuControl menu;
     void Start ()
     {
         //Setta la posizione della telecamera all'inizio del gioco
         cameraPos = Camera.main.transform.position;
+        menu = FindObjectOfType<MenuControl>();
 	}
 
     void FixedUpdate()
@@ -68,7 +71,7 @@ public class ObjectInteract : MonoBehaviour
                     //metto l'action image giusta
                     pickubleObj = hit.collider.gameObject;
 
-                    if (Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E))
+                    if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E)) && !menu.isMenu)
                     {
                         GetComponent<FirstPersonController>().enabled = false;
 
@@ -80,7 +83,8 @@ public class ObjectInteract : MonoBehaviour
 
                         lastObjPos = hit.collider.gameObject.transform.position;
                         lastObjRot = hit.collider.gameObject.transform.rotation;
-                        inspect.transform.localPosition = new Vector3 (0,0,0.2f) + new Vector3(0,0,(1 * pickubleObj.transform.gameObject.GetComponent<IspectionNear>().near)); 
+                        inspect.transform.localPosition = new Vector3 (0,0,0.2f) + new Vector3(0,0,(1 * pickubleObj.transform.gameObject.GetComponent<ObjInformation>().near));
+                        pickubleObj.transform.eulerAngles = Vector3.zero;
                         pickubleObj.transform.position = inspect.transform.position;
                         pickubleObj.transform.SetParent(inspect.transform);
                     }
@@ -90,7 +94,7 @@ public class ObjectInteract : MonoBehaviour
                 if (hit.collider.CompareTag("Terminal"))
                 {
 
-                    if (Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E))
+                    if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E)) && !menu.isMenu)
                     {
                         isInteracting = true;
                         isTerminal = true;
@@ -115,7 +119,7 @@ public class ObjectInteract : MonoBehaviour
                 // SE L'OGGETTO DEL RAYCAST E' ActionObj
                 if (hit.collider.CompareTag("ActionObj"))
                 {
-                    if (Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E))
+                    if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E)) && !menu.isMenu)
                     {
                         interactedObject.GetComponent<ActionObj>().DoStuff();
                     }
@@ -183,20 +187,16 @@ public class ObjectInteract : MonoBehaviour
                     mirino.gameObject.SetActive(true);
                 }
 
-                /*if (Input.GetKeyUp(KeyCode.Joystick1Button3) && isInspecting || Input.GetKeyDown(KeyCode.Escape))
+                if (Input.GetKeyUp(KeyCode.Joystick1Button2) && isInspecting || Input.GetKeyDown(KeyCode.Escape))
                 {
-                    ObjectInfo objInfo = pickubleObj.GetComponent<ObjectInfo>();
 
-                    if (!objInfo.isScan)
+                    ObjInformation objInfo = pickubleObj.GetComponent<ObjInformation>();
+                    if (!objInfo.isScanning)
                     {
-                        GameObject newButton = Instantiate(button);
-                        HoloObjectInfo holo = newButton.GetComponent<HoloObjectInfo>();
-                        holo.itemPrefab = objInfo.itemPrefab;
-                        holo.itemImage = objInfo.itemImage;
-                        objInfo.isScan = true;
-                        newButton.transform.SetParent(panel.transform);
+                        objInfo.isScanning = true;
+                        scan.SetNewButton(objInfo.objToView, objInfo.datiMedici, objInfo.datiIngegneria, objInfo.datiSicurezza, objInfo.objPreview);
                     }
-                }*/
+                }
             }
 
             if (isTerminal)
