@@ -16,8 +16,6 @@ public class AI_Turret : FiniteStateMachine {
 
 		this.turretReference.enemyStrategyList.Add (this.GetComponent <AI_TurretGuarding> ());
 		this.turretReference.enemyStrategyList.Add (this.GetComponent <AI_TurretDefending> ());
-		this.turretReference.enemyStrategyList.Add (this.GetComponent <AI_TurretFallingIntoLine> ());
-		this.turretReference.enemyStrategyList.Add (this.GetComponent <AI_TurretScanning> ());
 
 	}
 
