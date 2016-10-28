@@ -29,7 +29,7 @@ public class AI_SentinelInspecting : MonoBehaviour, IAI_ImplementedStrategy {
 	public StrategyState ExecuteImplementedStrategy () {
 
 		Debug.Log ("Sentinel is in <<Inspecting>>");
-
+        NavMesh a;
 
 		if (this.sentinelComponents.playerHasBeenHeard)
 			this.CheckPlace ();
@@ -45,7 +45,7 @@ public class AI_SentinelInspecting : MonoBehaviour, IAI_ImplementedStrategy {
 			Debug.Log ("Sentinel switches from <<Inspecting>> to <<Scanning>>");
 			return StrategyState.Scanning;
 
-		} else if (this.sentinelComponents.agent.remainingDistance < 1f) {
+		} else if (this.sentinelComponents.agent.remainingDistance < 2f) {
 
 			Debug.Log ("Sentinel switches from <<Inspecting>> to <<Falling Into Line>>");
 			return StrategyState.FallingIntoLine;

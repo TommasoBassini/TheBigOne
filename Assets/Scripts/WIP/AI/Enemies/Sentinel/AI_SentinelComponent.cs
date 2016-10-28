@@ -148,7 +148,7 @@ public class AI_SentinelComponent : MonoBehaviour {
 	}
 
 
-	public void OnTriggerExit (Collider other) {
+	/*public void OnTriggerExit (Collider other) {
 
 		// If the player leaves the trigger zone...
 		if (other.gameObject == this.player.gameObject) {
@@ -170,7 +170,7 @@ public class AI_SentinelComponent : MonoBehaviour {
 
 		}
 
-	}
+	}*/
 	#endregion
 
 

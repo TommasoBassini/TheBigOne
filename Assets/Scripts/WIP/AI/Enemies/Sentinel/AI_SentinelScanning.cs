@@ -20,11 +20,14 @@ public class AI_SentinelScanning : MonoBehaviour, IAI_ImplementedStrategy {
 	#region SENTINEL_METHODS
 	public bool EnlargeHearingCollidersRadius () {
 
+        if (!this.sentinelComponents.sentinelHasEnlargedItsHearingColliders)
+        {
 		this.sentinelComponents.sentinelHasEnlargedItsHearingColliders = true;
 
 		this.sentinelComponents.runCol.radius *= 2f;
 		this.sentinelComponents.walkCol.radius *= 2f;
 		this.sentinelComponents.crouchCol.radius *= 2f;
+        }
 
 		return true;
 
