@@ -40,12 +40,12 @@ public class ObjectInteract : MonoBehaviour
 
     public ScanButtonManager scan;
     private MenuControl menu;
-    void Start ()
+    void Start()
     {
         //Setta la posizione della telecamera all'inizio del gioco
         cameraPos = Camera.main.transform.position;
         menu = FindObjectOfType<MenuControl>();
-	}
+    }
 
     void FixedUpdate()
     {
@@ -83,10 +83,10 @@ public class ObjectInteract : MonoBehaviour
 
                         lastObjPos = hit.collider.gameObject.transform.position;
                         lastObjRot = hit.collider.gameObject.transform.rotation;
-                        inspect.transform.localPosition = new Vector3 (0,0,0.2f) + new Vector3(0,0,(1 * pickubleObj.transform.gameObject.GetComponent<ObjInformation>().near));
-                        pickubleObj.transform.eulerAngles = Vector3.zero;
+                        inspect.transform.localPosition = new Vector3(0, 0, 0.2f) + new Vector3(0, 0, (1 * pickubleObj.transform.gameObject.GetComponent<ObjInformation>().near));
                         pickubleObj.transform.position = inspect.transform.position;
                         pickubleObj.transform.SetParent(inspect.transform);
+                        pickubleObj.transform.localEulerAngles = new Vector3(-90, 0, 0);
                     }
                 }
 
@@ -135,7 +135,6 @@ public class ObjectInteract : MonoBehaviour
 
                     if (interactedObject.tag == "Terminal")
                     {
-                        Debug.Log("jfdn");
                         actionImage.sprite = interactSprite;
                         actionImage.gameObject.SetActive(true);
                     }
@@ -171,9 +170,9 @@ public class ObjectInteract : MonoBehaviour
                     inspect.transform.Rotate(new Vector3(-angV * rotationSpeed, 0, 0));
                 }
 
-                if (Input.GetKeyUp(KeyCode.Joystick1Button1) && isInspecting || Input.GetKeyDown(KeyCode.Escape))
+                if (Input.GetKeyUp(KeyCode.Joystick1Button1) && isInspecting || Input.GetKeyDown(KeyCode.Escape) && !menu.isMenu)
                 {
-                    
+
                     GetComponent<FirstPersonController>().enabled = true;
                     pickubleObj.transform.position = lastObjPos;
                     pickubleObj.transform.rotation = lastObjRot;
@@ -193,7 +192,7 @@ public class ObjectInteract : MonoBehaviour
                     ObjInformation objInfo = pickubleObj.GetComponent<ObjInformation>();
                     if (!objInfo.isScanning)
                     {
-                        objInfo.isScanning = true;
+                        //objInfo.isScanning = true;
                         scan.SetNewButton(objInfo.objToView, objInfo.datiMedici, objInfo.datiIngegneria, objInfo.datiSicurezza, objInfo.objPreview);
                     }
                 }
@@ -221,5 +220,18 @@ public class ObjectInteract : MonoBehaviour
         }
     }
 
+
+    public void ViewObjectMenu(GameObject obj)
+    {
+        pickubleObj = Instantiate(obj);
+
+        isInteracting = true;
+        isInspecting = true;
+
+        inspect.transform.localPosition = new Vector3(0, 0, 0.2f) + new Vector3(0, 0, (1 * pickubleObj.GetComponent<ObjInformation>().near));
+        pickubleObj.transform.position = inspect.transform.position;
+        pickubleObj.transform.SetParent(inspect.transform);
+        pickubleObj.transform.localEulerAngles = new Vector3(-90, 0, 0);
+    }
 }
 

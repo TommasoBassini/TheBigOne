@@ -24,8 +24,14 @@ public class ScanButton : MonoBehaviour
         GetComponent<Button>().navigation = FindObjectOfType<ScanButtonManager>().SetNaviagtion(gridPos);
     }
 
-    public void Selecterds()
+    public void ShowObj()
     {
-        Debug.Log("ygv");
+        FindObjectOfType<ScanButtonManager>().SwitchPanel();
+        FindObjectOfType<ObjectInteract>().ViewObjectMenu(objToView);
+    }
+
+    public void Refresh()
+    {
+        transform.GetComponentInParent<ScanButtonManager>().RefreshScroll((int)gridPos.y);
     }
 }

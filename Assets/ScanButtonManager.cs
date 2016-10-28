@@ -12,6 +12,8 @@ public class ScanButtonManager : MonoBehaviour
     public GameObject buttonPrefab;
     public GameObject scansPanel;
 
+    public GameObject ShowObjPanel;
+    public Scrollbar scroll;
 
     public void SetNewButton(GameObject obj, string datiMedici,string datiIngegneria,string datiSicurezza, Sprite objPreview)
     {
@@ -65,9 +67,12 @@ public class ScanButtonManager : MonoBehaviour
         }
 
         //Prendo bottone a destra
-        if ((x + 1 < 6) && scans[y][x + 1] != null)
+        if ((x + 1 < 6))
         {
-            buttonNavigation.selectOnRight = scans[y][x + 1].GetComponent<Button>();
+            if (scans[y][x + 1] != null)
+            {
+                buttonNavigation.selectOnRight = scans[y][x + 1].GetComponent<Button>();
+            }
         }
 
         //Prendo bottone a alto
@@ -76,14 +81,30 @@ public class ScanButtonManager : MonoBehaviour
             buttonNavigation.selectOnUp = scans[y - 1][x].GetComponent<Button>();
         }
 
-
         //Prendo bottone a basso 
         if ((y + 1 <= righe))
         {
-            buttonNavigation.selectOnUp = scans[y + 1][x].GetComponent<Button>();
+            if (scans[y + 1][x] != null)
+            {
+                buttonNavigation.selectOnDown = scans[y + 1][x].GetComponent<Button>();
+            }
         }
 
         return buttonNavigation;
     }
 
+    public void SwitchPanel()
+    {
+        ShowObjPanel.SetActive(true);
+        this.gameObject.SetActive(false);
+    }
+
+    public void RefreshScroll(int n)
+    {
+        if (n>4)
+        {
+            float perc = (float)n / righe;
+            scroll.value = 1.0f - perc;
+        }
+    }
 }
