@@ -29,8 +29,7 @@ public class AI_SentinelInspecting : MonoBehaviour, IAI_ImplementedStrategy {
 	public StrategyState ExecuteImplementedStrategy () {
 
 		Debug.Log ("Sentinel is in <<Inspecting>>");
-        NavMesh a;
-
+      
 		if (this.sentinelComponents.playerHasBeenHeard)
 			this.CheckPlace ();
 
