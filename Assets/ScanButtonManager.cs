@@ -15,7 +15,7 @@ public class ScanButtonManager : MonoBehaviour
     public GameObject ShowObjPanel;
     public Scrollbar scroll;
 
-    public void SetNewButton(GameObject obj, string datiMedici,string datiIngegneria,string datiSicurezza, Sprite objPreview)
+    public void SetNewButton(GameObject obj, string datiMedici, string datiIngegneria, string datiSicurezza, Sprite objPreview)
     {
         if (scans.Count == 0)
         {
@@ -46,9 +46,9 @@ public class ScanButtonManager : MonoBehaviour
             scans.Add(new GameObject[6]);
             righe++;
             colonna = 0;
-            if (righe >= 5)
+            if (righe >= 4)
             {
-                scansPanel.GetComponent<RectTransform>().sizeDelta = new Vector3(0, scansPanel.GetComponent<RectTransform>().sizeDelta.y + 140, 0);
+                scansPanel.GetComponent<RectTransform>().sizeDelta = new Vector3(0, scansPanel.GetComponent<RectTransform>().sizeDelta.y + 156, 0);
             }
         }
     }
@@ -61,7 +61,7 @@ public class ScanButtonManager : MonoBehaviour
         int y = (int)_pos.y;
 
         //Prendo bottone a sinistra
-        if ((x-1 >= 0))
+        if ((x - 1 >= 0))
         {
             buttonNavigation.selectOnLeft = scans[y][x - 1].GetComponent<Button>();
         }
@@ -101,10 +101,20 @@ public class ScanButtonManager : MonoBehaviour
 
     public void RefreshScroll(int n)
     {
-        if (n>4)
+
+        float perc = 1.0f - (float)(n) / (righe);
+        StartCoroutine(LerpScroll(perc));
+    }
+
+    public IEnumerator LerpScroll(float n1)
+    {
+        float elapsedTime = 0.0f;
+        float startScroll = scroll.value;
+        while (elapsedTime < 0.2f)
         {
-            float perc = (float)n / righe;
-            scroll.value = 1.0f - perc;
+            scroll.value = Mathf.Lerp(startScroll, n1, (elapsedTime / 0.2f));
+            elapsedTime += Time.deltaTime;
+            yield return null;
         }
     }
 }

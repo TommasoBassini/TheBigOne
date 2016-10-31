@@ -23,6 +23,7 @@ public class MenuControl : MonoBehaviour
 
     public GameObject mirino;
     public GameObject scansPanel;
+
     void Start()
     {
         foreach (Transform item in reportsPanel.transform)

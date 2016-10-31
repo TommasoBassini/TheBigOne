@@ -14,8 +14,20 @@ public class ScrollButtonPanel : MonoBehaviour
 
     public void RefreshScroll(int n)
     {
-        float perc = (float)n / nButtons;
+        float perc = 1.0f - (float)n / nButtons;
         FindObjectOfType<MenuControl>().nButtonReport = n;
-        scroll.value = 1.0f - perc;
+        StartCoroutine(LerpScroll(perc));
+    }
+
+    public IEnumerator LerpScroll(float n1)
+    {
+        float elapsedTime = 0.0f;
+        float startScroll = scroll.value;
+        while (elapsedTime < 0.3f)
+        {
+            scroll.value = Mathf.Lerp(startScroll, n1, (elapsedTime / 0.2f));
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
     }
 }
