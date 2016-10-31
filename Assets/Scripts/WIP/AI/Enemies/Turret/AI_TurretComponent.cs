@@ -1,7 +1,30 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public delegate void TurretDelegate (AI_TurretComponent turretComponentReference);
+
 public class AI_TurretComponent : MonoBehaviour {
+
+	#region TURRET_CLASSES
+	public class Delegates {
+
+		public TurretDelegate TurretAttackPostDelay = delegate (AI_TurretComponent turretComponentReference) {
+			
+			turretComponentReference.turretIsShoothing = true;
+			turretComponentReference.attackCoroutine = null;
+			
+		};
+
+		public TurretDelegate TurretSlipOutPostDelay = delegate (AI_TurretComponent turretComponentReference) {
+			
+			turretComponentReference.playerHasBeenDetected = false;
+			turretComponentReference.slipOutCoroutine = null;
+			
+		};
+
+	}
+	#endregion
+
 
 	#region TURRET_PARAMETERS
 	[Header ("Boolean Flags")]
@@ -10,12 +33,19 @@ public class AI_TurretComponent : MonoBehaviour {
 	public bool playerHasBeenDetected;
 	[Tooltip ("DO NOT TOUCH!")]
 	public bool playerInSight;							// Whether or not the player is currently sighted
+	[Tooltip ("DO NOT TOUCH!")]
+	public bool turretIsShoothing;
 
 
 	[Header ("Variables")]
 
 	[Tooltip ("DO NOT TOUCH! Ask programmers for utilization")]
 	public int destPoint;
+
+	[Tooltip ("Scanning time used to recognize the player - from 0f to 10f")]
+	[Range (0f, 10f)] public float scanningTime = 2f;
+	[Tooltip ("Waiting time used to return in guarding state - from 0f to 10f")]
+	[Range (0f, 10f)] public float waitingTime = 5f;
 
 
 	[Header ("Structs")]
@@ -28,6 +58,12 @@ public class AI_TurretComponent : MonoBehaviour {
 
 	[Header ("Classes")]
 
+	[Tooltip ("DO NOT TOUCH!")]
+	public Coroutine attackCoroutine;
+	[Tooltip ("DO NOT TOUCH!")]
+	public Coroutine slipOutCoroutine;
+	[Tooltip ("DO NOT TOUCH!")]
+	public Delegates delegates;
 	[Tooltip ("DO NOT TOUCH!")]
 	public BoxCollider col;                         	// Reference to the box collider trigger component
 
@@ -45,8 +81,10 @@ public class AI_TurretComponent : MonoBehaviour {
 	#endregion
 
 
-	#region DRONE_MONOBEHAVIOUR_METHODS
+	#region TURRET_MONOBEHAVIOUR_METHODS
 	public void Awake() {
+
+		this.delegates = new Delegates ();
 
 		this.col = this.GetComponent <BoxCollider> ();
 		this.player = GameObject.FindGameObjectWithTag ("Player");
@@ -58,8 +96,12 @@ public class AI_TurretComponent : MonoBehaviour {
 
 		this.playerHasBeenDetected = false;
 		this.playerInSight = false;
+		this.turretIsShoothing = false;
 
 		this.destPoint = 0;
+
+		this.attackCoroutine = null;
+		this.slipOutCoroutine = null;
 
 	}
 
@@ -86,9 +128,37 @@ public class AI_TurretComponent : MonoBehaviour {
 						// ... the player is in sight...
 						this.playerInSight = true;
 
-						// ... and may be attacked.
-						Debug.LogWarning ("Shooting!");
+						if (!this.turretIsShoothing) {
+
+							if (this.slipOutCoroutine != null) {
+
+								this.slipOutCoroutine = this.KillPreviousCoroutine (this.slipOutCoroutine);
+
+							}
+
+							if (this.attackCoroutine == null)
+								this.attackCoroutine = this.StartCoroutine_Auto (this.CO_TurretDelayedTime (this.scanningTime, this.delegates.TurretAttackPostDelay));
+
+						} else {
+
+							// ... and may be attacked.
+							Debug.LogWarning ("Shooting!");
+
+						}
 							
+					} else {
+
+						this.turretIsShoothing = false;
+
+						if (this.attackCoroutine != null) {
+
+							this.attackCoroutine = this.KillPreviousCoroutine (this.attackCoroutine);
+
+						}
+
+						if (this.slipOutCoroutine == null)
+							this.slipOutCoroutine = this.StartCoroutine_Auto (this.CO_TurretDelayedTime (this.waitingTime, this.delegates.TurretSlipOutPostDelay));
+
 					}
 					
 				}
@@ -109,6 +179,27 @@ public class AI_TurretComponent : MonoBehaviour {
 			this.playerInSight = false;
 
 		}
+
+	}
+	#endregion
+
+
+	#region TURRET_METHODS
+	public Coroutine KillPreviousCoroutine (Coroutine coroutine) {
+
+		this.StopCoroutine (coroutine);
+		return null;
+
+
+	}
+	#endregion
+
+
+	#region TURRET_COROUTINE_METHODS
+	public IEnumerator CO_TurretDelayedTime (float waitingTime, TurretDelegate DelegatedMethod) {
+		
+		yield return new WaitForSeconds (waitingTime);
+		DelegatedMethod (this);
 
 	}
 	#endregion
