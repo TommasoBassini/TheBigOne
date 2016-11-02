@@ -28,6 +28,9 @@ public class ScanButton : MonoBehaviour
     {
         FindObjectOfType<ScanButtonManager>().SwitchPanel();
         FindObjectOfType<ObjectInteract>().ViewObjectMenu(objToView);
+        MenuControl menu = FindObjectOfType <MenuControl>();
+        menu.scanButton = this.gameObject.GetComponent<Button>();
+        menu.isShowScan = true;
     }
 
     public void Refresh()

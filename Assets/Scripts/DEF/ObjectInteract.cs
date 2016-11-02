@@ -40,6 +40,9 @@ public class ObjectInteract : MonoBehaviour
 
     public ScanButtonManager scan;
     private MenuControl menu;
+    private float scanTime = 0.0f;
+    public Image scanPerc;
+
     void Start()
     {
         //Setta la posizione della telecamera all'inizio del gioco
@@ -170,9 +173,8 @@ public class ObjectInteract : MonoBehaviour
                     inspect.transform.Rotate(new Vector3(-angV * rotationSpeed, 0, 0));
                 }
 
-                if (Input.GetKeyUp(KeyCode.Joystick1Button1) && isInspecting || Input.GetKeyDown(KeyCode.Escape) && !menu.isMenu)
+                if ((Input.GetKeyUp(KeyCode.Joystick1Button1)  || Input.GetKeyDown(KeyCode.Escape)) && isInspecting && !menu.isMenu)
                 {
-
                     GetComponent<FirstPersonController>().enabled = true;
                     pickubleObj.transform.position = lastObjPos;
                     pickubleObj.transform.rotation = lastObjRot;
@@ -186,15 +188,25 @@ public class ObjectInteract : MonoBehaviour
                     mirino.gameObject.SetActive(true);
                 }
 
-                if (Input.GetKeyUp(KeyCode.Joystick1Button2) && isInspecting || Input.GetKeyDown(KeyCode.Escape))
+                if (Input.GetKey(KeyCode.Joystick1Button0) && isInspecting || Input.GetKeyDown(KeyCode.Escape))
                 {
-
                     ObjInformation objInfo = pickubleObj.GetComponent<ObjInformation>();
                     if (!objInfo.isScanning)
                     {
-                        //objInfo.isScanning = true;
-                        scan.SetNewButton(objInfo.objToView, objInfo.datiMedici, objInfo.datiIngegneria, objInfo.datiSicurezza, objInfo.objPreview);
+                        scanTime += 0.5f * Time.deltaTime;
+                        scanPerc.fillAmount = scanTime;
+                        if (scanTime > 1)
+                        {
+                            scanTime = 0.0f;
+                            scanPerc.fillAmount = scanTime;
+                            objInfo.isScanning = true;
+                            scan.SetNewButton(objInfo.objToView, objInfo.datiMedici, objInfo.datiIngegneria, objInfo.datiSicurezza, objInfo.objPreview);
+                        }
                     }
+                }
+                if (Input.GetKeyUp(KeyCode.Joystick1Button0) && isInspecting || Input.GetKeyDown(KeyCode.Escape))
+                {
+                    scanTime = 0.0f;
                 }
             }
 
@@ -227,7 +239,7 @@ public class ObjectInteract : MonoBehaviour
 
         isInteracting = true;
         isInspecting = true;
-
+        menu.objActive = pickubleObj;
         inspect.transform.localPosition = new Vector3(0, 0, 0.2f) + new Vector3(0, 0, (1 * pickubleObj.GetComponent<ObjInformation>().near));
         pickubleObj.transform.position = inspect.transform.position;
         pickubleObj.transform.SetParent(inspect.transform);

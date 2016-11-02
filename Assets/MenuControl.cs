@@ -9,6 +9,7 @@ public class MenuControl : MonoBehaviour
     public bool isMenu = false;
     public GameObject pnlMenu;
     public GameObject[] panels;
+    public GameObject panelShowScan;
     public GameObject panelShowReport;
     public Button[] buttons;
     public int nMenu = 0;
@@ -23,6 +24,8 @@ public class MenuControl : MonoBehaviour
 
     public GameObject mirino;
     public GameObject scansPanel;
+    public GameObject objActive;
+    public Button scanButton;
 
     void Start()
     {
@@ -35,7 +38,6 @@ public class MenuControl : MonoBehaviour
 
     void Update()
     {
-
         if (Input.GetKeyDown(KeyCode.Joystick1Button3))
         {
             if (!player.isInteracting)
@@ -47,6 +49,7 @@ public class MenuControl : MonoBehaviour
                     mirino.SetActive(false);
                     pnlMenu.SetActive(true);
                     panels[0].SetActive(true);
+                    buttons[1].Select();
                     buttons[0].Select();
                     return;
                 }
@@ -76,12 +79,26 @@ public class MenuControl : MonoBehaviour
                     return;
                 }
 
+                if (isShowScan)
+                {
+                    ObjectInteract player = FindObjectOfType<ObjectInteract>();
+                    player.isInspecting = false;
+                    player.isInteracting = false;
+                    isShowScan = false;
+                    panelShowScan.SetActive(false);
+                    panels[nMenu].SetActive(true);
+                    scanButton.Select();
+                    Destroy(objActive);
+                    return;
+                }
+
                 if (!isShowReport && !isShowScan)
                 {
                     buttons[nMenu].Select();
                     isSubMenu = false;
                     return;
                 }
+                return;
             }
             else
             {
@@ -126,13 +143,68 @@ public class MenuControl : MonoBehaviour
         }
     }
 
-
     public void SelectScanButton()
     {
         if (scansPanel.transform.GetChild(0) != null)
         {
+            isSubMenu = true;
             Button buttonToSelect = scansPanel.transform.GetChild(0).GetComponent<Button>();
             buttonToSelect.Select();
         }
+    }
+
+    public void CheckPodStatus()
+    {
+
+        PlayerStatus playerStatus = FindObjectOfType<PlayerStatus>();
+        //Controllo livello medico
+        switch (playerStatus.medicLvl)
+        {
+            case 1:
+                {
+                    this.transform.Find("pnlStatus/pnlPermissions/pnlMedicPermissions/txtPermission").GetComponent<Text>().color = Color.green;
+                    this.transform.Find("pnlStatus/pnlPermissions/pnlMedicPermissions/txtPermission1").GetComponent<Text>().color = Color.green;
+                    break;
+                }
+            case 2:
+                {
+                    this.transform.Find("pnlStatus/pnlPermissions/pnlMedicPermissions/txtPermission2").GetComponent<Text>().color = Color.green;
+                    break;
+                }
+        }
+
+        switch (playerStatus.engineerLvl)
+        {
+            case 1:
+                {
+                    this.transform.Find("pnlStatus/pnlPermissions/pnlEngineerPermissions/txtPermission").GetComponent<Text>().color = Color.green;
+                    this.transform.Find("pnlStatus/pnlPermissions/pnlEngineerPermissions/txtPermission1").GetComponent<Text>().color = Color.green;
+                    break;
+                }
+            case 2:
+                {
+                    this.transform.Find("pnlStatus/pnlPermissions/pnlEngineerPermissions/txtPermission2").GetComponent<Text>().color = Color.green;
+                    break;
+                }
+        }
+
+        switch (playerStatus.guardLvl)
+        {
+            case 1:
+                {
+                    this.transform.Find("pnlStatus/pnlPermissions/pnlSecurityPermissions/txtPermission").GetComponent<Text>().color = Color.green;
+                    this.transform.Find("pnlStatus/pnlPermissions/pnlSecurityPermissions/txtPermission1").GetComponent<Text>().color = Color.green;
+                    break;
+                }
+            case 2:
+                {
+                    this.transform.Find("pnlStatus/pnlPermissions/pnlSecurityPermissions/txtPermission2").GetComponent<Text>().color = Color.green;
+                    break;
+                }
+        }
+        this.transform.Find("pnlStatus/pnlPermissions/pnlMedicPermissions/txtMedic").GetComponent<Text>().text = "Medico: " + playerStatus.medicLvl.ToString();
+        this.transform.Find("pnlStatus/pnlPermissions/pnlEngineerPermissions/txtEngineer").GetComponent<Text>().text = "Ingegnere: " + playerStatus.medicLvl.ToString();
+        this.transform.Find("pnlStatus/pnlPermissions/pnlSecurityPermissions/txtSecurity").GetComponent<Text>().text = "Guardia: " + playerStatus.medicLvl.ToString();
+
     }
 }
