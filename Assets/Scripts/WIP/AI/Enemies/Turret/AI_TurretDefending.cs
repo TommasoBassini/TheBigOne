@@ -3,20 +3,37 @@ using System.Collections;
 
 public class AI_TurretDefending : MonoBehaviour, IAI_ImplementedStrategy {
 
+	[Tooltip ("DO NOT TOUCH!")]
+	public AI_TurretComponent turretComponents;
+
+
+	#region TURRET_MONOBEHAVIOUR_METHODS
+	public void Awake () {
+
+		this.turretComponents = this.GetComponent <AI_TurretComponent> ();
+
+	}
+	#endregion
+
+
 	#region IMPLEMENTED_STRATEGY_METHOD
 	public StrategyState ExecuteImplementedStrategy () {
 
 		Debug.Log ("Turret is in <<Defending>>");
 
-		if (Input.GetKeyDown (KeyCode.B)) {
+		//this.transform.LookAt (this.turretComponents.player.transform.position);
+
+		/*if (Input.GetKeyDown (KeyCode.B)) {
 
 			Debug.Log ("Turret switches from <<Defending>> to <<Falling Into Line>>");
 			return StrategyState.FallingIntoLine;
 
-		} else if (Input.GetKeyDown (KeyCode.E)) {
+		} else*/
 
-			Debug.Log ("Turret switches from <<Defending>> to <<Scanning>>");
-			return StrategyState.Scanning;
+		if (!this.turretComponents.playerHasBeenDetected) {
+
+			Debug.Log ("Turret switches from <<Defending>> to <<Guarding>>");
+			return StrategyState.Guarding;
 
 		} else {
 

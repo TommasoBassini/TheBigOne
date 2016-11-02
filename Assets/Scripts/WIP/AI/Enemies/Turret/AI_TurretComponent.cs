@@ -18,6 +18,7 @@ public class AI_TurretComponent : MonoBehaviour {
 		public TurretDelegate TurretSlipOutPostDelay = delegate (AI_TurretComponent turretComponentReference) {
 			
 			turretComponentReference.playerHasBeenDetected = false;
+			turretComponentReference.turretScanner.EnableTurretScanner (true);	//Might be moved elsewhere
 			turretComponentReference.slipOutCoroutine = null;
 			
 		};
@@ -66,6 +67,8 @@ public class AI_TurretComponent : MonoBehaviour {
 	public Delegates delegates;
 	[Tooltip ("DO NOT TOUCH!")]
 	public BoxCollider col;                         	// Reference to the box collider trigger component
+	[Tooltip ("DO NOT TOUCH!")]
+	public AI_TurretScanner turretScanner;
 
 
 	[Header ("GameObjects")]
@@ -85,8 +88,9 @@ public class AI_TurretComponent : MonoBehaviour {
 	public void Awake() {
 
 		this.delegates = new Delegates ();
-
 		this.col = this.GetComponent <BoxCollider> ();
+		this.turretScanner = this.GetComponentInChildren <AI_TurretScanner> (true);
+
 		this.player = GameObject.FindGameObjectWithTag ("Player");
 
 	}
@@ -121,6 +125,8 @@ public class AI_TurretComponent : MonoBehaviour {
 				
 				// ... and if a raycast towards the player hits something...
 				if (Physics.Raycast (this.transform.position, this.direction.normalized, out this.hit)) {
+
+					Debug.DrawLine (this.transform.position, this.hit.point, Color.green);
 					
 					// ... and if the raycast hits the player...
 					if (this.hit.collider.gameObject == this.player) {
@@ -130,11 +136,8 @@ public class AI_TurretComponent : MonoBehaviour {
 
 						if (!this.turretIsShoothing) {
 
-							if (this.slipOutCoroutine != null) {
-
+							if (this.slipOutCoroutine != null)
 								this.slipOutCoroutine = this.KillPreviousCoroutine (this.slipOutCoroutine);
-
-							}
 
 							if (this.attackCoroutine == null)
 								this.attackCoroutine = this.StartCoroutine_Auto (this.CO_TurretDelayedTime (this.scanningTime, this.delegates.TurretAttackPostDelay));
@@ -150,11 +153,8 @@ public class AI_TurretComponent : MonoBehaviour {
 
 						this.turretIsShoothing = false;
 
-						if (this.attackCoroutine != null) {
-
+						if (this.attackCoroutine != null)
 							this.attackCoroutine = this.KillPreviousCoroutine (this.attackCoroutine);
-
-						}
 
 						if (this.slipOutCoroutine == null)
 							this.slipOutCoroutine = this.StartCoroutine_Auto (this.CO_TurretDelayedTime (this.waitingTime, this.delegates.TurretSlipOutPostDelay));
@@ -178,6 +178,14 @@ public class AI_TurretComponent : MonoBehaviour {
 			// ... the player is not in sight.
 			this.playerInSight = false;
 
+			this.turretIsShoothing = false;
+
+			if (this.attackCoroutine != null)
+				this.attackCoroutine = this.KillPreviousCoroutine (this.attackCoroutine);
+
+			if (this.slipOutCoroutine == null)
+				this.slipOutCoroutine = this.StartCoroutine_Auto (this.CO_TurretDelayedTime (this.waitingTime, this.delegates.TurretSlipOutPostDelay));
+
 		}
 
 	}
@@ -189,7 +197,6 @@ public class AI_TurretComponent : MonoBehaviour {
 
 		this.StopCoroutine (coroutine);
 		return null;
-
 
 	}
 	#endregion
