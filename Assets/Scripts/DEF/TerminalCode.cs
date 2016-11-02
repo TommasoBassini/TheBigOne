@@ -12,10 +12,10 @@ public class TerminalCode : MonoBehaviour
 
     public void StampNumber (string n)
     {
-        if (passText.Length < 4)
+        if (passText.Length < 12)
         {
             currentPin = currentPin + n;
-            passText += '*';
+            passText += " - ";
             pinText.text = passText;
         }
     }
@@ -44,7 +44,7 @@ public class TerminalCode : MonoBehaviour
         if (passText.Length > 0)
         {
             currentPin = currentPin.Substring(0, currentPin.Length - 1);
-            passText = passText.Substring(0, passText.Length - 1);
+            passText = passText.Substring(0, passText.Length - 3);
 
             pinText.text = passText;
             if (passText.Length == 0)
