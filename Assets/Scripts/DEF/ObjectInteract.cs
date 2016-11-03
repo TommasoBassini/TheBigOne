@@ -38,11 +38,17 @@ public class ObjectInteract : MonoBehaviour
 
     public GameObject torcia;
 
-    void Start ()
+    public ScanButtonManager scan;
+    private MenuControl menu;
+    private float scanTime = 0.0f;
+    public Image scanPerc;
+
+    void Start()
     {
         //Setta la posizione della telecamera all'inizio del gioco
         cameraPos = Camera.main.transform.position;
-	}
+        menu = FindObjectOfType<MenuControl>();
+    }
 
     void FixedUpdate()
     {
@@ -68,7 +74,7 @@ public class ObjectInteract : MonoBehaviour
                     //metto l'action image giusta
                     pickubleObj = hit.collider.gameObject;
 
-                    if (Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E))
+                    if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E)) && !menu.isMenu)
                     {
                         GetComponent<FirstPersonController>().enabled = false;
 
@@ -80,16 +86,18 @@ public class ObjectInteract : MonoBehaviour
 
                         lastObjPos = hit.collider.gameObject.transform.position;
                         lastObjRot = hit.collider.gameObject.transform.rotation;
-                        inspect.transform.localPosition = new Vector3 (0,0,0.2f) + new Vector3(0,0,(1 * pickubleObj.transform.gameObject.GetComponent<IspectionNear>().near)); 
+                        inspect.transform.localPosition = new Vector3(0, 0, 0.2f) + new Vector3(0, 0, (1 * pickubleObj.transform.gameObject.GetComponent<ObjInformation>().near));
                         pickubleObj.transform.position = inspect.transform.position;
                         pickubleObj.transform.SetParent(inspect.transform);
+                        pickubleObj.transform.localEulerAngles = new Vector3(-90, 0, 0);
                     }
                 }
 
                 // SE L'OGGETTO DEL RAYCAST E' Terminal
                 if (hit.collider.CompareTag("Terminal"))
                 {
-                    if (Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E))
+
+                    if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E)) && !menu.isMenu)
                     {
                         isInteracting = true;
                         isTerminal = true;
@@ -114,7 +122,7 @@ public class ObjectInteract : MonoBehaviour
                 // SE L'OGGETTO DEL RAYCAST E' ActionObj
                 if (hit.collider.CompareTag("ActionObj"))
                 {
-                    if (Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E))
+                    if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E)) && !menu.isMenu)
                     {
                         interactedObject.GetComponent<ActionObj>().DoStuff();
                     }
@@ -165,9 +173,8 @@ public class ObjectInteract : MonoBehaviour
                     inspect.transform.Rotate(new Vector3(-angV * rotationSpeed, 0, 0));
                 }
 
-                if (Input.GetKeyUp(KeyCode.Joystick1Button1) && isInspecting || Input.GetKeyDown(KeyCode.Escape))
+                if ((Input.GetKeyUp(KeyCode.Joystick1Button1)  || Input.GetKeyDown(KeyCode.Escape)) && isInspecting && !menu.isMenu)
                 {
-                    
                     GetComponent<FirstPersonController>().enabled = true;
                     pickubleObj.transform.position = lastObjPos;
                     pickubleObj.transform.rotation = lastObjRot;
@@ -181,20 +188,26 @@ public class ObjectInteract : MonoBehaviour
                     mirino.gameObject.SetActive(true);
                 }
 
-                /*if (Input.GetKeyUp(KeyCode.Joystick1Button3) && isInspecting || Input.GetKeyDown(KeyCode.Escape))
+                if (Input.GetKey(KeyCode.Joystick1Button0) && isInspecting || Input.GetKeyDown(KeyCode.Escape))
                 {
-                    ObjectInfo objInfo = pickubleObj.GetComponent<ObjectInfo>();
-
-                    if (!objInfo.isScan)
+                    ObjInformation objInfo = pickubleObj.GetComponent<ObjInformation>();
+                    if (!objInfo.isScanning)
                     {
-                        GameObject newButton = Instantiate(button);
-                        HoloObjectInfo holo = newButton.GetComponent<HoloObjectInfo>();
-                        holo.itemPrefab = objInfo.itemPrefab;
-                        holo.itemImage = objInfo.itemImage;
-                        objInfo.isScan = true;
-                        newButton.transform.SetParent(panel.transform);
+                        scanTime += 0.5f * Time.deltaTime;
+                        scanPerc.fillAmount = scanTime;
+                        if (scanTime > 1)
+                        {
+                            scanTime = 0.0f;
+                            scanPerc.fillAmount = scanTime;
+                            objInfo.isScanning = true;
+                            scan.SetNewButton(objInfo.objToView, objInfo.datiMedici, objInfo.datiIngegneria, objInfo.datiSicurezza, objInfo.objPreview);
+                        }
                     }
-                }*/
+                }
+                if (Input.GetKeyUp(KeyCode.Joystick1Button0) && isInspecting || Input.GetKeyDown(KeyCode.Escape))
+                {
+                    scanTime = 0.0f;
+                }
             }
 
             if (isTerminal)
@@ -219,9 +232,18 @@ public class ObjectInteract : MonoBehaviour
         }
     }
 
-    public void ShowCursor()
+
+    public void ViewObjectMenu(GameObject obj)
     {
-        Cursor.visible = true;
+        pickubleObj = Instantiate(obj);
+
+        isInteracting = true;
+        isInspecting = true;
+        menu.objActive = pickubleObj;
+        inspect.transform.localPosition = new Vector3(0, 0, 0.2f) + new Vector3(0, 0, (1 * pickubleObj.GetComponent<ObjInformation>().near));
+        pickubleObj.transform.position = inspect.transform.position;
+        pickubleObj.transform.SetParent(inspect.transform);
+        pickubleObj.transform.localEulerAngles = new Vector3(-90, 0, 0);
     }
 }
 
