@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.Events;
+
 public class TerminalCode : MonoBehaviour
 {
     public string unlockPin;
@@ -29,6 +31,7 @@ public class TerminalCode : MonoBehaviour
             currentPin = "";
             passText = "";
             pinText.text = "Inserire codice";
+            GetComponentInParent<TerminalFeedbacks>().feedbackEventPin.rightPinEvent.Invoke();
             this.gameObject.SetActive(false);
         }
         else
@@ -36,6 +39,7 @@ public class TerminalCode : MonoBehaviour
             passText = "";
             currentPin = "";
             pinText.text = "Inserire codice";
+            GetComponentInParent<TerminalFeedbacks>().feedbackEventPin.wrongPinEvent.Invoke();
         }
     }
 

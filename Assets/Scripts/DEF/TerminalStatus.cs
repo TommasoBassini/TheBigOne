@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 
 //Classe da mettere dentro il main panel di un terminale
-public class SelectCanvasButton : MonoBehaviour
+public class TerminalStatus : MonoBehaviour
 {
     // variabili che settano lo stato iniziale del terminale
     public Button firstSelected;

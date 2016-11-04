@@ -14,7 +14,7 @@ public class TerminalButtonAction : MonoBehaviour
 
     public void ChangePanel(GameObject panelToShow)
     {
-        SelectCanvasButton canvas = GetComponent<SelectCanvasButton>();
+        TerminalStatus canvas = GetComponent<TerminalStatus>();
         canvas.activePanel.SetActive(false);
         panelToShow.SetActive(true);
         canvas.activePanel = panelToShow;
