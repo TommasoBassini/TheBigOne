@@ -108,8 +108,8 @@ public class ObjectInteract : MonoBehaviour
                         cameraRot = Camera.main.transform.rotation;
                         cameraPos = Camera.main.transform.position;
 
-                        Camera.main.transform.position = hit.collider.transform.position + (hit.collider.transform.forward * ((hit.collider.transform.localScale.y * 0.172f)));
-                        Camera.main.transform.LookAt(hit.collider.transform.position + new Vector3(0, 0.006f, 0));
+                        Camera.main.transform.position = hit.collider.transform.position + (hit.collider.transform.right * 0.2f) + (-hit.collider.transform.up * ((((hit.collider.transform.localScale.y)/(hit.collider.transform.localScale.y/3)) * 0.25f)));
+                        Camera.main.transform.LookAt(hit.collider.transform.position + (hit.collider.transform.right * 0.2f));
 
                         GetComponent<FirstPersonController>().enabled = false;
                         activeCanvas = hit.collider.transform.FindChild("Main").gameObject;
