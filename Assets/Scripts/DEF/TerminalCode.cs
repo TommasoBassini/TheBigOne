@@ -22,24 +22,24 @@ public class TerminalCode : MonoBehaviour
         }
     }
 
-    public void CheckPin()
+    public void CheckPin(int n)
     {
         if (currentPin == unlockPin)
         {
-            panelToUnlock.SetActive(true);
-            panelToUnlock.GetComponentInChildren<Button>().Select();
+            //panelToUnlock.SetActive(true);
+            //panelToUnlock.GetComponentInChildren<Button>().Select();
             currentPin = "";
             passText = "";
             pinText.text = "Inserire codice";
-            GetComponentInParent<TerminalFeedbacks>().feedbackEventPin.rightPinEvent.Invoke();
-            this.gameObject.SetActive(false);
+            GetComponentInParent<TerminalFeedbacks>().feedbackEventPin.rightPinEvent[n].Invoke();
+            //this.gameObject.SetActive(false);
         }
         else
         {
             passText = "";
             currentPin = "";
             pinText.text = "Inserire codice";
-            GetComponentInParent<TerminalFeedbacks>().feedbackEventPin.wrongPinEvent.Invoke();
+            GetComponentInParent<TerminalFeedbacks>().feedbackEventPin.wrongPinEvent[n].Invoke();
         }
     }
 

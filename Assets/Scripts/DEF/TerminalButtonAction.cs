@@ -4,14 +4,6 @@ using UnityEngine.UI;
 
 public class TerminalButtonAction : MonoBehaviour
 {
-
-    public void UnlockDoor (DoorBaseScript door)
-    {
-        Debug.Log("Porta Sbloccata");
-        door.doorIsUnLocked = true;
-        door.UnlockDoor();
-    }
-
     public void ChangePanel(GameObject panelToShow)
     {
         TerminalStatus canvas = GetComponent<TerminalStatus>();

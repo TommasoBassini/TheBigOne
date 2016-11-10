@@ -12,14 +12,18 @@ public class TerminalStatus : MonoBehaviour
 
     public GameObject[] panels;
 
+    public bool resetTerminalOnExit;
     //Methodo del terminale che resetta lo stato del terminale quando si abbandona il terminale
     public void ResetCanvas()
     {
-        foreach (var panel in panels)
+        if (resetTerminalOnExit)
         {
-            panel.SetActive(false);
+            foreach (var panel in panels)
+            {
+                panel.SetActive(false);
+            }
+            firstActivePanel.SetActive(true);
+            activePanel = firstActivePanel;
         }
-        firstActivePanel.SetActive(true);
-        activePanel = firstActivePanel;
     }
 }

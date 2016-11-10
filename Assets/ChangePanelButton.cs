@@ -14,8 +14,9 @@ public class ChangePanelButton : MonoBehaviour
 {
     public SecurityType securityType;
     public int securityLvl;
+    public GameObject panelToShow;
 
-    public void ChangePanel(GameObject panelToShow)
+    public void ChangePanel(int n)
     {
         bool access = false;
         PlayerStatus playerStatus = FindObjectOfType<PlayerStatus>();
@@ -54,7 +55,7 @@ public class ChangePanelButton : MonoBehaviour
 
         if (access)
         {
-            GetComponentInParent<TerminalFeedbacks>().feedbackEventPermission.hasPermission.Invoke();
+            GetComponentInParent<TerminalFeedbacks>().feedbackEventPermission.hasPermission[n].Invoke();
             TerminalStatus canvas = GetComponent<TerminalStatus>();
             canvas.activePanel.SetActive(false);
             panelToShow.SetActive(true);
@@ -69,7 +70,7 @@ public class ChangePanelButton : MonoBehaviour
         }
         else
         {
-            GetComponentInParent<TerminalFeedbacks>().feedbackEventPermission.noPermission.Invoke();
+            GetComponentInParent<TerminalFeedbacks>().feedbackEventPermission.noPermission[n].Invoke();
             //Mettere qui il suono di errore e varie cose
         }
     }

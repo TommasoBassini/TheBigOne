@@ -17,7 +17,7 @@ public class SwitchPanelDoorButton : MonoBehaviour
     {
         //ricerca lo script del delegato
         terminalSwitch = terminalMain.GetComponent<SwitchEnergyTerminal>();
-        terminalSwitch.terminalSwitch += DoorOn_Off;
+        //terminalSwitch.terminalSwitch += DoorOn_Off;
         //bool fasullo da aggiungere alla lista di bool 
         bool door = false;
         terminalSwitch.isDoors.Add(door);
@@ -35,22 +35,22 @@ public class SwitchPanelDoorButton : MonoBehaviour
     }
 
     // metodo chiamato dal delegato
-    void DoorOn_Off()
-    {
-        switch (terminalSwitch.isDoors[nInList])
-        {
-            case (true):
-                {
-                    door.doorIsUnLocked = true;
-                    door.UnlockDoor();
-                    break;
-                }
-            case (false):
-                {
-                    door.doorIsUnLocked = false;
-                    door.UnlockDoor();
-                    break;
-                }
-        }
-    }
+    //void DoorOn_Off()
+    //{
+    //    switch (terminalSwitch.isDoors[nInList])
+    //    {
+    //        case (true):
+    //            {
+    //                door.doorIsUnLocked = true;
+    //                door.UnlockDoor();
+    //                break;
+    //            }
+    //        case (false):
+    //            {
+    //                door.doorIsUnLocked = false;
+    //                door.UnlockDoor();
+    //                break;
+    //            }
+    //    }
+    //}
 }
