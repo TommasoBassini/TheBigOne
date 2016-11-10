@@ -39,7 +39,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private float m_StepCycle;
         private float m_NextStep;
         private AudioSource m_AudioSource;
-        private bool isCrouched = false;
+        public bool isCrouched = false;
         public Coroutine CrouchingCoroutine;
         public Coroutine DeCrouchingCoroutine;
         public int rotationSpeed;

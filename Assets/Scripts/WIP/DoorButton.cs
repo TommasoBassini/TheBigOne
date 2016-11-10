@@ -4,11 +4,14 @@ using System.Collections;
 public class DoorButton : ActionObj
 {
     public DoorBaseScript door;
+    private bool isInteractable = true;
 
     public override void DoStuff()
     {
-        if (door.doorIsUnLocked)
+        if (door.doorIsUnLocked && isInteractable)
         {
+            isInteractable = false;
+            Invoke("EnableInteraction", 1);
             if (!door.doorIsOpen)
             {
                 Debug.Log("Ho aperto la porta perchè è sbloccata");
@@ -28,10 +31,10 @@ public class DoorButton : ActionObj
                 return;
             }
         }
-        else
-        {
-            Debug.Log("Porta bloccata");
-        }
     }
 
+    void EnableInteraction()
+    {
+        isInteractable = true;
+    }
 }

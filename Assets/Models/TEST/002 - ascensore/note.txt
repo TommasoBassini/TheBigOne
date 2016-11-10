@@ -1,0 +1,10 @@
+NOTE:
+
+Ci sono vari modelli che possono essere spostati singolarmente.
+il terminale, i cavi, la piattaforma. 
+
+Le colonne sono collegate all'intersezione.
+Le colonne, l'intersezione e il tubo in alto sono tileabili e il tubo è di vetro.
+Alla base ci sono due cilindri, uno dentro l'altro:
+	quello esterno è la struttura esterna che impedisce al giocatore di vedere che lascensore è 'finto' e possiede uno sportello a scorrimento verticale.
+	quello interno è l'ascensore stesso che si muove nel tubo. Anch'esso possiede porte scorrevoli sul fronte.
