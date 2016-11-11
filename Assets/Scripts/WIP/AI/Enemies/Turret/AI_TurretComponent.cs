@@ -68,6 +68,8 @@ public class AI_TurretComponent : MonoBehaviour {
 	[Tooltip ("DO NOT TOUCH!")]
 	public BoxCollider col;                         	// Reference to the box collider trigger component
 	[Tooltip ("DO NOT TOUCH!")]
+	public LineRenderer attackRay;
+	[Tooltip ("DO NOT TOUCH!")]
 	public AI_TurretScanner turretScanner;
 
 
@@ -89,6 +91,7 @@ public class AI_TurretComponent : MonoBehaviour {
 
 		this.delegates = new Delegates ();
 		this.col = this.GetComponent <BoxCollider> ();
+		this.attackRay = this.GetComponentInChildren <LineRenderer> (true);
 		this.turretScanner = this.GetComponentInChildren <AI_TurretScanner> (true);
 
 		this.player = GameObject.FindGameObjectWithTag ("Player");
@@ -144,6 +147,10 @@ public class AI_TurretComponent : MonoBehaviour {
 
 						} else {
 
+							this.attackRay.enabled = true;
+							this.attackRay.SetPosition (0, this.attackRay.transform.position);
+							this.attackRay.SetPosition (1, other.transform.position);
+
 							// ... and may be attacked.
 							Debug.LogWarning ("Shooting!");
 
@@ -152,6 +159,7 @@ public class AI_TurretComponent : MonoBehaviour {
 					} else {
 
 						this.turretIsShoothing = false;
+						this.attackRay.enabled = false;
 
 						if (this.attackCoroutine != null)
 							this.attackCoroutine = this.KillPreviousCoroutine (this.attackCoroutine);
@@ -179,6 +187,7 @@ public class AI_TurretComponent : MonoBehaviour {
 			this.playerInSight = false;
 
 			this.turretIsShoothing = false;
+			this.attackRay.enabled = false;
 
 			if (this.attackCoroutine != null)
 				this.attackCoroutine = this.KillPreviousCoroutine (this.attackCoroutine);

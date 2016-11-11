@@ -12,6 +12,8 @@ public class AI_DroneComponent : MonoBehaviour {
 	public bool droneIsFallingIntoLine;
 	[Tooltip ("DO NOT TOUCH!")]
 	public bool playerInSight;							// Whether or not the player is currently sighted
+	[Tooltip ("DO NOT TOUCH!")]
+	public bool agentHasBeenStopped;
 
 
 	[Header ("Variables")]
@@ -22,7 +24,7 @@ public class AI_DroneComponent : MonoBehaviour {
 	[Tooltip ("Determines the plane angle in wich the enemy could spot the player (from 0f to 360f)")]
 	[Range (0f, 360f)] public float fieldOfViewAngle = 110f;               // Number of degrees, centred on forward, for the enemy see
 	[Tooltip ("Determines the SQUARED attack distance of the enemy (from 0f to 100f)")]
-	[Range (0f, 100f)] public float attackDistance = 5f;
+	[Range (0f, 100f)] public float sqrAttackDistance = 5f;
 	[Tooltip ("DO NOT TOUCH!")]
 	public float angle;
 
@@ -41,6 +43,8 @@ public class AI_DroneComponent : MonoBehaviour {
     public NavMeshAgent agent;
 	[Tooltip ("DO NOT TOUCH!")]
     public SphereCollider col;                         // Reference to the sphere collider trigger component
+	[Tooltip ("DO NOT TOUCH!")]
+	public LineRenderer attackRay;
 
 
 	[Header ("GameObjects")]
@@ -61,6 +65,7 @@ public class AI_DroneComponent : MonoBehaviour {
 
 		this.agent = this.GetComponent <NavMeshAgent> ();
         this.col = this.GetComponent <SphereCollider> ();
+		this.attackRay = this.GetComponentInChildren <LineRenderer> (true);
         this.player = GameObject.FindGameObjectWithTag ("Player");
 
     }
@@ -70,6 +75,7 @@ public class AI_DroneComponent : MonoBehaviour {
 
 		this.droneIsFallingIntoLine = false;
 		this.playerInSight = false;
+		this.agentHasBeenStopped = false;
 		this.agent.autoBraking = false;
 
 		this.destPoint = 0;
@@ -101,18 +107,28 @@ public class AI_DroneComponent : MonoBehaviour {
 						// ... the player is in sight...
 						this.playerInSight = true;
 
-						if (this.direction.sqrMagnitude < this.attackDistance) {
+						if (this.direction.sqrMagnitude < this.sqrAttackDistance) {
+
+							this.agent.Stop ();
+							this.agentHasBeenStopped = true;
+							this.attackRay.enabled = true;
+							this.attackRay.SetPosition (0, this.attackRay.transform.position);
+							this.attackRay.SetPosition (1, other.transform.position);
 
 							// ... and may be attacked.
 							Debug.LogWarning ("Shooting!");
 
-						}
+						} else if (this.agentHasBeenStopped)
+							this.ResumeAgent ();
 
-					}
+					} else if (this.agentHasBeenStopped)
+						this.ResumeAgent ();
 
-				}
+				} else if (this.agentHasBeenStopped)
+					this.ResumeAgent ();
 
-			}
+			} else if (this.agentHasBeenStopped)
+				this.ResumeAgent ();
 
 		}
 
@@ -127,7 +143,21 @@ public class AI_DroneComponent : MonoBehaviour {
 			// ... the player is not in sight.
 			this.playerInSight = false;
 
+			if (this.agentHasBeenStopped)
+				this.ResumeAgent ();
+
 		}
+
+	}
+	#endregion
+
+
+	#region DRONE_METHODS
+	public void ResumeAgent () {
+
+		this.agent.Resume ();
+		this.agentHasBeenStopped = false;
+		this.attackRay.enabled = false;
 
 	}
 	#endregion
