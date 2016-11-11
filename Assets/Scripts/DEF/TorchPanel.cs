@@ -9,6 +9,7 @@ public class TorchPanel : MonoBehaviour
     public GameObject indietro;
     public Text percText;
     public Text InfoText;
+
     public void startBarra()
     {
         StartCoroutine(BarraTorch());

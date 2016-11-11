@@ -3,16 +3,10 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
-public class TerminalFeedbacks : MonoBehaviour
+public class TriggerFeedbacks : MonoBehaviour
 {
-    [Header("Eventi per pannello pin")]
-    public FeedbackEventPin feedbackEventPin;
-
-    [Header("Eventi per permessi bottoni")]
-    public FeedbackEventPermission feedbackEventPermission;
-
-    [Header("Eventi per upgrade permessi")]
-    public FeedbackEventPod feedbackEventUpgrade;
+    [Header("Eventi per trigger")]
+    public FeedbackTriggerEvent feedbackEventTrigger;
 
     [Header("Eventi a tempo")]
     public Timed[] times;
@@ -24,6 +18,10 @@ public class TerminalFeedbacks : MonoBehaviour
     public Audios[] audios;
     public Animations[] animations;
     public Lights[] lights;
+    public Gameobjects[] gameobjects;
+
+    private bool isDoneEnter = false;
+    private bool isDoneExit = false;
 
     public void ChangeText(int n)
     {
@@ -136,6 +134,31 @@ public class TerminalFeedbacks : MonoBehaviour
                 panel.firstSelectButtonInPanel.Select();
                 break;
             }
+        }
+    }
+
+    public void SetGameobject(int n)
+    {
+        bool objStatus = gameobjects[n].gameobject.activeInHierarchy;
+
+        gameobjects[n].gameobject.SetActive(!objStatus);
+    }
+
+    void OnTriggerEnter()
+    {
+        if (!isDoneEnter)
+        {
+            feedbackEventTrigger.onTriggerEnter.Invoke();
+            isDoneEnter = true;
+        }
+    }
+
+    void OnTriggerExit()
+    {
+        if (!isDoneExit)
+        {
+            feedbackEventTrigger.onTriggerExit.Invoke();
+            isDoneExit = true;
         }
     }
 }

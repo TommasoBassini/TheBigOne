@@ -113,7 +113,15 @@ public class ObjectInteract : MonoBehaviour
 
                         GetComponent<FirstPersonController>().enabled = false;
                         activeCanvas = hit.collider.transform.FindChild("Main").gameObject;
-                        activeCanvas.GetComponent<TerminalStatus>().firstSelected.Select();
+                        TerminalStatus ts = activeCanvas.GetComponent<TerminalStatus>();
+                        foreach (var panel in ts.panels)
+                        {
+                            if (panel.panel.activeInHierarchy)
+                            {
+                                panel.firstSelectButtonInPanel.Select();
+                                break;
+                            }
+                        }
                         torcia.SetActive(false);
                     }
                 }
@@ -214,8 +222,6 @@ public class ObjectInteract : MonoBehaviour
             {
                 if (Input.GetKeyUp(KeyCode.Joystick1Button1) || Input.GetKeyDown(KeyCode.Escape))
                 {
-                    activeCanvas.GetComponent<TerminalStatus>().ResetCanvas();
-
                     GetComponent<FirstPersonController>().enabled = true;
                     Camera.main.transform.rotation = cameraRot;
                     Camera.main.transform.position = cameraPos;
