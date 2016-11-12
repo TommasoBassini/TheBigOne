@@ -9,6 +9,7 @@ public class TerminalCode : MonoBehaviour
     public string currentPin;
     public string passText;
     public Text pinText;
+    public Button confirmButton;
 
     public void StampNumber (string n)
     {
@@ -17,6 +18,11 @@ public class TerminalCode : MonoBehaviour
             currentPin = currentPin + n;
             passText += " - ";
             pinText.text = passText;
+
+            if (passText.Length == 12)
+            {
+                confirmButton.Select();
+            }
         }
     }
 

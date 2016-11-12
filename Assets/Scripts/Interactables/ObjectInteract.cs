@@ -74,7 +74,7 @@ public class ObjectInteract : MonoBehaviour
                     //metto l'action image giusta
                     pickubleObj = hit.collider.gameObject;
 
-                    if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E)) && !menu.isMenu)
+                    if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E)) && (!menu || !menu.isMenu))
                     {
                         GetComponent<FirstPersonController>().enabled = false;
 
@@ -130,7 +130,7 @@ public class ObjectInteract : MonoBehaviour
                 // SE L'OGGETTO DEL RAYCAST E' ActionObj
                 if (hit.collider.CompareTag("ActionObj"))
                 {
-                    if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E)) && !menu.isMenu)
+                    if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E)) && (!menu || !menu.isMenu))
                     {
                         interactedObject.GetComponent<ActionObj>().DoStuff();
                     }
@@ -181,7 +181,7 @@ public class ObjectInteract : MonoBehaviour
                     inspect.transform.Rotate(new Vector3(-angV * rotationSpeed, 0, 0));
                 }
 
-                if ((Input.GetKeyUp(KeyCode.Joystick1Button1)  || Input.GetKeyDown(KeyCode.Escape)) && isInspecting && !menu.isMenu)
+                if ((Input.GetKeyUp(KeyCode.Joystick1Button1)  || Input.GetKeyDown(KeyCode.Escape)) && isInspecting && (!menu || !menu.isMenu))
                 {
                     GetComponent<FirstPersonController>().enabled = true;
                     pickubleObj.transform.position = lastObjPos;
