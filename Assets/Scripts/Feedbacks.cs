@@ -96,28 +96,30 @@ public class Feedbacks : MonoBehaviour
         }
     }
 
-    public void ChangePanel(GameObject panelToShow)
-    {
-        TerminalStatus canvas = GetComponent<TerminalStatus>();
-        canvas.activePanel.SetActive(false);
-        panelToShow.SetActive(true);
-        canvas.activePanel = panelToShow;
-
-        TerminalStatus ts = canvas.activePanel.GetComponentInParent<TerminalStatus>();
-        foreach (var panel in ts.panels)
-        {
-            if (panel.panel.activeInHierarchy)
-            {
-                panel.firstSelectButtonInPanel.Select();
-                break;
-            }
-        }
-    }
-
     public void SetGameobject(int n)
     {
         bool objStatus = gameobjects[n].gameobject.activeInHierarchy;
 
         gameobjects[n].gameobject.SetActive(!objStatus);
+    }
+
+    public void ChangeTerminalPanel(GameObject panelToShow)
+    {
+        TerminalStatus canvas = GetComponent<TerminalStatus>();
+        if (canvas)
+        {
+            canvas.activePanel.SetActive(false);
+            panelToShow.SetActive(true);
+            canvas.activePanel = panelToShow;
+
+            foreach (var panel in canvas.panels)
+            {
+                if (panel.panel.activeInHierarchy)
+                {
+                    panel.firstSelectButtonInPanel.Select();
+                    break;
+                }
+            }
+        }
     }
 }
