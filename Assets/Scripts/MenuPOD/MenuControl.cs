@@ -205,6 +205,7 @@ public class MenuControl : MonoBehaviour
         this.transform.Find("pnlStatus/pnlPermissions/pnlMedicPermissions/txtMedic").GetComponent<Text>().text = "Medico: " + playerStatus.medicLvl.ToString();
         this.transform.Find("pnlStatus/pnlPermissions/pnlEngineerPermissions/txtEngineer").GetComponent<Text>().text = "Ingegnere: " + playerStatus.medicLvl.ToString();
         this.transform.Find("pnlStatus/pnlPermissions/pnlSecurityPermissions/txtSecurity").GetComponent<Text>().text = "Guardia: " + playerStatus.medicLvl.ToString();
+        this.transform.Find("pnlStatus/pnlValues/pnlMaterial/txtValue").GetComponent<Text>().text =" " + playerStatus.storageMaterial.ToString();
 
     }
 }
