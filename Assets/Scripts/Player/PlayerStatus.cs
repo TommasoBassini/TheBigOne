@@ -26,6 +26,9 @@ public class PlayerStatus : MonoBehaviour
     public int guardLvl;
     public Permessi permessi;
 
+    public int life;
+
+    public AbrsorbType storageMaterial;
 
     public void MedicLvlUp(int n)
     {

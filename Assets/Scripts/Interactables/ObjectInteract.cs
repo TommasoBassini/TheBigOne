@@ -5,8 +5,19 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
+public enum RaycastTarget
+{
+    nothing,
+    pickable,
+    terminal,
+    action,
+    absorb
+}
+
 public class ObjectInteract : MonoBehaviour
 {
+    #region Variabili
+    //Roba che serve per inspezionare gli oggetti
     private Vector3 cameraPos;
     private Quaternion cameraRot;
     private Vector3 lastObjPos;
@@ -17,31 +28,36 @@ public class ObjectInteract : MonoBehaviour
     public bool isInspecting = false;
     public bool isTerminal = false;
 
+    public GameObject inspect;
+    private GameObject activeCanvas;
+    [HideInInspector]
+    public Button dummyButton;
+    private Ray interactionRay;
+    public GameObject torcia;
+    public ScanButtonManager scan;
+    private MenuControl menu;
+    private float scanTime = 0.0f;
+    public GameObject body;
+    private bool pauseAbsorb = false;
+    private RaycastTarget raycastTarget;
+
+    [Header("Per i designer")]
+    [Tooltip("Setta la distanza di interazione con gli oggetti")]
+    public float dropDistance;
+
+    [Tooltip("Setta la velocità di rotazione durante l'inspezione")]
     public int rotationSpeed;
 
-    public Image mirino;
+    [Tooltip("Mettere Immagine del mirino")]
+    public Image viewFinder;
+    [Tooltip("Mettere Immagine delle azioni")]
     public Image actionImage;
 
     public Sprite pickubleSprite;
     public Sprite interactSprite;
-    public Sprite punto;
-
-    public GameObject button;
-    public GameObject panel;
-
-    public GameObject inspect;
-    public GameObject activeCanvas;
-    public Button dummyButton;
-
-    private Ray interactionRay;
-    public float dropDistance;
-
-    public GameObject torcia;
-
-    public ScanButtonManager scan;
-    private MenuControl menu;
-    private float scanTime = 0.0f;
+    public Sprite absorbSprite;
     public Image scanPerc;
+    #endregion
 
     void Start()
     {
@@ -50,10 +66,20 @@ public class ObjectInteract : MonoBehaviour
         menu = FindObjectOfType<MenuControl>();
     }
 
+    void Update()
+    {
+        if (Input.GetAxis("Trigger") < -0.9f && raycastTarget != RaycastTarget.absorb)
+        {
+            FullOxygen();
+        }
+    }
     void FixedUpdate()
     {
         // Ray per l'interazione con gli oggetti dal centro dello schermo
         interactionRay = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward, Color.red);
+        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.right, Color.green);
+        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.up, Color.blue);
 
         // Viene chiamato il metodo per controllare l'interazione con gli oggetti interagibili
         CheckInteract();
@@ -61,6 +87,7 @@ public class ObjectInteract : MonoBehaviour
 
     void CheckInteract()
     {
+        #region !isInteracting
         if (!isInteracting)
         {
             RaycastHit hit;
@@ -68,9 +95,14 @@ public class ObjectInteract : MonoBehaviour
             {
                 GameObject interactedObject = hit.transform.gameObject;
 
+                #region pickable
                 // SE L'OGGETTO DEL RAYCAST E' PICKUBLE
                 if (hit.collider.CompareTag("Pickuble"))
                 {
+                    raycastTarget = RaycastTarget.pickable;
+                    actionImage.sprite = pickubleSprite;
+                    actionImage.gameObject.SetActive(true);
+
                     //metto l'action image giusta
                     pickubleObj = hit.collider.gameObject;
 
@@ -82,7 +114,7 @@ public class ObjectInteract : MonoBehaviour
                         isInspecting = true;
 
                         actionImage.gameObject.SetActive(false);
-                        mirino.gameObject.SetActive(false);
+                        viewFinder.gameObject.SetActive(false);
 
                         lastObjPos = hit.collider.gameObject.transform.position;
                         lastObjRot = hit.collider.gameObject.transform.rotation;
@@ -92,10 +124,15 @@ public class ObjectInteract : MonoBehaviour
                         pickubleObj.transform.localEulerAngles = new Vector3(-90, 0, 0);
                     }
                 }
+                #endregion
 
+                #region terminal
                 // SE L'OGGETTO DEL RAYCAST E' Terminal
                 if (hit.collider.CompareTag("Terminal"))
                 {
+                    actionImage.sprite = interactSprite;
+                    actionImage.gameObject.SetActive(true);
+                    raycastTarget = RaycastTarget.terminal;
 
                     if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E)) && (!menu || !menu.isMenu))
                     {
@@ -103,13 +140,14 @@ public class ObjectInteract : MonoBehaviour
                         isTerminal = true;
 
                         actionImage.gameObject.SetActive(false);
-                        mirino.gameObject.SetActive(false);
+                        viewFinder.gameObject.SetActive(false);
 
                         cameraRot = Camera.main.transform.rotation;
                         cameraPos = Camera.main.transform.position;
-
-                        Camera.main.transform.position = hit.collider.transform.position + (hit.collider.transform.right * 0.2f) + (-hit.collider.transform.up * ((((hit.collider.transform.localScale.y)/(hit.collider.transform.localScale.y/3)) * 0.25f)));
-                        Camera.main.transform.LookAt(hit.collider.transform.position + (hit.collider.transform.right * 0.2f));
+                        Vector3 endPos = hit.transform.Find("Main").position + (-hit.transform.Find("Main").transform.forward * 0.4f);
+                        StartCoroutine(LerpCameraMovement(endPos, hit.transform.Find("Main").position));
+                        body.SetActive(false);
+                        //StartCoroutine(LerpLookAt(hit.transform.Find("Main").position));
 
                         GetComponent<FirstPersonController>().enabled = false;
                         activeCanvas = hit.collider.transform.FindChild("Main").gameObject;
@@ -125,46 +163,98 @@ public class ObjectInteract : MonoBehaviour
                         torcia.SetActive(false);
                     }
                 }
+                #endregion
 
-
+                #region actionObj
                 // SE L'OGGETTO DEL RAYCAST E' ActionObj
                 if (hit.collider.CompareTag("ActionObj"))
                 {
+                    actionImage.sprite = interactSprite;
+                    actionImage.gameObject.SetActive(true);
+                    raycastTarget = RaycastTarget.action;
+
                     if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E)) && (!menu || !menu.isMenu))
                     {
                         interactedObject.GetComponent<ActionObj>().DoStuff();
                     }
                 }
+                #endregion
 
-                if (!hit.collider.CompareTag("Untagged"))
+                #region Absorb
+                // SE L'OGGETTO DEL RAYCAST E' ActionObj
+                if (hit.collider.CompareTag("Absorb"))
                 {
-                    if (interactedObject.tag == "Pickuble")
+                    actionImage.sprite = absorbSprite;
+                    actionImage.gameObject.SetActive(true);
+                    raycastTarget = RaycastTarget.absorb;
+                    if (Input.GetAxis("Trigger") < -0.9f)
                     {
-                        actionImage.sprite = pickubleSprite;
-                        actionImage.gameObject.SetActive(true);
-                    }
+                        GetComponent<FirstPersonController>().enabled = false;
+                        PlayerStatus ps = GetComponent<PlayerStatus>();
 
-                    if (interactedObject.tag == "Terminal")
-                    {
-                        actionImage.sprite = interactSprite;
-                        actionImage.gameObject.SetActive(true);
+                        if (ps.storageMaterial == AbrsorbType.nessuno && !pauseAbsorb)
+                        {
+                            AbsorbMaterial am = hit.collider.transform.GetComponent<AbsorbMaterial>();
+                            if (am.material != AbrsorbType.nessuno)
+                            {
+                                scanTime += 0.5f * Time.deltaTime;
+                                scanPerc.fillAmount = scanTime;
+                                if (scanTime > 1)
+                                {
+                                    pauseAbsorb = true;
+                                    ps.storageMaterial = am.material;
+                                    am.material = 0;
+                                    scanTime = 0.0f;
+                                    scanPerc.fillAmount = scanTime;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            AbsorbMaterial am = hit.collider.transform.GetComponent<AbsorbMaterial>();
+                            if (am.material == AbrsorbType.nessuno && !pauseAbsorb)
+                            {
+                                scanTime += 0.5f * Time.deltaTime;
+                                scanPerc.fillAmount = scanTime;
+                                if (scanTime > 1)
+                                {
+                                    pauseAbsorb = true;
+                                    am.material = ps.storageMaterial;
+                                    ps.storageMaterial = 0;
+                                    scanTime = 0.0f;
+                                    scanPerc.fillAmount = scanTime;
+                                }
+                            }
+                        }
                     }
-
-                    if (interactedObject.tag == "ActionObj")
+                    else
                     {
-                        actionImage.sprite = interactSprite;
-                        actionImage.gameObject.SetActive(true);
+                        pauseAbsorb = false;
+                        GetComponent<FirstPersonController>().enabled = true;
+                        scanTime = 0.0f;
+                        scanPerc.fillAmount = scanTime;
                     }
                 }
-                else
+                #endregion
+                if (hit.collider.CompareTag("Untagged"))
+                {
+                    raycastTarget = RaycastTarget.nothing;
                     actionImage.gameObject.SetActive(false);
+                }
+
             }
             else
+            {
+                raycastTarget = RaycastTarget.nothing;
                 actionImage.gameObject.SetActive(false);
+            }
         }
         else
             actionImage.gameObject.SetActive(false);
 
+        #endregion
+
+        #region isinteracting
         if (isInteracting)
         {
             if (isInspecting)
@@ -181,7 +271,7 @@ public class ObjectInteract : MonoBehaviour
                     inspect.transform.Rotate(new Vector3(-angV * rotationSpeed, 0, 0));
                 }
 
-                if ((Input.GetKeyUp(KeyCode.Joystick1Button1)  || Input.GetKeyDown(KeyCode.Escape)) && isInspecting && (!menu || !menu.isMenu))
+                if ((Input.GetKeyUp(KeyCode.Joystick1Button1) || Input.GetKeyDown(KeyCode.Escape)) && isInspecting && (!menu || !menu.isMenu))
                 {
                     GetComponent<FirstPersonController>().enabled = true;
                     pickubleObj.transform.position = lastObjPos;
@@ -193,7 +283,7 @@ public class ObjectInteract : MonoBehaviour
                     isInteracting = false;
 
                     actionImage.gameObject.SetActive(true);
-                    mirino.gameObject.SetActive(true);
+                    viewFinder.gameObject.SetActive(true);
                 }
 
                 if (Input.GetKey(KeyCode.Joystick1Button0) && isInspecting || Input.GetKeyDown(KeyCode.Escape))
@@ -226,16 +316,18 @@ public class ObjectInteract : MonoBehaviour
                     Camera.main.transform.rotation = cameraRot;
                     Camera.main.transform.position = cameraPos;
                     dummyButton.Select();
+                    body.SetActive(true);
                     torcia.SetActive(true);
 
                     isTerminal = false;
                     isInteracting = false;
 
                     actionImage.gameObject.SetActive(true);
-                    mirino.gameObject.SetActive(true);
+                    viewFinder.gameObject.SetActive(true);
                 }
             }
         }
+        #endregion
     }
 
 
@@ -251,5 +343,47 @@ public class ObjectInteract : MonoBehaviour
         pickubleObj.transform.SetParent(inspect.transform);
         pickubleObj.transform.localEulerAngles = new Vector3(-90, 0, 0);
     }
+
+    IEnumerator LerpCameraMovement(Vector3 pos, Vector3 lookAt)
+    {
+        float elapsedTime = 0.0f;
+        Vector3 startPos = Camera.main.transform.position;
+        Vector3 startLook = Camera.main.transform.forward + Camera.main.transform.position;
+
+        while (elapsedTime < 0.5f)
+        {
+            Camera.main.transform.position = Vector3.Lerp(startPos, pos, (elapsedTime / 0.4f));
+            Camera.main.transform.LookAt(Vector3.Lerp(startLook, lookAt, (elapsedTime / 0.4f)));
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    IEnumerator LerpCameraToStart(Vector3 pos, Vector3 lookAt)
+    {
+        float elapsedTime = 0.0f;
+        Vector3 startPos = Camera.main.transform.position;
+        Vector3 startLook = Camera.main.transform.forward + Camera.main.transform.position;
+
+        while (elapsedTime < 0.5f)
+        {
+            Camera.main.transform.position = Vector3.Lerp(startPos, pos, (elapsedTime / 0.4f));
+            Camera.main.transform.LookAt(Vector3.Lerp(startLook, lookAt, (elapsedTime / 0.4f)));
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    void FullOxygen()
+    {
+        PlayerStatus ps = GetComponent<PlayerStatus>();
+        if (ps.storageMaterial == AbrsorbType.ossigeno)
+        {
+            ps.storageMaterial = AbrsorbType.nessuno;
+            GetComponent<OxygenScript>().FullOxygen();
+        }
+    }
 }
+
+
 

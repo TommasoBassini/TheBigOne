@@ -19,37 +19,33 @@ public class OxygenScript : TimerScript {
 	public Text uiOxygenText;
     public Text menuOxygenText;
 
-    [Header ("Flag Booleani")]
-	public bool leftShiftHasBeenPressed;
-	public bool characterIsRunning;
+	private bool leftShiftHasBeenPressed;
+    private bool characterIsRunning;
 
-	[Header ("Ossigeno Parametri Base - Da 0f a 10f")]
-	[Range (0f, 1000f)] public float oxygenAmount = 100f;
-	[Range (0f, 1000f)] public float minOxygenAmount = 0f;
-	[Range (0f, 1000f)] public float maxOxygenAmount = 100f;
+	[Header ("Parametri ossigeno")]
+	[Range (0f, 100f)] public float oxygenAmount = 100f;
+    private float minOxygenAmount = 0f;
+	private float maxOxygenAmount = 100f;
 
-	[Header ("Ossigeno Parametri da Fermo - Da 0f a 10f")]
+	[Tooltip ("Settare il valore del decadimento quando siamo fermi")]
 	[Range (0f, 10f)] public float oxygenStandingDecadenceSpeed = 10f;
-	[Range (0f, 3f)] public float oxygenStandingDecadenceAmount = 1f;
+	private float oxygenStandingDecadenceAmount = 1f;
 
-	[Header ("Ossigeno Parametri Camminata - Da 0f a 10f")]
-	[Range (0f, 10f)] public float oxygenWalkingDecadenceSpeed = 5f;
-	[Range (0f, 3f)] public float oxygenWalkingDecadenceAmount = 5f;
+    [Tooltip("Settare il valore del decadimento quando stiamo camminando")]
+    [Range (0f, 10f)] public float oxygenWalkingDecadenceSpeed = 5f;
+    private float oxygenWalkingDecadenceAmount = 1f;
 
-	[Header ("Ossigeno Parametri Corsa - Da 0f a 10f")]
-	[Range (0f, 10f)] public float oxygenRunningDecadenceSpeed = 2f;
-	[Range (0f, 3f)] public float oxygenRunningDecadenceAmount = 8f;
+    [Tooltip("Settare il valore del decadimento quando stiamo correndo")]
+    [Range (0f, 10f)] public float oxygenRunningDecadenceSpeed = 2f;
+    private float oxygenRunningDecadenceAmount = 1f;
 
-	[Header ("Ossigeno Parametro Step Per Rigenerazione Breve - Da 0 a 100")]
-	[Range (0, 100)] public int oxygenRegenerationSteps = 20;
+	private int oxygenRegenerationSteps = 20;
 
-	[Header ("Ossigeno Parametri Rigenerazione Breve - Da 0f a 10f")]
-	[Range (0f, 10f)] public float oxygenSmallRegenerationSpeed = 0.1f;
-	[Range (0f, 10f)] public float oxygenSmallRegenerationAmount = 1f;
+    private float oxygenSmallRegenerationSpeed = 0.1f;
+    private float oxygenSmallRegenerationAmount = 1f;
 
-	[Header ("Ossigeno Parametri Rigenerazione Completa - Da 0f a 10f")]
-	[Range (0f, 10f)] public float oxygenCompleteRegenerationSpeed = 0.1f;
-	[Range (0f, 10f)] public float oxygenCompleteRegenerationAmount = 5f;
+    private float oxygenCompleteRegenerationSpeed = 0.1f;
+    private float oxygenCompleteRegenerationAmount = 5f;
 
 	public Coroutine[] oxygenCoroutine;
 	public OxygenSaveAndLoadData OxygenReference;
