@@ -14,6 +14,8 @@ public class AI_DroneComponent : MonoBehaviour {
 	public bool playerInSight;							// Whether or not the player is currently sighted
 	[Tooltip ("DO NOT TOUCH!")]
 	public bool agentHasBeenStopped;
+	[Tooltip ("DO NOT TOUCH!")]
+	public bool enemyHasBeenStunned;
 
 
 	[Header ("Variables")]
@@ -23,8 +25,10 @@ public class AI_DroneComponent : MonoBehaviour {
 
 	[Tooltip ("Determines the plane angle in wich the enemy could spot the player (from 0f to 360f)")]
 	[Range (0f, 360f)] public float fieldOfViewAngle = 110f;               // Number of degrees, centred on forward, for the enemy see
-	[Tooltip ("Determines the SQUARED attack distance of the enemy (from 0f to 100f)")]
-	[Range (0f, 100f)] public float sqrAttackDistance = 5f;
+	[Tooltip ("Determines the attack distance of the enemy (from 0f to 10f)")]
+	[Range (0f, 10f)] public float attackDistance = 5f;
+	[Tooltip ("Determines the stunning time of the enemy if hit by an EMI (from 0f to 10f)")]
+	[Range (0f, 10f)] public float stunnedTime = 5f;
 	[Tooltip ("DO NOT TOUCH!")]
 	public float angle;
 
@@ -43,6 +47,8 @@ public class AI_DroneComponent : MonoBehaviour {
     public NavMeshAgent agent;
 	[Tooltip ("DO NOT TOUCH!")]
     public SphereCollider col;                         // Reference to the sphere collider trigger component
+	[Tooltip ("DO NOT TOUCH!")]
+	public Coroutine enemyStunnedCoroutine;
 	[Tooltip ("DO NOT TOUCH!")]
 	public LineRenderer attackRay;
 
@@ -76,9 +82,12 @@ public class AI_DroneComponent : MonoBehaviour {
 		this.droneIsFallingIntoLine = false;
 		this.playerInSight = false;
 		this.agentHasBeenStopped = false;
+		this.enemyHasBeenStunned = false;
 		this.agent.autoBraking = false;
 
 		this.destPoint = 0;
+
+		this.enemyStunnedCoroutine = null;
 
 	}
 
@@ -107,7 +116,7 @@ public class AI_DroneComponent : MonoBehaviour {
 						// ... the player is in sight...
 						this.playerInSight = true;
 
-						if (this.direction.sqrMagnitude < this.sqrAttackDistance) {
+						if (this.direction.sqrMagnitude < Mathf.Pow (this.attackDistance, 2f)) {
 
 							this.agent.Stop ();
 							this.agentHasBeenStopped = true;
@@ -149,6 +158,22 @@ public class AI_DroneComponent : MonoBehaviour {
 		}
 
 	}
+
+
+	public void OnCollisionEnter (Collision collision) {
+
+		if (collision.gameObject.CompareTag ("IEM")) {
+
+			if (this.enemyStunnedCoroutine == null) {
+				
+				this.enemyHasBeenStunned = true;
+				this.enemyStunnedCoroutine = this.StartCoroutine_Auto (this.CO_EnemyStunnedTime ());
+
+			}
+
+		}
+
+	}
 	#endregion
 
 
@@ -158,6 +183,27 @@ public class AI_DroneComponent : MonoBehaviour {
 		this.agent.Resume ();
 		this.agentHasBeenStopped = false;
 		this.attackRay.enabled = false;
+
+	}
+
+
+	public Coroutine KillPreviousCoroutine (Coroutine coroutine) {
+
+		if (coroutine != null)
+			this.StopCoroutine (coroutine);
+
+		return null;
+
+	}
+	#endregion
+
+
+	#region DRONE_COROUTINES
+	public IEnumerator CO_EnemyStunnedTime () {
+
+		yield return new WaitForSeconds (this.stunnedTime);
+		this.enemyHasBeenStunned = false;
+		this.enemyStunnedCoroutine = this.KillPreviousCoroutine (this.enemyStunnedCoroutine);
 
 	}
 	#endregion

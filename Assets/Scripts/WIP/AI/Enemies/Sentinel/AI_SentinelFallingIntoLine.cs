@@ -46,37 +46,46 @@ public class AI_SentinelFallingIntoLine : MonoBehaviour, IAI_ImplementedStrategy
 	#region IMPLEMENTED_STRATEGY_METHOD
 	public StrategyState ExecuteImplementedStrategy () {
 
-		Debug.Log ("Sentinel is in <<Falling Into Line>>");
+		if (!this.sentinelComponents.enemyHasBeenStunned) {
+
+			Debug.Log ("Sentinel is in <<Falling Into Line>>");
 
 
-		if (this.sentinelComponents.sentinelHasEnlargedItsHearingColliders)
-			this.ResetHearingCollidersRadius ();
+			if (this.sentinelComponents.sentinelHasEnlargedItsHearingColliders)
+				this.ResetHearingCollidersRadius ();
 
-		if (!this.sentinelComponents.sentinelIsFallingIntoLine)
-			this.sentinelComponents.sentinelIsFallingIntoLine = this.ReturnToPatrol ();
+			if (!this.sentinelComponents.sentinelIsFallingIntoLine)
+				this.sentinelComponents.sentinelIsFallingIntoLine = this.ReturnToPatrol ();
 
 
-		if (this.sentinelComponents.playerInSight) {
+			if (this.sentinelComponents.playerInSight) {
 
-			Debug.Log ("Sentinel switches from <<Falling Into Line>> to <<Defending>>");
-			this.sentinelComponents.sentinelIsFallingIntoLine = false;
-			return StrategyState.Defending;
+				Debug.Log ("Sentinel switches from <<Falling Into Line>> to <<Defending>>");
+				this.sentinelComponents.sentinelIsFallingIntoLine = false;
+				return StrategyState.Defending;
 
-		} else if (this.sentinelComponents.playerHasBeenHeard) {
+			} else if (this.sentinelComponents.playerHasBeenHeard) {
 
-			Debug.Log ("Sentinel switches from <<Falling Into Line>> to <<Inspecting>>");
-			this.sentinelComponents.sentinelIsFallingIntoLine = false;
-			return StrategyState.Inspecting;
+				Debug.Log ("Sentinel switches from <<Falling Into Line>> to <<Inspecting>>");
+				this.sentinelComponents.sentinelIsFallingIntoLine = false;
+				return StrategyState.Inspecting;
 
-		} else if (this.sentinelComponents.agent.remainingDistance < 1f) {
+			} else if (this.sentinelComponents.agent.remainingDistance < 1f) {
 
-			Debug.Log ("Sentinel switches from <<Falling Into Line>> to <<Guarding>>");
-			this.sentinelComponents.sentinelIsFallingIntoLine = false;
-			return StrategyState.Guarding;
+				Debug.Log ("Sentinel switches from <<Falling Into Line>> to <<Guarding>>");
+				this.sentinelComponents.sentinelIsFallingIntoLine = false;
+				return StrategyState.Guarding;
+
+			} else {
+
+				Debug.Log ("Sentinel does not change strategy");
+				return StrategyState.NoStrategyChanging;
+
+			}
 
 		} else {
-
-			Debug.Log ("Sentinel does not change strategy");
+			
+			Debug.Log ("Sentinel has been stunned");
 			return StrategyState.NoStrategyChanging;
 
 		}

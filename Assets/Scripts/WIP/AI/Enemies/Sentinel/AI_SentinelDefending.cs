@@ -38,23 +38,32 @@ public class AI_SentinelDefending : MonoBehaviour, IAI_ImplementedStrategy {
 	#region IMPLEMENTED_STRATEGY_METHOD
 	public StrategyState ExecuteImplementedStrategy () {
 
-		Debug.Log ("Sentinel is in <<Defending>>");
+		if (!this.sentinelComponents.enemyHasBeenStunned) {
+
+			Debug.Log ("Sentinel is in <<Defending>>");
 
 
-		if (this.sentinelComponents.sentinelHasEnlargedItsHearingColliders)
-			this.ResetHearingCollidersRadius ();
+			if (this.sentinelComponents.sentinelHasEnlargedItsHearingColliders)
+				this.ResetHearingCollidersRadius ();
 
-		this.ChasePlayer ();
+			this.ChasePlayer ();
 
 
-		if (!this.sentinelComponents.playerInSight) {
+			if (!this.sentinelComponents.playerInSight) {
 
-			Debug.Log ("Sentinel switches from <<Defending>> to <<Scanning>>");
-			return StrategyState.Scanning;
+				Debug.Log ("Sentinel switches from <<Defending>> to <<Scanning>>");
+				return StrategyState.Scanning;
+
+			} else {
+
+				Debug.Log ("Sentinel does not change strategy");
+				return StrategyState.NoStrategyChanging;
+
+			}
 
 		} else {
-
-			Debug.Log ("Sentinel does not change strategy");
+			
+			Debug.Log ("Sentinel has been stunned");
 			return StrategyState.NoStrategyChanging;
 
 		}

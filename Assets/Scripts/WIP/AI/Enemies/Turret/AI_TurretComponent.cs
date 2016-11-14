@@ -36,6 +36,8 @@ public class AI_TurretComponent : MonoBehaviour {
 	public bool playerInSight;							// Whether or not the player is currently sighted
 	[Tooltip ("DO NOT TOUCH!")]
 	public bool turretIsShoothing;
+	[Tooltip ("DO NOT TOUCH!")]
+	public bool enemyHasBeenStunned;
 
 
 	[Header ("Variables")]
@@ -47,6 +49,8 @@ public class AI_TurretComponent : MonoBehaviour {
 	[Range (0f, 10f)] public float scanningTime = 2f;
 	[Tooltip ("Waiting time used to return in guarding state - from 0f to 10f")]
 	[Range (0f, 10f)] public float waitingTime = 5f;
+	[Tooltip ("Determines the stunning time of the enemy if hit by an EMI (from 0f to 10f)")]
+	[Range (0f, 10f)] public float stunnedTime = 5f;
 
 
 	[Header ("Structs")]
@@ -63,6 +67,8 @@ public class AI_TurretComponent : MonoBehaviour {
 	public Coroutine attackCoroutine;
 	[Tooltip ("DO NOT TOUCH!")]
 	public Coroutine slipOutCoroutine;
+	[Tooltip ("DO NOT TOUCH!")]
+	public Coroutine enemyStunnedCoroutine;
 	[Tooltip ("DO NOT TOUCH!")]
 	public Delegates delegates;
 	[Tooltip ("DO NOT TOUCH!")]
@@ -104,11 +110,13 @@ public class AI_TurretComponent : MonoBehaviour {
 		this.playerHasBeenDetected = false;
 		this.playerInSight = false;
 		this.turretIsShoothing = false;
+		this.enemyHasBeenStunned = false;
 
 		this.destPoint = 0;
 
 		this.attackCoroutine = null;
 		this.slipOutCoroutine = null;
+		this.enemyStunnedCoroutine = null;
 
 	}
 
@@ -198,13 +206,31 @@ public class AI_TurretComponent : MonoBehaviour {
 		}
 
 	}
+
+
+	public void OnCollisionEnter (Collision collision) {
+
+		if (collision.gameObject.CompareTag ("IEM")) {
+
+			if (this.enemyStunnedCoroutine == null) {
+
+				this.enemyHasBeenStunned = true;
+				this.enemyStunnedCoroutine = this.StartCoroutine_Auto (this.CO_EnemyStunnedTime ());
+
+			}
+
+		}
+
+	}
 	#endregion
 
 
 	#region TURRET_METHODS
 	public Coroutine KillPreviousCoroutine (Coroutine coroutine) {
 
-		this.StopCoroutine (coroutine);
+		if (coroutine != null)
+			this.StopCoroutine (coroutine);
+		
 		return null;
 
 	}
@@ -216,6 +242,15 @@ public class AI_TurretComponent : MonoBehaviour {
 		
 		yield return new WaitForSeconds (waitingTime);
 		DelegatedMethod (this);
+
+	}
+
+
+	public IEnumerator CO_EnemyStunnedTime () {
+
+		yield return new WaitForSeconds (this.stunnedTime);
+		this.enemyHasBeenStunned = false;
+		this.enemyStunnedCoroutine = this.KillPreviousCoroutine (this.enemyStunnedCoroutine);
 
 	}
 	#endregion

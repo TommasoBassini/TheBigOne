@@ -40,28 +40,37 @@ public class AI_DroneFallingIntoLine : MonoBehaviour, IAI_ImplementedStrategy {
     #region IMPLEMENTED_STRATEGY_METHOD
     public StrategyState ExecuteImplementedStrategy () {
 
-		Debug.Log ("Drone is in <<Falling Into Line>>");
+		if (!this.droneComponents.enemyHasBeenStunned) {
+
+			Debug.Log ("Drone is in <<Falling Into Line>>");
 
 
-        if (!this.droneComponents.droneIsFallingIntoLine)
-            this.droneComponents.droneIsFallingIntoLine = this.ReturnToPatrol ();
+			if (!this.droneComponents.droneIsFallingIntoLine)
+				this.droneComponents.droneIsFallingIntoLine = this.ReturnToPatrol ();
 
 
-		if (this.droneComponents.playerInSight) {
+			if (this.droneComponents.playerInSight) {
 
-			Debug.Log ("Drone switches from <<Falling Into Line>> to <<Defending>>");
-			this.droneComponents.droneIsFallingIntoLine = false;
-			return StrategyState.Defending;
+				Debug.Log ("Drone switches from <<Falling Into Line>> to <<Defending>>");
+				this.droneComponents.droneIsFallingIntoLine = false;
+				return StrategyState.Defending;
 
-		} else if (this.droneComponents.agent.remainingDistance < 1f) {
+			} else if (this.droneComponents.agent.remainingDistance < 1f) {
 
-			Debug.Log ("Drone switches from <<Falling Into Line>> to <<Guarding>>");
-            this.droneComponents.droneIsFallingIntoLine = false;
-            return StrategyState.Guarding;
+				Debug.Log ("Drone switches from <<Falling Into Line>> to <<Guarding>>");
+				this.droneComponents.droneIsFallingIntoLine = false;
+				return StrategyState.Guarding;
+
+			} else {
+
+				Debug.Log ("Drone does not change strategy");
+				return StrategyState.NoStrategyChanging;
+
+			}
 
 		} else {
-
-			Debug.Log ("Drone does not change strategy");
+			
+			Debug.Log ("Drone has been stunned");
 			return StrategyState.NoStrategyChanging;
 
 		}

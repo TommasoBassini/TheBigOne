@@ -41,26 +41,35 @@ public class AI_SentinelGuarding : MonoBehaviour, IAI_ImplementedStrategy {
 	#region IMPLEMENTED_STRATEGY_METHOD
 	public StrategyState ExecuteImplementedStrategy () {
 
-		Debug.Log ("Sentinel is in <<Guarding>>");
+		if (!this.sentinelComponents.enemyHasBeenStunned) {
+
+			Debug.Log ("Sentinel is in <<Guarding>>");
 
 
-		if (this.sentinelComponents.agent.remainingDistance < 0.5f)
-			this.GoToNextPoint ();
+			if (this.sentinelComponents.agent.remainingDistance < 0.5f)
+				this.GoToNextPoint ();
 		
 
-		if (this.sentinelComponents.playerInSight) {
+			if (this.sentinelComponents.playerInSight) {
 
-			Debug.Log ("Sentinel switches from <<Guarding>> to <<Defending>>");
-			return StrategyState.Defending;
+				Debug.Log ("Sentinel switches from <<Guarding>> to <<Defending>>");
+				return StrategyState.Defending;
 
-		} else if (this.sentinelComponents.playerHasBeenHeard) {
+			} else if (this.sentinelComponents.playerHasBeenHeard) {
 
-			Debug.Log ("Sentinel switches from <<Guarding>> to <<Inspecting>>");
-			return StrategyState.Inspecting;
+				Debug.Log ("Sentinel switches from <<Guarding>> to <<Inspecting>>");
+				return StrategyState.Inspecting;
+
+			} else {
+
+				Debug.Log ("Sentinel does not change strategy");
+				return StrategyState.NoStrategyChanging;
+
+			}
 
 		} else {
-
-			Debug.Log ("Sentinel does not change strategy");
+			
+			Debug.Log ("Sentinel has been stunned");
 			return StrategyState.NoStrategyChanging;
 
 		}

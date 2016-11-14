@@ -19,18 +19,27 @@ public class AI_TurretGuarding : MonoBehaviour, IAI_ImplementedStrategy {
 	#region IMPLEMENTED_STRATEGY_METHOD
 	public StrategyState ExecuteImplementedStrategy () {
 
-		Debug.Log ("Turret is in <<Guarding>>");
+		if (!this.turretComponents.enemyHasBeenStunned) {
 
-		//this.transform.LookAt (this.turretComponents.turretScanner.transform.position);
+			Debug.Log ("Turret is in <<Guarding>>");
 
-		if (this.turretComponents.playerInSight) {
+			//this.transform.LookAt (this.turretComponents.turretScanner.transform.position);
 
-			Debug.Log ("Turret switches from <<Guarding>> to <<Defending>>");
-			return StrategyState.Defending;
+			if (this.turretComponents.playerInSight) {
+
+				Debug.Log ("Turret switches from <<Guarding>> to <<Defending>>");
+				return StrategyState.Defending;
+
+			} else {
+
+				Debug.Log ("Turret does not change strategy");
+				return StrategyState.NoStrategyChanging;
+
+			}
 
 		} else {
-
-			Debug.Log ("Turret does not change strategy");
+			
+			Debug.Log ("Turret has been stunned");
 			return StrategyState.NoStrategyChanging;
 
 		}

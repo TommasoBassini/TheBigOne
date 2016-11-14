@@ -28,20 +28,29 @@ public class AI_DroneDefending : MonoBehaviour, IAI_ImplementedStrategy {
     #region IMPLEMENTED_STRATEGY_METHOD
     public StrategyState ExecuteImplementedStrategy () {
 
-		Debug.Log ("Drone is in <<Defending>>");
+		if (!this.droneComponents.enemyHasBeenStunned) {
+
+			Debug.Log ("Drone is in <<Defending>>");
 
 
-        this.ChasePlayer ();
+			this.ChasePlayer ();
 
                 
-		if (!this.droneComponents.playerInSight) {
+			if (!this.droneComponents.playerInSight) {
 
-			Debug.Log ("Drone switches from <<Defending>> to <<Falling Into Line>>");
-			return StrategyState.FallingIntoLine;
+				Debug.Log ("Drone switches from <<Defending>> to <<Falling Into Line>>");
+				return StrategyState.FallingIntoLine;
+
+			} else {
+
+				Debug.Log ("Drone does not change strategy");
+				return StrategyState.NoStrategyChanging;
+
+			}
 
 		} else {
-
-			Debug.Log ("Drone does not change strategy");
+			
+			Debug.Log ("Drone has been stunned");
 			return StrategyState.NoStrategyChanging;
 
 		}

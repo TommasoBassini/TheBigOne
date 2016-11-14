@@ -60,33 +60,41 @@ public class AI_DroneGuarding : MonoBehaviour, IAI_ImplementedStrategy {
 	
 	#region IMPLEMENTED_STRATEGY_METHOD
 	public StrategyState ExecuteImplementedStrategy () {
-		
-		Debug.Log ("Drone is in <<Guarding>>");
-		
-		
-		if (this.droneComponents.agent.remainingDistance < 0.5f) {
-			
-			if (this.droneComponents.isPathRandomized)
-				this.GoToNextPointRandomized ();
-			
-			else
-				this.GoToNextPointOrdered ();
 
-		}
+		if (!this.droneComponents.enemyHasBeenStunned) {
+		
+			Debug.Log ("Drone is in <<Guarding>>");
 		
 		
-		if (this.droneComponents.playerInSight) {
+			if (this.droneComponents.agent.remainingDistance < 0.5f) {
 			
-			Debug.Log ("Drone switches from <<Guarding>> to <<Defending>>");
-			return StrategyState.Defending;
+				if (this.droneComponents.isPathRandomized)
+					this.GoToNextPointRandomized ();
+				else
+					this.GoToNextPointOrdered ();
+
+			}
+		
+		
+			if (this.droneComponents.playerInSight) {
 			
+				Debug.Log ("Drone switches from <<Guarding>> to <<Defending>>");
+				return StrategyState.Defending;
+			
+			} else {
+			
+				Debug.Log ("Drone does not change strategy");
+				return StrategyState.NoStrategyChanging;
+			
+			}
+		
 		} else {
 			
-			Debug.Log ("Drone does not change strategy");
+			Debug.Log ("Drone has been stunned");
 			return StrategyState.NoStrategyChanging;
-			
+
 		}
-		
+
 	}
 	#endregion
 	
