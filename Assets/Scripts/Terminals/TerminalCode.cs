@@ -5,8 +5,8 @@ using UnityEngine.Events;
 
 public class TerminalCode : MonoBehaviour
 {
-    private string currentPin;
-    private string passText;
+    public string currentPin;
+    public string passText;
     public Text pinText;
     public Button confirmButton;
 
