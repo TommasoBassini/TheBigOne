@@ -7,6 +7,7 @@ public class VariableButton : MonoBehaviour
     public int valueDiff;
 
     public bool justPressed = false;
+    public int nImageToFill = 0;
 
     public void Press(int n)
     {
@@ -18,11 +19,11 @@ public class VariableButton : MonoBehaviour
             if (isActive)
             {
                 justPressed = true;
-                Invoke("ResetPressed", ts.imagesToFill[n].timerToFill);
+                Invoke("ResetPressed", ts.imagesToFill[nImageToFill].timerToFill);
                 isActive = false;
-                ts.imagesToFill[n].terminalValue += valueDiff;
+                ts.imagesToFill[nImageToFill].terminalValue += valueDiff;
                 te.feedbackButtonVariableEvent.deactive[n].Invoke(); // setti gli effetti del tasto premuto
-                StartCoroutine(ts.FillImageOverTime(n, valueDiff)); // L'immagine si filla automaticamente
+                StartCoroutine(ts.FillImageOverTime(nImageToFill, valueDiff)); // L'immagine si filla automaticamente
             }
             else
             {
@@ -30,10 +31,10 @@ public class VariableButton : MonoBehaviour
                 {
                     justPressed = true;
                     isActive = true;
-                    Invoke("ResetPressed", ts.imagesToFill[n].timerToFill);
-                    ts.imagesToFill[n].terminalValue -= valueDiff;
+                    Invoke("ResetPressed", ts.imagesToFill[nImageToFill].timerToFill);
+                    ts.imagesToFill[nImageToFill].terminalValue -= valueDiff;
                     te.feedbackButtonVariableEvent.active[n].Invoke(); // setti gli effetti del tasto premuto
-                    StartCoroutine(ts.FillImageOverTime(n, -valueDiff)); // L'immagine si filla automaticamente
+                    StartCoroutine(ts.FillImageOverTime(nImageToFill, -valueDiff)); // L'immagine si filla automaticamente
                 }
                 else
                 {
