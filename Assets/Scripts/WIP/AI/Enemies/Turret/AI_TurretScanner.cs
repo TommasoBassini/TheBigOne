@@ -41,28 +41,24 @@ public class AI_TurretScanner : MonoBehaviour {
 
 	public void Update () {
 
-		if (!this.turretComponents.enemyHasBeenStunned) {
-		
-			if (this.isScanningForward) {
+		if (this.isScanningForward) {
 			
-				this.distance = this.turretComponents.points [1].position - this.transform.position;
+			this.distance = this.turretComponents.points [1].position - this.transform.position;
 			
-				if (this.distance.sqrMagnitude < 0.01f)
-					this.isScanningForward = false;
-				else
-					this.transform.Translate (this.distance.normalized * Time.deltaTime);
+			if (this.distance.sqrMagnitude < 0.01f)
+				this.isScanningForward = false;
+			else
+				this.transform.Translate (this.distance.normalized * Time.deltaTime);
 			
-			} else {
+		} else {
 			
-				this.distance = this.turretComponents.points [0].position - this.transform.position;
+			this.distance = this.turretComponents.points [0].position - this.transform.position;
 			
-				if (this.distance.sqrMagnitude < 0.01f)
-					this.isScanningForward = true;
-				else
-					this.transform.Translate (this.distance.normalized * Time.deltaTime);
+			if (this.distance.sqrMagnitude < 0.01f)
+				this.isScanningForward = true;
+			else
+				this.transform.Translate (this.distance.normalized * Time.deltaTime);
 			
-			}
-
 		}
 		
 	}
@@ -70,16 +66,12 @@ public class AI_TurretScanner : MonoBehaviour {
 
 	public void OnTriggerEnter (Collider other) {
 
-		if (!this.turretComponents.enemyHasBeenStunned) {
-
-			if (other.gameObject == this.turretComponents.player) {
-
-				this.turretComponents.playerHasBeenDetected = true;
-				this.transform.localPosition = Vector3.zero;
-				this.EnableTurretScanner (false);
-
-			}
-
+		if (other.gameObject == this.turretComponents.player) {
+			
+			this.turretComponents.playerHasBeenDetected = true;
+			this.transform.localPosition = Vector3.zero;
+			this.EnableTurretScanner (false);
+			
 		}
 
 	}

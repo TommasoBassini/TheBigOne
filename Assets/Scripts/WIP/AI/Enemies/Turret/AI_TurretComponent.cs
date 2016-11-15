@@ -11,7 +11,7 @@ public class AI_TurretComponent : MonoBehaviour {
 		public TurretDelegate TurretAttackPostDelay = delegate (AI_TurretComponent turretComponentReference) {
 			
 			turretComponentReference.turretIsShoothing = true;
-			turretComponentReference.attackCoroutine = null;
+			turretComponentReference.attackCoroutine = turretComponentReference.KillPreviousCoroutine (turretComponentReference.attackCoroutine);
 			
 		};
 
@@ -19,7 +19,7 @@ public class AI_TurretComponent : MonoBehaviour {
 			
 			turretComponentReference.playerHasBeenDetected = false;
 			turretComponentReference.turretScanner.EnableTurretScanner (true);	//Might be moved elsewhere
-			turretComponentReference.slipOutCoroutine = null;
+			turretComponentReference.slipOutCoroutine = turretComponentReference.KillPreviousCoroutine (turretComponentReference.slipOutCoroutine);
 			
 		};
 
@@ -36,8 +36,6 @@ public class AI_TurretComponent : MonoBehaviour {
 	public bool playerInSight;							// Whether or not the player is currently sighted
 	[Tooltip ("DO NOT TOUCH!")]
 	public bool turretIsShoothing;
-	[Tooltip ("DO NOT TOUCH!")]
-	public bool enemyHasBeenStunned;
 
 
 	[Header ("Variables")]
@@ -49,8 +47,6 @@ public class AI_TurretComponent : MonoBehaviour {
 	[Range (0f, 10f)] public float scanningTime = 2f;
 	[Tooltip ("Waiting time used to return in guarding state - from 0f to 10f")]
 	[Range (0f, 10f)] public float waitingTime = 5f;
-	[Tooltip ("Determines the stunning time of the enemy if hit by an EMI (from 0f to 10f)")]
-	[Range (0f, 10f)] public float stunnedTime = 5f;
 
 
 	[Header ("Structs")]
@@ -67,8 +63,6 @@ public class AI_TurretComponent : MonoBehaviour {
 	public Coroutine attackCoroutine;
 	[Tooltip ("DO NOT TOUCH!")]
 	public Coroutine slipOutCoroutine;
-	[Tooltip ("DO NOT TOUCH!")]
-	public Coroutine enemyStunnedCoroutine;
 	[Tooltip ("DO NOT TOUCH!")]
 	public Delegates delegates;
 	[Tooltip ("DO NOT TOUCH!")]
@@ -110,13 +104,11 @@ public class AI_TurretComponent : MonoBehaviour {
 		this.playerHasBeenDetected = false;
 		this.playerInSight = false;
 		this.turretIsShoothing = false;
-		this.enemyHasBeenStunned = false;
 
 		this.destPoint = 0;
 
 		this.attackCoroutine = null;
 		this.slipOutCoroutine = null;
-		this.enemyStunnedCoroutine = null;
 
 	}
 
@@ -136,8 +128,6 @@ public class AI_TurretComponent : MonoBehaviour {
 				
 				// ... and if a raycast towards the player hits something...
 				if (Physics.Raycast (this.transform.position, this.direction.normalized, out this.hit)) {
-
-					Debug.DrawLine (this.transform.position, this.hit.point, Color.green);
 					
 					// ... and if the raycast hits the player...
 					if (this.hit.collider.gameObject == this.player) {
@@ -155,10 +145,6 @@ public class AI_TurretComponent : MonoBehaviour {
 
 						} else {
 
-							this.attackRay.enabled = true;
-							this.attackRay.SetPosition (0, this.attackRay.transform.position);
-							this.attackRay.SetPosition (1, other.transform.position);
-
 							// ... and may be attacked.
 							Debug.LogWarning ("Shooting!");
 
@@ -167,7 +153,6 @@ public class AI_TurretComponent : MonoBehaviour {
 					} else {
 
 						this.turretIsShoothing = false;
-						this.attackRay.enabled = false;
 
 						if (this.attackCoroutine != null)
 							this.attackCoroutine = this.KillPreviousCoroutine (this.attackCoroutine);
@@ -193,31 +178,13 @@ public class AI_TurretComponent : MonoBehaviour {
 
 			// ... the player is not in sight.
 			this.playerInSight = false;
-
 			this.turretIsShoothing = false;
-			this.attackRay.enabled = false;
 
 			if (this.attackCoroutine != null)
 				this.attackCoroutine = this.KillPreviousCoroutine (this.attackCoroutine);
 
 			if (this.slipOutCoroutine == null)
 				this.slipOutCoroutine = this.StartCoroutine_Auto (this.CO_TurretDelayedTime (this.waitingTime, this.delegates.TurretSlipOutPostDelay));
-
-		}
-
-	}
-
-
-	public void OnCollisionEnter (Collision collision) {
-
-		if (collision.gameObject.CompareTag ("IEM")) {
-
-			if (this.enemyStunnedCoroutine == null) {
-
-				this.enemyHasBeenStunned = true;
-				this.enemyStunnedCoroutine = this.StartCoroutine_Auto (this.CO_EnemyStunnedTime ());
-
-			}
 
 		}
 
@@ -242,15 +209,6 @@ public class AI_TurretComponent : MonoBehaviour {
 		
 		yield return new WaitForSeconds (waitingTime);
 		DelegatedMethod (this);
-
-	}
-
-
-	public IEnumerator CO_EnemyStunnedTime () {
-
-		yield return new WaitForSeconds (this.stunnedTime);
-		this.enemyHasBeenStunned = false;
-		this.enemyStunnedCoroutine = this.KillPreviousCoroutine (this.enemyStunnedCoroutine);
 
 	}
 	#endregion

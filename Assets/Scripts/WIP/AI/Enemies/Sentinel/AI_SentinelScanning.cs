@@ -71,9 +71,6 @@ public class AI_SentinelScanning : MonoBehaviour, IAI_ImplementedStrategy {
 
 			}
 
-			//if (this.sentinelComponents.agent.remainingDistance < 0.1f)
-			//	this.transform.localRotation = Quaternion.AngleAxis ((720f / this.sentinelComponents.scanningTime) * Time.deltaTime, Vector3.up);
-
 
 			if (this.sentinelComponents.playerInSight) {
 

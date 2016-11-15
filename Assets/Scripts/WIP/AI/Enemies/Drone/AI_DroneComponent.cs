@@ -93,39 +93,39 @@ public class AI_DroneComponent : MonoBehaviour {
 
 
 	public void OnTriggerStay (Collider other) {
+
+		if (!this.enemyHasBeenStunned) {
 		
-		// If the player has entered the trigger sphere...
-		if (other.gameObject == this.player) {
+			// If the player has entered the trigger sphere...
+			if (other.gameObject == this.player) {
 			
-			// By default the player is not in sight.
-			this.playerInSight = false;
+				// By default the player is not in sight.
+				this.playerInSight = false;
 
-			// Compute a vector from the enemy to the player and store the angle between it and forward.
-			this.direction = other.transform.position - this.transform.position;
-			this.angle = Vector3.Angle (this.direction, this.transform.forward);
+				// Compute a vector from the enemy to the player and store the angle between it and forward.
+				this.direction = other.transform.position - this.transform.position;
+				this.angle = Vector3.Angle (this.direction, this.transform.forward);
 
-			// If the angle between forward and where the player is, is less than half the angle of view...
-			if (this.angle < this.fieldOfViewAngle * 0.5f) {
+				// If the angle between forward and where the player is, is less than half the angle of view...
+				if (this.angle < this.fieldOfViewAngle * 0.5f) {
 
-				// ... and if a raycast towards the player hits something...
-				if (Physics.Raycast (this.transform.position, this.direction.normalized, out this.hit, this.col.radius)) {
+					// ... and if a raycast towards the player hits something...
+					if (Physics.Raycast (this.transform.position, this.direction.normalized, out this.hit, this.col.radius)) {
 					
-					// ... and if the raycast hits the player...
-					if (this.hit.collider.gameObject == this.player) {
+						// ... and if the raycast hits the player...
+						if (this.hit.collider.gameObject == this.player) {
 						
-						// ... the player is in sight...
-						this.playerInSight = true;
+							// ... the player is in sight...
+							this.playerInSight = true;
 
-						if (this.direction.sqrMagnitude < Mathf.Pow (this.attackDistance, 2f)) {
+							if (this.direction.sqrMagnitude < Mathf.Pow (this.attackDistance, 2f)) {
 
-							this.agent.Stop ();
-							this.agentHasBeenStopped = true;
-							this.attackRay.enabled = true;
-							this.attackRay.SetPosition (0, this.attackRay.transform.position);
-							this.attackRay.SetPosition (1, other.transform.position);
+								// ... and may be attacked.
+								this.StopAgent ();
+								Debug.LogWarning ("Shooting!");
 
-							// ... and may be attacked.
-							Debug.LogWarning ("Shooting!");
+							} else if (this.agentHasBeenStopped)
+								this.ResumeAgent ();
 
 						} else if (this.agentHasBeenStopped)
 							this.ResumeAgent ();
@@ -136,8 +136,11 @@ public class AI_DroneComponent : MonoBehaviour {
 				} else if (this.agentHasBeenStopped)
 					this.ResumeAgent ();
 
-			} else if (this.agentHasBeenStopped)
-				this.ResumeAgent ();
+			}
+
+		} else {
+
+			this.StopAgent ();
 
 		}
 
@@ -152,7 +155,7 @@ public class AI_DroneComponent : MonoBehaviour {
 			// ... the player is not in sight.
 			this.playerInSight = false;
 
-			if (this.agentHasBeenStopped)
+			if (!this.enemyHasBeenStunned && this.agentHasBeenStopped)
 				this.ResumeAgent ();
 
 		}
@@ -164,12 +167,9 @@ public class AI_DroneComponent : MonoBehaviour {
 
 		if (collision.gameObject.CompareTag ("IEM")) {
 
-			if (this.enemyStunnedCoroutine == null) {
-				
-				this.enemyHasBeenStunned = true;
-				this.enemyStunnedCoroutine = this.StartCoroutine_Auto (this.CO_EnemyStunnedTime ());
-
-			}
+			this.enemyStunnedCoroutine = KillPreviousCoroutine (this.enemyStunnedCoroutine);
+			this.enemyHasBeenStunned = true;
+			this.enemyStunnedCoroutine = this.StartCoroutine_Auto (this.CO_EnemyStunnedTime ());
 
 		}
 
@@ -178,11 +178,18 @@ public class AI_DroneComponent : MonoBehaviour {
 
 
 	#region DRONE_METHODS
+	public void StopAgent () {
+
+		this.agent.Stop ();
+		this.agentHasBeenStopped = true;
+
+	}
+
+
 	public void ResumeAgent () {
 
 		this.agent.Resume ();
 		this.agentHasBeenStopped = false;
-		this.attackRay.enabled = false;
 
 	}
 
@@ -202,6 +209,7 @@ public class AI_DroneComponent : MonoBehaviour {
 	public IEnumerator CO_EnemyStunnedTime () {
 
 		yield return new WaitForSeconds (this.stunnedTime);
+		this.ResumeAgent ();
 		this.enemyHasBeenStunned = false;
 		this.enemyStunnedCoroutine = this.KillPreviousCoroutine (this.enemyStunnedCoroutine);
 
