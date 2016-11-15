@@ -55,6 +55,7 @@ public struct Images
     public Sprite imageSprite;
     public float imageFill;
     public float timerToFill;
+    public bool isWorking;
 }
 
 [System.Serializable]
@@ -106,4 +107,6 @@ public struct Lights
 public struct Gameobjects
 {
     public GameObject gameobject;
+    public int nSecondiFlesh;
+    public bool isWorking;
 }
