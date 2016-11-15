@@ -27,6 +27,14 @@ public class FeedbackEventPermission
 }
 
 [System.Serializable]
+public class FeedbackButtonVariableEvent
+{
+    public UnityEvent[] active;
+    public UnityEvent[] deactive;
+    public UnityEvent noEnergy;
+}
+
+[System.Serializable]
 public class TimedFeedbackEvent
 {
     public UnityEvent[] timedEvent;
@@ -47,6 +55,18 @@ public struct Images
     public Sprite imageSprite;
     public float imageFill;
     public float timerToFill;
+    public bool isWorking;
+}
+
+[System.Serializable]
+public struct ImagesToFillEnergy
+{
+    public Image imageToChange;
+    public float timerToFill;
+    public int terminalValue;
+    public Text textValue;
+    public string valuePrefix;
+    public string valueSuffix;
 }
 
 [System.Serializable]
@@ -87,4 +107,6 @@ public struct Lights
 public struct Gameobjects
 {
     public GameObject gameobject;
+    public int nSecondiFlesh;
+    public bool isWorking;
 }
