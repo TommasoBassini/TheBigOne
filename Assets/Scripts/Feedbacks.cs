@@ -41,7 +41,10 @@ public class Feedbacks : MonoBehaviour
         {
             if (images[n].timerToFill>0)
             {
-                StartCoroutine(FillImageOverTime(n));
+                if (!images[n].isWorking)
+                {
+                    StartCoroutine(FillImageOverTime(n));
+                }
             }
             else
             {
@@ -52,6 +55,7 @@ public class Feedbacks : MonoBehaviour
 
     public IEnumerator FillImageOverTime(int n)
     {
+        images[n].isWorking = true;
         float time = images[n].timerToFill;
         float elapsedTime = 0.0f;
         float startFill = images[n].imageToChange.fillAmount;
@@ -61,6 +65,7 @@ public class Feedbacks : MonoBehaviour
             elapsedTime += Time.deltaTime;
             yield return null;
         }
+        images[n].isWorking = false;
     }
 
     public void PlayAudio(int n)
@@ -103,6 +108,27 @@ public class Feedbacks : MonoBehaviour
         gameobjects[n].gameobject.SetActive(!objStatus);
     }
 
+    public void FlashGameobject(int n)
+    {
+        if (!gameobjects[n].isWorking)
+        {
+            StartCoroutine(FlashGameobjectCO(n));
+        }
+    }
+
+    IEnumerator FlashGameobjectCO(int n)
+    {
+        gameobjects[n].isWorking = true;
+        bool initialState = gameobjects[n].gameobject.activeInHierarchy;
+        for (int i = 0; i < (gameobjects[n].nSecondiFlesh * 2); i++)
+        {
+            gameobjects[n].gameobject.SetActive(!gameobjects[n].gameobject.activeInHierarchy);
+            yield return new WaitForSeconds(0.5f);
+        }
+        gameobjects[n].gameobject.SetActive(initialState);
+        gameobjects[n].isWorking = false;
+    }
+
     public void ChangeTerminalPanel(GameObject panelToShow)
     {
         TerminalStatus canvas = GetComponent<TerminalStatus>();
@@ -122,4 +148,6 @@ public class Feedbacks : MonoBehaviour
             }
         }
     }
+
+
 }

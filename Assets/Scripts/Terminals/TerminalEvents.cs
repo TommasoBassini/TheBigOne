@@ -16,6 +16,9 @@ public class TerminalEvents : MonoBehaviour
     public Timed[] times;
     public TimedFeedbackEvent timedFeedbackEvent;
 
+    [Header("Eventi per terminali che cambiano variabili")]
+    public FeedbackButtonVariableEvent feedbackButtonVariableEvent;
+
     public IEnumerator TimedFeedback(int n, float t)
     {
         yield return new WaitForSeconds(t);
