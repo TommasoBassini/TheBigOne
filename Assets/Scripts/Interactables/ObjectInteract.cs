@@ -30,7 +30,6 @@ public class ObjectInteract : MonoBehaviour
 
     public GameObject inspect;
     private GameObject activeCanvas;
-    [HideInInspector]
     public Button dummyButton;
     private Ray interactionRay;
     public GameObject torcia;
