@@ -5,21 +5,29 @@ using UnityEngine.Events;
 
 public class TerminalCode : MonoBehaviour
 {
-    public string unlockPin;
     public string currentPin;
     public string passText;
     public Text pinText;
     public Button confirmButton;
 
+    [Header("Per Designer")]
+    public string unlockPin;
+    public bool showNumber;
+    public int passLenght;
+
     public void StampNumber (string n)
     {
-        if (passText.Length < 12)
+        if (passText.Length < passLenght * 3)
         {
             currentPin = currentPin + n;
-            passText += " - ";
+            if (!showNumber)
+                passText += " - ";
+            else
+                passText += " " + n + " ";
+
             pinText.text = passText;
 
-            if (passText.Length == 12)
+            if (passText.Length == passLenght * 3)
             {
                 confirmButton.Select();
             }
