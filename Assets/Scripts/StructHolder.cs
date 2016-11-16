@@ -41,6 +41,12 @@ public class TimedFeedbackEvent
 }
 
 [System.Serializable]
+public class GeneralFeedbackEvent
+{
+    public UnityEvent[] generalEvent;
+}
+
+[System.Serializable]
 public class FeedbackTriggerEvent
 {
     public UnityEvent onTriggerEnter;

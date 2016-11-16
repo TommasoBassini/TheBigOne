@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class Permessi
@@ -26,9 +27,20 @@ public class PlayerStatus : MonoBehaviour
     public int guardLvl;
     public Permessi permessi;
 
+    public int maxLife;
     public int life;
 
     public AbrsorbType storageMaterial;
+
+    public float timeForRestore;
+    public float speedOfRestore;
+
+    public Image damageEffectImage;
+
+    void Start()
+    {
+        life = maxLife;
+    }
 
     public void MedicLvlUp(int n)
     {
@@ -79,6 +91,59 @@ public class PlayerStatus : MonoBehaviour
                     permessi.hasIemEngineer = true;
                     break;
                 }
+        }
+    }
+
+    public void ReceiveDamege(int damage)
+    {
+        StopCoroutine("RestoreLife");
+        life -= damage;
+        Debug.Log(life);
+        if (life <= 0)
+        {
+            Debug.Log("Morto");
+            //Mettere qui logica per morte
+        }
+        else
+        {
+            StartCoroutine("RestoreLife");
+        }
+
+        if (life <= (50))
+        {
+            StartCoroutine(DamageEffect(life));
+
+        }
+    }
+    
+    private IEnumerator DamageEffect(int life)
+    {
+        float elapsedTime = 0.0f;
+        float startAlpha = damageEffectImage.color.a;
+        float step = 200 /50;
+
+        float finalAlpha = (200 - (step * life))/255;
+        while (elapsedTime < 0.3f)
+        {
+            damageEffectImage.color = new Color(damageEffectImage.color.r, damageEffectImage.color.g, damageEffectImage.color.b, Mathf.Lerp(startAlpha, finalAlpha, (elapsedTime / 0.3f)));
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    private IEnumerator RestoreLife()
+    {
+        yield return new WaitForSeconds(timeForRestore);
+        float elapsedTime = 0.0f;
+        float startLife = life;
+        while (elapsedTime < speedOfRestore)
+        {
+            life = Mathf.RoundToInt(Mathf.Lerp(startLife, maxLife, (elapsedTime / speedOfRestore)));
+            if(life<50)
+                StartCoroutine(DamageEffect(life));
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
         }
     }
 }

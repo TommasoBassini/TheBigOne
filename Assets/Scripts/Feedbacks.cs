@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Events;
-
+using UnityEngine.SceneManagement;
 public class Feedbacks : MonoBehaviour
 {
     [Header("Feedback")]
@@ -12,6 +12,8 @@ public class Feedbacks : MonoBehaviour
     public Animations[] animations;
     public Lights[] lights;
     public Gameobjects[] gameobjects;
+
+    private AsyncOperation async;
 
     public void ChangeText(int n)
     {
@@ -149,5 +151,26 @@ public class Feedbacks : MonoBehaviour
         }
     }
 
+    public void ChangeScene(int sceneIndex)
+    {
+        StartCoroutine(ChangeSceneCO(sceneIndex));
+    }
+
+    IEnumerator ChangeSceneCO(int sceneIndex)
+    {
+        async = SceneManager.LoadSceneAsync(sceneIndex);
+        async.allowSceneActivation = false;
+        Invoke("prova", 5);
+        Debug.Log("la scena è stata caricata e verra cambiata in 5 secondi");
+        yield return async;
+    }
+    void prova()
+    {
+        async.allowSceneActivation = true;
+    }
+    public void GeneralButton(int n)
+    {
+        GetComponentInParent<TerminalEvents>().generalFeedbackEvent.generalEvent[n].Invoke();
+    }
 
 }
