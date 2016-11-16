@@ -18,8 +18,8 @@ public class EnergyManage : MonoBehaviour
 
     public void Ligth()
     {
-        door.doorIsUnLocked = false;
-        door.UnlockDoor();
+        //door.doorIsUnLocked = false;
+        //door.UnlockDoor();
         foreach (Light light in lights)
         {
             light.enabled = true;
@@ -28,8 +28,8 @@ public class EnergyManage : MonoBehaviour
 
     public void UnlockDoor()
     {
-        door.doorIsUnLocked = true;
-        door.UnlockDoor();
+        //door.doorIsUnLocked = true;
+        //door.UnlockDoor();
         foreach (Light light in lights)
         {
             light.enabled = false;
