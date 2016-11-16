@@ -3,6 +3,58 @@ using System.Collections;
 
 public class AI_DroneComponent : MonoBehaviour {
 
+	#region DRONE_DELEGATES
+	public EnemyDelegate <AI_DroneComponent> DelegatedMethod = delegate (AI_DroneComponent droneReference, Collider other) {
+		
+		if (!droneReference.enemyHasBeenStunned) {
+			
+			// By default the player is not in sight.
+			droneReference.playerInSight = false;
+			
+			// Compute a vector from the enemy to the player and store the angle between it and forward.
+			droneReference.direction = other.transform.position - droneReference.transform.position;
+			droneReference.angle = Vector3.Angle (droneReference.direction, droneReference.transform.forward);
+			
+			// If the angle between forward and where the player is, is less than half the angle of view...
+			if (droneReference.angle < droneReference.fieldOfViewAngle * 0.5f) {
+				
+				// ... and if a raycast towards the player hits something...
+				if (Physics.Raycast (droneReference.transform.position, droneReference.direction.normalized, out droneReference.hit, droneReference.col.radius)) {
+					
+					// ... and if the raycast hits the player...
+					if (droneReference.hit.collider.gameObject == droneReference.player) {
+						
+						// ... the player is in sight...
+						droneReference.playerInSight = true;
+						
+						if (droneReference.direction.sqrMagnitude < Mathf.Pow (droneReference.attackDistance, 2f)) {
+							
+							// ... and may be attacked.
+							droneReference.StopAgent ();
+							Debug.LogWarning ("Shooting!");
+							
+						} else if (droneReference.agentHasBeenStopped)
+							droneReference.ResumeAgent ();
+						
+					} else if (droneReference.agentHasBeenStopped)
+						droneReference.ResumeAgent ();
+					
+				} else if (droneReference.agentHasBeenStopped)
+					droneReference.ResumeAgent ();
+				
+			} else if (droneReference.agentHasBeenStopped)
+				droneReference.ResumeAgent ();
+			
+		} else {
+			
+			droneReference.StopAgent ();
+			
+		}
+		
+	};
+	#endregion
+
+
 	#region DRONE_PARAMETERS
 	[Header ("Boolean Flags")]
 
@@ -29,6 +81,8 @@ public class AI_DroneComponent : MonoBehaviour {
 	[Range (0f, 10f)] public float attackDistance = 5f;
 	[Tooltip ("Determines the stunning time of the enemy if hit by an EMI (from 0f to 10f)")]
 	[Range (0f, 10f)] public float stunnedTime = 5f;
+	[Tooltip ("Determines the Input checking time of the enemy (from 0f to 10f)")]
+	[Range (0f, 10f)] public float inputCheckingTime = 1f;
 	[Tooltip ("DO NOT TOUCH!")]
 	public float angle;
 
@@ -47,6 +101,8 @@ public class AI_DroneComponent : MonoBehaviour {
     public NavMeshAgent agent;
 	[Tooltip ("DO NOT TOUCH!")]
     public SphereCollider col;                         // Reference to the sphere collider trigger component
+	[Tooltip ("DO NOT TOUCH!")]
+	public Coroutine inputCheckingCoroutine;
 	[Tooltip ("DO NOT TOUCH!")]
 	public Coroutine enemyStunnedCoroutine;
 	[Tooltip ("DO NOT TOUCH!")]
@@ -87,12 +143,25 @@ public class AI_DroneComponent : MonoBehaviour {
 
 		this.destPoint = 0;
 
-		this.enemyStunnedCoroutine = null;
+		this.inputCheckingCoroutine = this.KillPreviousCoroutine (this.inputCheckingCoroutine);
+		this.enemyStunnedCoroutine = this.KillPreviousCoroutine (this.enemyStunnedCoroutine);
 
 	}
 
 
-	public void OnTriggerStay (Collider other) {
+	public void OnTriggerEnter (Collider other) {
+
+		if (other.gameObject == this.player) {
+
+			if (this.inputCheckingCoroutine == null)
+				this.inputCheckingCoroutine = this.StartCoroutine_Auto (this.CO_InputChecking (this.inputCheckingTime, this.DelegatedMethod, other));
+
+		}
+
+	}
+
+
+	/*public void OnTriggerStay (Collider other) {
 
 		if (!this.enemyHasBeenStunned) {
 		
@@ -144,7 +213,7 @@ public class AI_DroneComponent : MonoBehaviour {
 
 		}
 
-	}
+	}*/
 
 
 	public void OnTriggerExit (Collider other) {
@@ -154,6 +223,8 @@ public class AI_DroneComponent : MonoBehaviour {
 
 			// ... the player is not in sight.
 			this.playerInSight = false;
+
+			this.inputCheckingCoroutine = this.KillPreviousCoroutine (this.inputCheckingCoroutine);
 
 			if (!this.enemyHasBeenStunned && this.agentHasBeenStopped)
 				this.ResumeAgent ();
@@ -206,6 +277,18 @@ public class AI_DroneComponent : MonoBehaviour {
 
 
 	#region DRONE_COROUTINES
+	public IEnumerator CO_InputChecking (float inputCheckingTime, EnemyDelegate <AI_DroneComponent> DelegatedMethod, Collider other) {
+
+		while (true) {
+
+			yield return new WaitForSeconds (inputCheckingTime);
+			DelegatedMethod (this, other);
+
+		}
+
+	}
+
+
 	public IEnumerator CO_EnemyStunnedTime () {
 
 		yield return new WaitForSeconds (this.stunnedTime);

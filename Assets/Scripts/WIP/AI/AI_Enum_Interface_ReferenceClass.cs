@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+public delegate void EnemyDelegate <TEnemy> (TEnemy enemyReference, Collider other) where TEnemy : MonoBehaviour;
+
 //Enum used to establish the AIs' states
 public enum StrategyState : byte {NoStrategyChanging, Guarding, Defending, FallingIntoLine, Inspecting, Scanning};
 
