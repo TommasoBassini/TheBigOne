@@ -155,6 +155,7 @@ public class ObjectInteract : MonoBehaviour
                         {
                             if (panel.panel.activeInHierarchy)
                             {
+                                Debug.Log(panel.firstSelectButtonInPanel);
                                 panel.firstSelectButtonInPanel.Select();
                                 break;
                             }
