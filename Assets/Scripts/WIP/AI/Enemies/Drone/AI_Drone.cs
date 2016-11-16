@@ -17,6 +17,7 @@ public class AI_Drone : FiniteStateMachine {
 		this.droneReference.enemyStrategyList.Add (this.GetComponent <AI_DroneGuarding> ());
 		this.droneReference.enemyStrategyList.Add (this.GetComponent <AI_DroneDefending> ());
 		this.droneReference.enemyStrategyList.Add (this.GetComponent <AI_DroneFallingIntoLine> ());
+		this.droneReference.enemyStrategyList.Add (this.GetComponent <AI_DroneInspecting> ());
 
 	}
 

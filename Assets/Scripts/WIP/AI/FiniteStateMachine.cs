@@ -4,23 +4,25 @@ using System.Collections.Generic;
 
 public abstract class FiniteStateMachine : MonoBehaviour {
 
+	private int state;
+
 	public void FiniteStateMachineMethod (EnemyReference enemyReference) {
 		
-	 	int state = 1;
+	 	this.state = 1;
 
 		if (enemyReference.enemyStrategyState == StrategyState.NoStrategyChanging)
 			return;
 
 		do {
 
-			if (enemyReference.enemyStrategyState == (StrategyState) ((int) StrategyState.NoStrategyChanging + state)) {
+			if (enemyReference.enemyStrategyState == (StrategyState) ((int) StrategyState.NoStrategyChanging + this.state)) {
 				
-				enemyReference.enemyImplementedStrategy = enemyReference.enemyStrategyList [state - 1];
+				enemyReference.enemyImplementedStrategy = enemyReference.enemyStrategyList [this.state - 1];
 				return;
 
 			}
 
-		} while (++state <= enemyReference.enemyStrategyList.Count);
+		} while (++(this.state) <= enemyReference.enemyStrategyList.Count);
 
 		Debug.LogError (this.ToString () + " does not understand wich strategy it should use!");
 		return;

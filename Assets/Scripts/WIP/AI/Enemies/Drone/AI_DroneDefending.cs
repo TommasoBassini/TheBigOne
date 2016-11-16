@@ -38,8 +38,8 @@ public class AI_DroneDefending : MonoBehaviour, IAI_ImplementedStrategy {
                 
 			if (!this.droneComponents.playerInSight) {
 
-				Debug.Log ("Drone switches from <<Defending>> to <<Falling Into Line>>");
-				return StrategyState.FallingIntoLine;
+				Debug.Log ("Drone switches from <<Defending>> to <<Inspecting>>");
+				return StrategyState.Inspecting;
 
 			} else {
 
