@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 [System.Serializable]
 public struct Panels
@@ -17,8 +19,14 @@ public class TerminalStatus : MonoBehaviour
 
     public ImagesToFillEnergy[] imagesToFill;
 
+    public List<Panels> orderOfLastPanel = new List<Panels>();
 
-    public IEnumerator FillImageOverTime(int n,int valueDiff)
+    void Start()
+    {
+        orderOfLastPanel.Add(panels[0]);
+    }
+
+    public IEnumerator FillImageOverTime(int n, int valueDiff)
     {
         float time = imagesToFill[n].timerToFill;
         float finishValue = imagesToFill[n].imageToChange.fillAmount + ((float)valueDiff / 100);
@@ -30,6 +38,28 @@ public class TerminalStatus : MonoBehaviour
             imagesToFill[n].textValue.text = imagesToFill[n].valuePrefix + (imagesToFill[n].imageToChange.fillAmount * 100).ToString("0") + imagesToFill[n].valueSuffix;
             elapsedTime += Time.deltaTime;
             yield return null;
+        }
+    }
+
+    public IEnumerator BlockTerminal(float nSecondi)
+    {
+        Button[] terminalButtons = this.gameObject.GetComponentsInChildren<Button>();
+        GameObject selectedButton = FindObjectOfType<EventSystem>().currentSelectedGameObject; ;
+        foreach (var button in terminalButtons)
+        {
+            button.interactable = false;
+        }
+
+        yield return new WaitForSeconds(nSecondi);
+
+        foreach (var button in terminalButtons)
+        {
+            button.interactable = true;
+        }
+
+        if (selectedButton != null)
+        {
+            selectedButton.GetComponent<Button>().Select();
         }
     }
 }

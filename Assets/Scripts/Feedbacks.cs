@@ -2,6 +2,9 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using UnityStandardAssets.Characters.FirstPerson;
+
 
 public class Feedbacks : MonoBehaviour
 {
@@ -13,6 +16,15 @@ public class Feedbacks : MonoBehaviour
     public Lights[] lights;
     public Gameobjects[] gameobjects;
 
+    private AsyncOperation async;
+
+    void Start()
+    {
+        for (int i = 0; i < texts.Length; i++)
+        {
+            texts[i].textString = texts[i].textString.Replace("<br>", "\n");
+        }
+    }
     public void ChangeText(int n)
     {
         if (texts[n].textColors != new Color(0, 0, 0, 0))
@@ -132,9 +144,21 @@ public class Feedbacks : MonoBehaviour
     public void ChangeTerminalPanel(GameObject panelToShow)
     {
         TerminalStatus canvas = GetComponent<TerminalStatus>();
+
         if (canvas)
         {
-            canvas.activePanel.SetActive(false);
+
+            foreach (var panel in canvas.panels)
+            {
+                if (panel.panel.activeInHierarchy)
+                {
+
+                    canvas.orderOfLastPanel.Add(panel);
+                    canvas.activePanel.SetActive(false);
+                    break;
+                }
+            }
+
             panelToShow.SetActive(true);
             canvas.activePanel = panelToShow;
 
@@ -142,6 +166,7 @@ public class Feedbacks : MonoBehaviour
             {
                 if (panel.panel.activeInHierarchy)
                 {
+
                     panel.firstSelectButtonInPanel.Select();
                     break;
                 }
@@ -149,5 +174,31 @@ public class Feedbacks : MonoBehaviour
         }
     }
 
+    public void ChangeScene(int sceneIndex)
+    {
+        StartCoroutine(ChangeSceneCO(sceneIndex));
+    }
 
+    IEnumerator ChangeSceneCO(int sceneIndex)
+    {
+        async = SceneManager.LoadSceneAsync(sceneIndex);
+        async.allowSceneActivation = false;
+        Invoke("prova", 5);
+        Debug.Log("la scena è stata caricata e verra cambiata in 5 secondi");
+        yield return async;
+    }
+    void prova()
+    {
+        async.allowSceneActivation = true;
+    }
+    public void GeneralButton(int n)
+    {
+        GetComponentInParent<TerminalEvents>().generalFeedbackEvent.generalEvent[n].Invoke();
+    }
+
+    public void ExitFromTerminal()
+    {
+        ObjectInteract objectInteract = FindObjectOfType<ObjectInteract>();
+        objectInteract.ExitFromTerminal();
+    }
 }

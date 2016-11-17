@@ -19,8 +19,16 @@ public class TerminalEvents : MonoBehaviour
     [Header("Eventi per terminali che cambiano variabili")]
     public FeedbackButtonVariableEvent feedbackButtonVariableEvent;
 
+    [Header("Eventi generali")]
+    public GeneralFeedbackEvent generalFeedbackEvent;
+
     public IEnumerator TimedFeedback(int n, float t)
     {
+        if (times[n].isBlocked)
+        {
+            TerminalStatus ts = this.gameObject.GetComponent<TerminalStatus>();
+            StartCoroutine(ts.BlockTerminal(times[n].timeToWait));
+        }
         yield return new WaitForSeconds(t);
         timedFeedbackEvent.timedEvent[n].Invoke();
     }

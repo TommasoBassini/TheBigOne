@@ -41,6 +41,12 @@ public class TimedFeedbackEvent
 }
 
 [System.Serializable]
+public class GeneralFeedbackEvent
+{
+    public UnityEvent[] generalEvent;
+}
+
+[System.Serializable]
 public class FeedbackTriggerEvent
 {
     public UnityEvent onTriggerEnter;
@@ -82,6 +88,7 @@ public struct Timed
 {
     public float timeToWait;
     public int nEvent;
+    public bool isBlocked;
 }
 
 [System.Serializable]

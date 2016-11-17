@@ -9,6 +9,11 @@ public class DoorBaseScript : MonoBehaviour
 
     public GameObject[] buttons;
 
+    void Start()
+    {
+        UpdateButtons();
+    }
+
     public void UpdateButtons()
     {
         foreach (var item in buttons)
