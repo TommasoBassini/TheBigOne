@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityStandardAssets.Characters.FirstPerson;
 using System.Collections.Generic;
+using UnityStandardAssets.ImageEffects;
 
 public class MenuControl : MonoBehaviour
 {
@@ -26,6 +27,7 @@ public class MenuControl : MonoBehaviour
     public GameObject scansPanel;
     public GameObject objActive;
     public Button scanButton;
+    public BlurOptimized blur;
 
     void Start()
     {
@@ -51,6 +53,7 @@ public class MenuControl : MonoBehaviour
                     panels[0].SetActive(true);
                     buttons[1].Select();
                     buttons[0].Select();
+                    blur.enabled = true;
                     return;
                 }
                 else
@@ -61,6 +64,7 @@ public class MenuControl : MonoBehaviour
                     pnlMenu.SetActive(false);
                     panels[nMenu].SetActive(false);
                     nMenu = 0;
+                    blur.enabled = false;
                     return;
                 }
             }
@@ -108,6 +112,7 @@ public class MenuControl : MonoBehaviour
                 pnlMenu.SetActive(false);
                 panels[nMenu].SetActive(false);
                 nMenu = 0;
+                blur.enabled = false;
                 return;
             }
         }

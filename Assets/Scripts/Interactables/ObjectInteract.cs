@@ -66,7 +66,7 @@ public class ObjectInteract : MonoBehaviour
     public bool isTerminal = false;
 
     public GameObject inspect;
-    private GameObject activeCanvas;
+    private TerminalStatus activeCanvas;
     public Text feedbacktext;
     public Image buttonFeedbackImage;
     public Button dummyButton;
@@ -78,6 +78,7 @@ public class ObjectInteract : MonoBehaviour
     public GameObject body;
     private bool pauseAbsorb = false;
     private RaycastTarget raycastTarget;
+    private bool isCoroutineWork = false;
 
     [Header("Per i designer")]
     [Tooltip("Setta la distanza di interazione con gli oggetti")]
@@ -177,7 +178,7 @@ public class ObjectInteract : MonoBehaviour
                     raycastTarget = RaycastTarget.terminal;
                     InputUIFeedback();
 
-                    if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E)) && (!menu || !menu.isMenu))
+                    if ((Input.GetKeyUp(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.E)) && (!menu || !menu.isMenu) && !isCoroutineWork)
                     {
                         isInteracting = true;
                         isTerminal = true;
@@ -194,9 +195,8 @@ public class ObjectInteract : MonoBehaviour
                         //StartCoroutine(LerpLookAt(hit.transform.Find("Main").position));
 
                         GetComponent<FirstPersonController>().enabled = false;
-                        activeCanvas = hit.collider.transform.FindChild("Main").gameObject;
-                        TerminalStatus ts = activeCanvas.GetComponent<TerminalStatus>();
-                        foreach (var panel in ts.panels)
+                        activeCanvas = hit.collider.transform.FindChild("Main").gameObject.GetComponent<TerminalStatus>();
+                        foreach (var panel in activeCanvas.panels)
                         {
                             if (panel.panel.activeInHierarchy)
                             {
@@ -350,21 +350,29 @@ public class ObjectInteract : MonoBehaviour
 
             if (isTerminal)
             {
-                if (Input.GetKeyUp(KeyCode.Joystick1Button1) || Input.GetKeyDown(KeyCode.Escape))
+                if ((Input.GetKeyUp(KeyCode.Joystick1Button1) || Input.GetKeyDown(KeyCode.Escape)) && !isCoroutineWork)
                 {
-                    GetComponent<FirstPersonController>().enabled = true;
-                    //Camera.main.transform.rotation = cameraRot;
-                    //Camera.main.transform.position = cameraPos;
-                    StartCoroutine(LerpCameraMovement(cameraPos, cameraLookPos));
-                    dummyButton.Select();
-                    body.SetActive(true);
-                    torcia.SetActive(true);
-
-                    isTerminal = false;
-                    isInteracting = false;
-
-                    actionImage.gameObject.SetActive(true);
-                    viewFinder.gameObject.SetActive(true);
+                    if (activeCanvas.orderOfLastPanel.Count > 1)
+                    {
+                        activeCanvas.activePanel.gameObject.SetActive(false);
+                        activeCanvas.orderOfLastPanel[activeCanvas.orderOfLastPanel.Count - 1].panel.SetActive(true);
+                        activeCanvas.activePanel = activeCanvas.orderOfLastPanel[activeCanvas.orderOfLastPanel.Count - 1].panel;
+                        activeCanvas.orderOfLastPanel.RemoveAt(activeCanvas.orderOfLastPanel.Count - 1);
+                        activeCanvas.orderOfLastPanel[activeCanvas.orderOfLastPanel.Count - 1].firstSelectButtonInPanel.Select();
+                    }
+                    else
+                    {
+                        Debug.Log("ESCO DAL TERMINALE");
+                        GetComponent<FirstPersonController>().enabled = true;
+                        StartCoroutine(LerpCameraMovement(cameraPos, cameraLookPos));
+                        dummyButton.Select();
+                        body.SetActive(true);
+                        torcia.SetActive(true);
+                        isTerminal = false;
+                        isInteracting = false;
+                        actionImage.gameObject.SetActive(true);
+                        viewFinder.gameObject.SetActive(true);
+                    }
                 }
             }
         }
@@ -387,6 +395,8 @@ public class ObjectInteract : MonoBehaviour
 
     IEnumerator LerpCameraMovement(Vector3 pos, Vector3 lookAt)
     {
+        isCoroutineWork = true;
+
         float elapsedTime = 0.0f;
         Vector3 startPos = Camera.main.transform.position;
         Vector3 startLook = Camera.main.transform.forward + Camera.main.transform.position;
@@ -398,6 +408,7 @@ public class ObjectInteract : MonoBehaviour
             elapsedTime += Time.deltaTime;
             yield return null;
         }
+        isCoroutineWork = false;
     }
 
     void FullOxygen()

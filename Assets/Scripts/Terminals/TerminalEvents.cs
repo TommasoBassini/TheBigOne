@@ -24,6 +24,11 @@ public class TerminalEvents : MonoBehaviour
 
     public IEnumerator TimedFeedback(int n, float t)
     {
+        if (times[n].isBlocked)
+        {
+            TerminalStatus ts = this.gameObject.GetComponent<TerminalStatus>();
+            StartCoroutine(ts.BlockTerminal(times[n].timeToWait));
+        }
         yield return new WaitForSeconds(t);
         timedFeedbackEvent.timedEvent[n].Invoke();
     }

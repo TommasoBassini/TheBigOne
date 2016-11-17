@@ -14,6 +14,7 @@ public class TerminalCode : MonoBehaviour
     public string unlockPin;
     public bool showNumber;
     public int passLenght;
+    public char simboloCodiceNascosto; // da rinominare;
 
     public void StampNumber (string n)
     {
@@ -21,7 +22,7 @@ public class TerminalCode : MonoBehaviour
         {
             currentPin = currentPin + n;
             if (!showNumber)
-                passText += " - ";
+                passText += " " + simboloCodiceNascosto + " ";
             else
                 passText += " " + n + " ";
 

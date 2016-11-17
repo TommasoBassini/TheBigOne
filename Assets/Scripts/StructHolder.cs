@@ -88,6 +88,7 @@ public struct Timed
 {
     public float timeToWait;
     public int nEvent;
+    public bool isBlocked;
 }
 
 [System.Serializable]
