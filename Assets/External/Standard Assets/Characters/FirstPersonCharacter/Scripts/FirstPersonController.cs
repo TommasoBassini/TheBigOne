@@ -65,7 +65,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         public Vector3 rot;
         public bool isJoystick = false;
-        // Use this for initialization
+
+        public GameObject iemPrefab;
+        public Transform iemSpawn;
+        public int iemBatteryCost;
+
         private void Start()
         {
             m_CharacterController = GetComponent<CharacterController>();
@@ -185,10 +189,13 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
 
             // Lining Control 
-            if (Input.GetKeyDown(KeyCode.Joystick1Button4) || Input.GetKeyDown(KeyCode.LeftControl))
+            if (Input.GetAxis("Trigger") > 0.8f || Input.GetKeyDown(KeyCode.LeftControl))
             {
-                rot = transform.eulerAngles;
-                isLining = true;
+                if (!isLining)
+                {
+                    rot = transform.eulerAngles;
+                    isLining = true;
+                }
             }
 
             if (isLining)
@@ -213,12 +220,14 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 liningAngle = new Vector3(rot.x, rot.y, rot.z + liningF);
                 this.transform.localEulerAngles = liningAngle;
             }
-            if (Input.GetKeyUp(KeyCode.Joystick1Button4))
+            if (Input.GetAxis("Trigger") > -0.2f && Input.GetAxis("Trigger") < 0.2f)
             {
-                isLining = false;
-                liningF = 0.0f;
-                liningAngle = Vector3.zero;
-                this.transform.eulerAngles = rot;
+                if (isLining)
+                {
+                    isLining = false;
+                    liningF = 0.0f;
+                    StartCoroutine(ReturnFromLining());
+                }
             }
             if (!isJoystick)
             {
@@ -238,6 +247,17 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
 
             m_PreviouslyGrounded = m_CharacterController.isGrounded;
+
+            if (Input.GetKeyDown(KeyCode.Joystick1Button5))
+            {
+                BatteryScript bs = this.GetComponent<BatteryScript>();
+                if (bs.batteryEnergyAmount*100 > iemBatteryCost)
+                {
+                    Debug.Log("jhvbasujh");
+                    Instantiate(iemPrefab, iemSpawn.transform.position, this.transform.rotation);
+                    bs.batteryEnergyAmount -= (float)iemBatteryCost/100;
+                }
+            }
         }
 
 
@@ -454,6 +474,23 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
             body.AddForceAtPosition(m_CharacterController.velocity*0.1f, hit.point, ForceMode.Impulse);
         }
-    }
 
+        IEnumerator ReturnFromLining()
+        {
+            float elapsedTime = 0.0f;
+            float startPos = this.transform.eulerAngles.z;
+            if (startPos > 180)
+            {
+                startPos -= 360;
+            }
+            Debug.Log(startPos);
+            while (elapsedTime < 0.5f)
+            {
+                this.transform.eulerAngles = new Vector3(0, 0, Mathf.Lerp(startPos, 0.0f, (elapsedTime / 0.4f)));
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+            this.transform.eulerAngles = Vector3.zero;
+        }
+    }
 }
