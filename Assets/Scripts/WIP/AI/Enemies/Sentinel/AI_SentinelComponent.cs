@@ -6,6 +6,72 @@ using UnityStandardAssets.Characters.FirstPerson;
 
 public class AI_SentinelComponent : MonoBehaviour {
 
+	#region SENTINEL_DELEGATES
+	public EnemyDelegate <AI_SentinelComponent> DelegatedMethod = delegate (AI_SentinelComponent sentinelReference, Collider other) {
+		
+		if (!sentinelReference.enemyHasBeenStunned) {
+			
+			// By default the player is not in sight.
+			sentinelReference.playerInSight = false;
+			sentinelReference.playerHasBeenHeard = false;
+			
+			// Compute a vector from the enemy to the player and store the angle between it and forward.
+			sentinelReference.direction = other.transform.position - sentinelReference.transform.position;
+			sentinelReference.angle = Vector3.Angle (sentinelReference.direction, sentinelReference.transform.forward);
+			
+			// If the angle between forward and where the player is, is less than half the angle of view...
+			if (sentinelReference.angle < sentinelReference.fieldOfViewAngle * 0.5f) {
+				
+				// ... and if a raycast towards the player hits something...
+				if (Physics.Raycast (sentinelReference.transform.position, sentinelReference.direction.normalized, out sentinelReference.hit, sentinelReference.viewCol.radius)) {
+					
+					// ... and if the raycast hits the player...
+					if (sentinelReference.hit.collider.gameObject == sentinelReference.player.gameObject) {
+						
+						// ... the player is in sight...
+						sentinelReference.playerInSight = true;
+						
+						if (sentinelReference.direction.sqrMagnitude < Mathf.Pow (sentinelReference.attackDistance, 2f)) {
+							
+							// ... and may be attacked.
+							sentinelReference.StopAgent ();
+							Debug.LogWarning ("Shooting!");
+							
+						} else if (sentinelReference.agentHasBeenStopped)
+							sentinelReference.ResumeAgent ();
+						
+					} else if (sentinelReference.agentHasBeenStopped)
+						sentinelReference.ResumeAgent ();
+					
+				} else if (sentinelReference.agentHasBeenStopped)
+					sentinelReference.ResumeAgent ();
+				
+			} else if (sentinelReference.agentHasBeenStopped)
+				sentinelReference.ResumeAgent ();
+			
+			if ((sentinelReference.HearingCollision (sentinelReference.player.run, sentinelReference.runCol, other)) ||
+				(sentinelReference.HearingCollision (sentinelReference.player.walking, sentinelReference.walkCol, other)) ||
+				(sentinelReference.HearingCollision (sentinelReference.player.isCrouched, sentinelReference.crouchCol, other)))
+				sentinelReference.playerHasBeenHeard = true;
+			
+			/*this.HearingCollision (this.player.run, this.runCol, other);
+
+				if (!this.playerHasBeenHeard && !this.player.isCrouched)
+					this.HearingCollision (this.player.walking, this.walkCol, other);
+
+				if (!this.playerHasBeenHeard)
+					this.HearingCollision (this.player.isCrouched, this.crouchCol, other);*/
+			
+		} else {
+			
+			sentinelReference.StopAgent ();
+			
+		}
+		
+	};
+	#endregion
+
+
 	#region SENTINEL_PARAMETERS
 	[Header ("Boolean Flags")]
 
@@ -32,14 +98,16 @@ public class AI_SentinelComponent : MonoBehaviour {
 	[Tooltip ("DO NOT TOUCH! Ask programmers for utilization")]
 	public int destPoint;
 
-	[Tooltip ("Determines the plane angle in wich the enemy could spot the player (from 0f to 360f)")]
-	[Range (0f, 360f)] public float fieldOfViewAngle = 110f;               // Number of degrees, centred on forward, for the enemy see
-	[Tooltip ("Determines the attack distance of the enemy (from 0f to 10f)")]
-	[Range (0f, 10f)] public float attackDistance = 5f;
-	[Tooltip ("Determines the time wich the Sentinel scans around it if lost the player (from 0f to 10f)")]
-	[Range (0f, 10f)] public float scanningTime = 5f;
-	[Tooltip ("Determines the stunning time of the enemy if hit by an EMI (from 0f to 10f)")]
-	[Range (0f, 10f)] public float stunnedTime = 5f;
+	[Tooltip ("Determines the plane angle in wich the enemy could spot the player (from 0.1f to 360f)")]
+	[Range (0.1f, 360f)] public float fieldOfViewAngle = 110f;               // Number of degrees, centred on forward, for the enemy see
+	[Tooltip ("Determines the attack distance of the enemy (from 0.1f to 10f)")]
+	[Range (0.1f, 10f)] public float attackDistance = 5f;
+	[Tooltip ("Determines the time wich the Sentinel scans around it if lost the player (from 0.1f to 10f)")]
+	[Range (0.1f, 10f)] public float scanningTime = 5f;
+	[Tooltip ("Determines the stunning time of the enemy if hit by an EMI (from 0.1f to 10f)")]
+	[Range (0.1f, 10f)] public float stunnedTime = 5f;
+	[Tooltip ("Determines the Input checking time of the enemy (from 0.1f to 10f)")]
+	[Range (0.1f, 10f)] public float inputCheckingTime = 0.5f;
 	[Tooltip ("DO NOT TOUCH!")]
 	public float angle;
 
@@ -64,6 +132,8 @@ public class AI_SentinelComponent : MonoBehaviour {
 	public SphereCollider walkCol;                     // Reference to the "Walk" sphere collider trigger component
 	[Tooltip ("DO NOT TOUCH!")]
 	public SphereCollider crouchCol;                   // Reference to the "Crouch" sphere collider trigger component
+	[Tooltip ("DO NOT TOUCH!")]
+	public Coroutine inputCheckingCoroutine;
 	[Tooltip ("DO NOT TOUCH!")]
 	public Coroutine enemyStunnedCoroutine;
 	[Tooltip ("DO NOT TOUCH!")]
@@ -108,12 +178,25 @@ public class AI_SentinelComponent : MonoBehaviour {
 
 		this.destPoint = 0;
 
-		this.enemyStunnedCoroutine = null;
+		this.inputCheckingCoroutine = this.KillPreviousCoroutine (this.inputCheckingCoroutine);
+		this.enemyStunnedCoroutine = this.KillPreviousCoroutine (this.enemyStunnedCoroutine);
 
 	}
 
 
-	public void OnTriggerStay (Collider other) {
+	public void OnTriggerEnter (Collider other) {
+
+		if (other.gameObject == this.player.gameObject) {
+
+			if (this.inputCheckingCoroutine == null)
+				this.inputCheckingCoroutine = this.StartCoroutine_Auto (this.CO_InputChecking (this.inputCheckingTime, this.DelegatedMethod, other));
+
+		}
+
+	}
+
+
+	/*public void OnTriggerStay (Collider other) {
 
 		if (!this.enemyHasBeenStunned) {
 		
@@ -164,14 +247,14 @@ public class AI_SentinelComponent : MonoBehaviour {
 				    (this.HearingCollision (this.player.isCrouched, this.crouchCol, other)))
 					this.playerHasBeenHeard = true;
 			
-				/*this.HearingCollision (this.player.run, this.runCol, other);
+				this.HearingCollision (this.player.run, this.runCol, other);
 
 				if (!this.playerHasBeenHeard && !this.player.isCrouched)
 					this.HearingCollision (this.player.walking, this.walkCol, other);
 
 				if (!this.playerHasBeenHeard)
-					this.HearingCollision (this.player.isCrouched, this.crouchCol, other);*/
-
+					this.HearingCollision (this.player.isCrouched, this.crouchCol, other);
+	
 			}
 
 		} else {
@@ -180,7 +263,7 @@ public class AI_SentinelComponent : MonoBehaviour {
 
 		}
 
-	}
+	}*/
 
 
 	public void OnTriggerExit (Collider other) {
@@ -197,6 +280,8 @@ public class AI_SentinelComponent : MonoBehaviour {
 
 				// ... the player is not in sight.
 				this.playerInSight = false;
+
+				this.inputCheckingCoroutine = this.KillPreviousCoroutine (this.inputCheckingCoroutine);
 
 				if (!this.enemyHasBeenStunned && this.agentHasBeenStopped)
 					this.ResumeAgent ();
@@ -363,6 +448,18 @@ public class AI_SentinelComponent : MonoBehaviour {
 
 
 	#region SENTINEL_COROUTINES
+	public IEnumerator CO_InputChecking (float inputCheckingTime, EnemyDelegate <AI_SentinelComponent> DelegatedMethod, Collider other) {
+		
+		while (true) {
+			
+			yield return new WaitForSeconds (inputCheckingTime);
+			DelegatedMethod (this, other);
+			
+		}
+		
+	}
+
+
 	public IEnumerator CO_EnemyStunnedTime () {
 
 		yield return new WaitForSeconds (this.stunnedTime);

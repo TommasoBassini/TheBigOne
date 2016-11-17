@@ -63,6 +63,8 @@ public class AI_DroneComponent : MonoBehaviour {
 	[Tooltip ("DO NOT TOUCH!")]
 	public bool droneIsFallingIntoLine;
 	[Tooltip ("DO NOT TOUCH!")]
+	public bool droneIsInspecting;
+	[Tooltip ("DO NOT TOUCH!")]
 	public bool playerInSight;							// Whether or not the player is currently sighted
 	[Tooltip ("DO NOT TOUCH!")]
 	public bool agentHasBeenStopped;
@@ -75,14 +77,16 @@ public class AI_DroneComponent : MonoBehaviour {
 	[Tooltip ("DO NOT TOUCH! Ask programmers for utilization")]
 	public int destPoint;
 
-	[Tooltip ("Determines the plane angle in wich the enemy could spot the player (from 0f to 360f)")]
-	[Range (0f, 360f)] public float fieldOfViewAngle = 110f;               // Number of degrees, centred on forward, for the enemy see
-	[Tooltip ("Determines the attack distance of the enemy (from 0f to 10f)")]
-	[Range (0f, 10f)] public float attackDistance = 5f;
-	[Tooltip ("Determines the stunning time of the enemy if hit by an EMI (from 0f to 10f)")]
-	[Range (0f, 10f)] public float stunnedTime = 5f;
-	[Tooltip ("Determines the Input checking time of the enemy (from 0f to 10f)")]
-	[Range (0f, 10f)] public float inputCheckingTime = 1f;
+	[Tooltip ("Determines the plane angle in wich the enemy could spot the player (from 0.1f to 360f)")]
+	[Range (0.1f, 360f)] public float fieldOfViewAngle = 110f;               // Number of degrees, centred on forward, for the enemy see
+	[Tooltip ("Determines the attack distance of the enemy (from 0.1f to 10f)")]
+	[Range (0.1f, 10f)] public float attackDistance = 5f;
+	[Tooltip ("Determines the stunning time of the enemy if hit by an EMI (from 0.1f to 10f)")]
+	[Range (0.1f, 10f)] public float stunnedTime = 5f;
+	[Tooltip ("Determines the Inspecting checking time of the enemy (from 0.1f to 10f)")]
+	[Range (0.1f, 10f)] public float inspectingCheckingTime = 5f;
+	[Tooltip ("Determines the Input checking time of the enemy (from 0.1f to 10f)")]
+	[Range (0.1f, 10f)] public float inputCheckingTime = 0.5f;
 	[Tooltip ("DO NOT TOUCH!")]
 	public float angle;
 
@@ -136,6 +140,7 @@ public class AI_DroneComponent : MonoBehaviour {
 	public void Start () {
 
 		this.droneIsFallingIntoLine = false;
+		this.droneIsInspecting = false;
 		this.playerInSight = false;
 		this.agentHasBeenStopped = false;
 		this.enemyHasBeenStunned = false;
