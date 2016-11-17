@@ -27,7 +27,7 @@ public class VariableButton : MonoBehaviour
             }
             else
             {
-                if (valueDiff <= ts.imagesToFill[n].terminalValue)
+                if (valueDiff <= ts.imagesToFill[nImageToFill].terminalValue)
                 {
                     justPressed = true;
                     isActive = true;

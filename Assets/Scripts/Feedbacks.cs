@@ -3,6 +3,9 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using UnityStandardAssets.Characters.FirstPerson;
+
+
 public class Feedbacks : MonoBehaviour
 {
     [Header("Feedback")]
@@ -193,4 +196,9 @@ public class Feedbacks : MonoBehaviour
         GetComponentInParent<TerminalEvents>().generalFeedbackEvent.generalEvent[n].Invoke();
     }
 
+    public void ExitFromTerminal()
+    {
+        ObjectInteract objectInteract = FindObjectOfType<ObjectInteract>();
+        objectInteract.ExitFromTerminal();
+    }
 }

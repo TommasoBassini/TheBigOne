@@ -196,6 +196,7 @@ public class ObjectInteract : MonoBehaviour
 
                         GetComponent<FirstPersonController>().enabled = false;
                         activeCanvas = hit.collider.transform.FindChild("Main").gameObject.GetComponent<TerminalStatus>();
+
                         foreach (var panel in activeCanvas.panels)
                         {
                             if (panel.panel.activeInHierarchy)
@@ -362,16 +363,7 @@ public class ObjectInteract : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("ESCO DAL TERMINALE");
-                        GetComponent<FirstPersonController>().enabled = true;
-                        StartCoroutine(LerpCameraMovement(cameraPos, cameraLookPos));
-                        dummyButton.Select();
-                        body.SetActive(true);
-                        torcia.SetActive(true);
-                        isTerminal = false;
-                        isInteracting = false;
-                        actionImage.gameObject.SetActive(true);
-                        viewFinder.gameObject.SetActive(true);
+                        ExitFromTerminal();
                     }
                 }
             }
@@ -473,6 +465,19 @@ public class ObjectInteract : MonoBehaviour
                     break;
                 }
         }
+    }
+
+    public void ExitFromTerminal()
+    {
+        GetComponent<FirstPersonController>().enabled = true;
+        StartCoroutine(LerpCameraMovement(cameraPos, cameraLookPos));
+        dummyButton.Select();
+        body.SetActive(true);
+        torcia.SetActive(true);
+        isTerminal = false;
+        isInteracting = false;
+        actionImage.gameObject.SetActive(true);
+        viewFinder.gameObject.SetActive(true);
     }
 }
 
