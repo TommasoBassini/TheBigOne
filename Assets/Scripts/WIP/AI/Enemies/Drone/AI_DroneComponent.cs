@@ -4,7 +4,7 @@ using System.Collections;
 public class AI_DroneComponent : MonoBehaviour {
 
 	#region DRONE_DELEGATES
-	public EnemyDelegate <AI_DroneComponent> DelegatedMethod = delegate (AI_DroneComponent droneReference, Collider other) {
+	public EnemyTriggerDelegate <AI_DroneComponent> DelegatedMethod = delegate (AI_DroneComponent droneReference, Collider other) {
 		
 		if (!droneReference.enemyHasBeenStunned) {
 			
@@ -282,7 +282,7 @@ public class AI_DroneComponent : MonoBehaviour {
 
 
 	#region DRONE_COROUTINES
-	public IEnumerator CO_InputChecking (float inputCheckingTime, EnemyDelegate <AI_DroneComponent> DelegatedMethod, Collider other) {
+	public IEnumerator CO_InputChecking (float inputCheckingTime, EnemyTriggerDelegate <AI_DroneComponent> DelegatedMethod, Collider other) {
 
 		while (true) {
 

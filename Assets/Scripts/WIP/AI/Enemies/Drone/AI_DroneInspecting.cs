@@ -3,14 +3,13 @@ using System.Collections;
 
 public class AI_DroneInspecting : MonoBehaviour, IAI_ImplementedStrategy {
 
-	[Tooltip ("DO NOT TOUCH!")]
 	public Coroutine waitingCoroutine;
 	[Tooltip ("DO NOT TOUCH!")]
 	public AI_DroneComponent droneComponents;
 
 
 	#region DRONE_DELEGATES
-	public EnemyInspectingDelegate <AI_DroneInspecting> DelegatedMethod = delegate (AI_DroneInspecting droneInspectingReference) {
+	public EnemyStateDelegate <AI_DroneInspecting> DelegatedMethod = delegate (AI_DroneInspecting droneInspectingReference) {
 
 		droneInspectingReference.droneComponents.droneIsInspecting = false;
 		
@@ -45,7 +44,7 @@ public class AI_DroneInspecting : MonoBehaviour, IAI_ImplementedStrategy {
 	}
 
 
-	public Coroutine ExitingInspectingState (ref bool droneIsInspecting, NavMeshAgent agent, Coroutine coroutine) {
+	public Coroutine ExitingStationaryInspectingState (ref bool droneIsInspecting, NavMeshAgent agent, Coroutine coroutine) {
 
 		droneIsInspecting = false;
 		agent.autoBraking = false;
@@ -56,7 +55,7 @@ public class AI_DroneInspecting : MonoBehaviour, IAI_ImplementedStrategy {
 
 
 	#region DRONE_COROUTINES
-	public IEnumerator CO_WaitingCoroutine (float inspectingCheckingTime, EnemyInspectingDelegate <AI_DroneInspecting> DelegatedMethod) {
+	public IEnumerator CO_WaitingCoroutine (float inspectingCheckingTime, EnemyStateDelegate <AI_DroneInspecting> DelegatedMethod) {
 
 		yield return new WaitForSeconds (inspectingCheckingTime);
 		DelegatedMethod (this);
@@ -84,13 +83,13 @@ public class AI_DroneInspecting : MonoBehaviour, IAI_ImplementedStrategy {
 			if (this.droneComponents.playerInSight) {
 
 				Debug.Log ("Drone switches from <<Inspecting>> to <<Defending>>");
-				this.waitingCoroutine = this.ExitingInspectingState (ref this.droneComponents.droneIsInspecting, this.droneComponents.agent, this.waitingCoroutine);
+				this.waitingCoroutine = this.ExitingStationaryInspectingState (ref this.droneComponents.droneIsInspecting, this.droneComponents.agent, this.waitingCoroutine);
 				return StrategyState.Defending;
 
 			} else if (this.waitingCoroutine != null && !this.droneComponents.droneIsInspecting) {
 
 				Debug.Log ("Drone switches from <<Inspecting>> to <<Falling Into Line>>");
-				this.waitingCoroutine = this.ExitingInspectingState (ref this.droneComponents.droneIsInspecting, this.droneComponents.agent, this.waitingCoroutine);
+				this.waitingCoroutine = this.ExitingStationaryInspectingState (ref this.droneComponents.droneIsInspecting, this.droneComponents.agent, this.waitingCoroutine);
 				return StrategyState.FallingIntoLine;
 
 			} else {

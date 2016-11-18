@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class AI_Drone : FiniteStateMachine {
 
+	[Tooltip ("DO NOT TOUCH!")]
 	public EnemyReference droneReference;
 
 

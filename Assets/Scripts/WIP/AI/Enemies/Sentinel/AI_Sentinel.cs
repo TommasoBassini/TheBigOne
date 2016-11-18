@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class AI_Sentinel : FiniteStateMachine {
 
+	[Tooltip ("DO NOT TOUCH!")]
 	public EnemyReference sentinelReference;
 
 

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 
 //AI Delegate declarations
-public delegate void EnemyDelegate <TEnemy> (TEnemy enemyReference, Collider other) where TEnemy : MonoBehaviour;
-public delegate void EnemyInspectingDelegate <TEnemy> (TEnemy enemyReference) where TEnemy : MonoBehaviour;
+public delegate void EnemyTriggerDelegate <TEnemy> (TEnemy enemyReference, Collider other) where TEnemy : MonoBehaviour;
+public delegate void EnemyStateDelegate <TEnemy> (TEnemy enemyReference) where TEnemy : MonoBehaviour;
 
 //Enum used to establish the AIs' states
 public enum StrategyState : byte {NoStrategyChanging, Guarding, Defending, FallingIntoLine, Inspecting, Scanning};

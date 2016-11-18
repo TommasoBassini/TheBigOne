@@ -3,8 +3,8 @@ using System.Collections;
 
 public class AI_SentinelScanning : MonoBehaviour, IAI_ImplementedStrategy {
 
-	[Tooltip ("DO NOT TOUCH!")]
 	public Coroutine scanningCoroutine;
+	[Tooltip ("DO NOT TOUCH!")]
 	public AI_SentinelComponent sentinelComponents;
 
 

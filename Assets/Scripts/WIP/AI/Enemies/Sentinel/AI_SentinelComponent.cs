@@ -7,7 +7,7 @@ using UnityStandardAssets.Characters.FirstPerson;
 public class AI_SentinelComponent : MonoBehaviour {
 
 	#region SENTINEL_DELEGATES
-	public EnemyDelegate <AI_SentinelComponent> DelegatedMethod = delegate (AI_SentinelComponent sentinelReference, Collider other) {
+	public EnemyTriggerDelegate <AI_SentinelComponent> DelegatedMethod = delegate (AI_SentinelComponent sentinelReference, Collider other) {
 		
 		if (!sentinelReference.enemyHasBeenStunned) {
 			
@@ -78,6 +78,8 @@ public class AI_SentinelComponent : MonoBehaviour {
 	[Tooltip ("DO NOT TOUCH!")]
 	public bool sentinelHasEnlargedItsHearingColliders;
 	[Tooltip ("DO NOT TOUCH!")]
+	public bool sentinelIsInspecting;
+	[Tooltip ("DO NOT TOUCH!")]
 	public bool sentinelIsScanning;
 	[Tooltip ("DO NOT TOUCH!")]
 	public bool sentinelEndsScanning;
@@ -102,6 +104,8 @@ public class AI_SentinelComponent : MonoBehaviour {
 	[Range (0.1f, 360f)] public float fieldOfViewAngle = 110f;               // Number of degrees, centred on forward, for the enemy see
 	[Tooltip ("Determines the attack distance of the enemy (from 0.1f to 10f)")]
 	[Range (0.1f, 10f)] public float attackDistance = 5f;
+	[Tooltip ("Determines the Inspecting checking time of the enemy (from 0.1f to 10f)")]
+	[Range (0.1f, 10f)] public float inspectingCheckingTime = 5f;
 	[Tooltip ("Determines the time wich the Sentinel scans around it if lost the player (from 0.1f to 10f)")]
 	[Range (0.1f, 10f)] public float scanningTime = 5f;
 	[Tooltip ("Determines the stunning time of the enemy if hit by an EMI (from 0.1f to 10f)")]
@@ -167,6 +171,7 @@ public class AI_SentinelComponent : MonoBehaviour {
 	public void Start () {
 
 		this.sentinelHasEnlargedItsHearingColliders = false;
+		this.sentinelIsInspecting = false;
 		this.sentinelIsScanning = false;
 		this.sentinelEndsScanning = false;
 		this.sentinelIsFallingIntoLine = false;
@@ -448,7 +453,7 @@ public class AI_SentinelComponent : MonoBehaviour {
 
 
 	#region SENTINEL_COROUTINES
-	public IEnumerator CO_InputChecking (float inputCheckingTime, EnemyDelegate <AI_SentinelComponent> DelegatedMethod, Collider other) {
+	public IEnumerator CO_InputChecking (float inputCheckingTime, EnemyTriggerDelegate <AI_SentinelComponent> DelegatedMethod, Collider other) {
 		
 		while (true) {
 			
