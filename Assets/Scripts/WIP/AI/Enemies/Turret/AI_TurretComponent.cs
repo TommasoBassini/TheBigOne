@@ -1,27 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public delegate void TurretDelegate (AI_TurretComponent turretComponentReference);
-
 public class AI_TurretComponent : MonoBehaviour {
 
-	#region TURRET_CLASSES
+	#region TURRET_SUBCLASSES
 	public class Delegates {
 
-		public TurretDelegate TurretAttackPostDelay = delegate (AI_TurretComponent turretComponentReference) {
+		public EnemyStateDelegate <AI_TurretComponent> TurretAttackPostDelay = delegate (AI_TurretComponent turretComponentReference) {
 			
 			turretComponentReference.turretIsShoothing = true;
 			turretComponentReference.attackCoroutine = turretComponentReference.KillPreviousCoroutine (turretComponentReference.attackCoroutine);
 			
 		};
 
-		public TurretDelegate TurretSlipOutPostDelay = delegate (AI_TurretComponent turretComponentReference) {
+		public EnemyStateDelegate <AI_TurretComponent> TurretSlipOutPostDelay = delegate (AI_TurretComponent turretComponentReference) {
 			
 			turretComponentReference.playerHasBeenDetected = false;
 			turretComponentReference.turretScanner.EnableTurretScanner (true);	//Might be moved elsewhere
 			turretComponentReference.slipOutCoroutine = turretComponentReference.KillPreviousCoroutine (turretComponentReference.slipOutCoroutine);
 			
 		};
+
+		public CO_EnemyCoroutineDelegate <AI_TurretComponent> CO_TurretCoroutine;
 
 	}
 	#endregion
@@ -43,10 +43,10 @@ public class AI_TurretComponent : MonoBehaviour {
 	[Tooltip ("DO NOT TOUCH! Ask programmers for utilization")]
 	public int destPoint;
 
-	[Tooltip ("Scanning time used to recognize the player - from 0f to 10f")]
-	[Range (0f, 10f)] public float scanningTime = 2f;
-	[Tooltip ("Waiting time used to return in guarding state - from 0f to 10f")]
-	[Range (0f, 10f)] public float waitingTime = 5f;
+	[Tooltip ("Scanning time used to recognize the player - from 0.1f to 10f")]
+	[Range (0.1f, 10f)] public float scanningTime = 2f;
+	[Tooltip ("Waiting time used to return in guarding state - from 0.1f to 10f")]
+	[Range (0.1f, 10f)] public float slipOutTime = 5f;
 
 
 	[Header ("Structs")]
@@ -69,6 +69,10 @@ public class AI_TurretComponent : MonoBehaviour {
 	public BoxCollider col;                         	// Reference to the box collider trigger component
 	[Tooltip ("DO NOT TOUCH!")]
 	public LineRenderer attackRay;
+
+
+	[Header ("Scripts")]
+
 	[Tooltip ("DO NOT TOUCH!")]
 	public AI_TurretScanner turretScanner;
 
@@ -90,10 +94,11 @@ public class AI_TurretComponent : MonoBehaviour {
 	public void Awake() {
 
 		this.delegates = new Delegates ();
-		this.col = this.GetComponent <BoxCollider> ();
+		this.delegates.CO_TurretCoroutine = this.CO_TurretDelayedTime;
+
+		this.col = this.InitializeAreaCollider ();
 		this.attackRay = this.GetComponentInChildren <LineRenderer> (true);
 		this.turretScanner = this.GetComponentInChildren <AI_TurretScanner> (true);
-
 		this.player = GameObject.FindGameObjectWithTag ("Player");
 
 	}
@@ -107,8 +112,8 @@ public class AI_TurretComponent : MonoBehaviour {
 
 		this.destPoint = 0;
 
-		this.attackCoroutine = null;
-		this.slipOutCoroutine = null;
+		this.attackCoroutine = this.KillPreviousCoroutine (this.attackCoroutine);
+		this.slipOutCoroutine = this.KillPreviousCoroutine (this.slipOutCoroutine);
 
 	}
 
@@ -137,11 +142,8 @@ public class AI_TurretComponent : MonoBehaviour {
 
 						if (!this.turretIsShoothing) {
 
-							if (this.slipOutCoroutine != null)
-								this.slipOutCoroutine = this.KillPreviousCoroutine (this.slipOutCoroutine);
-
-							if (this.attackCoroutine == null)
-								this.attackCoroutine = this.StartCoroutine_Auto (this.CO_TurretDelayedTime (this.scanningTime, this.delegates.TurretAttackPostDelay));
+							this.SwitchCoroutine (out this.slipOutCoroutine, out this.attackCoroutine, this.slipOutCoroutine, this.attackCoroutine,
+								this.delegates.CO_TurretCoroutine, this.scanningTime, this.delegates.TurretAttackPostDelay);
 
 						} else {
 
@@ -154,11 +156,8 @@ public class AI_TurretComponent : MonoBehaviour {
 
 						this.turretIsShoothing = false;
 
-						if (this.attackCoroutine != null)
-							this.attackCoroutine = this.KillPreviousCoroutine (this.attackCoroutine);
-
-						if (this.slipOutCoroutine == null)
-							this.slipOutCoroutine = this.StartCoroutine_Auto (this.CO_TurretDelayedTime (this.waitingTime, this.delegates.TurretSlipOutPostDelay));
+						this.SwitchCoroutine (out this.attackCoroutine, out this.slipOutCoroutine, this.attackCoroutine, this.slipOutCoroutine,
+							this.delegates.CO_TurretCoroutine, this.slipOutTime, this.delegates.TurretSlipOutPostDelay);
 
 					}
 					
@@ -180,11 +179,8 @@ public class AI_TurretComponent : MonoBehaviour {
 			this.playerInSight = false;
 			this.turretIsShoothing = false;
 
-			if (this.attackCoroutine != null)
-				this.attackCoroutine = this.KillPreviousCoroutine (this.attackCoroutine);
-
-			if (this.slipOutCoroutine == null)
-				this.slipOutCoroutine = this.StartCoroutine_Auto (this.CO_TurretDelayedTime (this.waitingTime, this.delegates.TurretSlipOutPostDelay));
+			this.SwitchCoroutine (out this.attackCoroutine, out this.slipOutCoroutine, this.attackCoroutine, this.slipOutCoroutine,
+				this.delegates.CO_TurretCoroutine, this.slipOutTime, this.delegates.TurretSlipOutPostDelay);
 
 		}
 
@@ -193,6 +189,19 @@ public class AI_TurretComponent : MonoBehaviour {
 
 
 	#region TURRET_METHODS
+	public void SwitchCoroutine (out Coroutine stoppedCoroutine, out Coroutine initializedCoroutine, Coroutine firstCoroutine, Coroutine secondCoroutine,
+		CO_EnemyCoroutineDelegate <AI_TurretComponent> CO_DelegatedMethod, float waitingTime, EnemyStateDelegate <AI_TurretComponent> DelegatedMethod) {
+		
+		stoppedCoroutine = this.KillPreviousCoroutine (firstCoroutine);
+		
+		if (secondCoroutine == null)
+			initializedCoroutine = this.StartCoroutine_Auto (CO_DelegatedMethod (waitingTime, DelegatedMethod));
+		else
+			initializedCoroutine = secondCoroutine;
+		
+	}
+	
+	
 	public Coroutine KillPreviousCoroutine (Coroutine coroutine) {
 
 		if (coroutine != null)
@@ -201,11 +210,25 @@ public class AI_TurretComponent : MonoBehaviour {
 		return null;
 
 	}
+
+
+	public BoxCollider InitializeAreaCollider () {
+
+		BoxCollider[] boxColliders = this.GetComponentsInChildren <BoxCollider> ();
+
+		foreach (BoxCollider boxCollider in boxColliders)
+			if (boxCollider.name == "TriggerBox")
+				return boxCollider;
+
+		Debug.LogError ("Turret cannot initialize its Area BoxCollider (check both names in Children GameObjects and Script String in the specific initialization method)!");
+		return null;
+
+	}
 	#endregion
 
 
 	#region TURRET_COROUTINE_METHODS
-	public IEnumerator CO_TurretDelayedTime (float waitingTime, TurretDelegate DelegatedMethod) {
+	public IEnumerator CO_TurretDelayedTime (float waitingTime, EnemyStateDelegate <AI_TurretComponent> DelegatedMethod) {
 		
 		yield return new WaitForSeconds (waitingTime);
 		DelegatedMethod (this);
