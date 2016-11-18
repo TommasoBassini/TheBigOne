@@ -22,13 +22,7 @@ public class AI_TurretDefending : MonoBehaviour, IAI_ImplementedStrategy {
 		Debug.Log ("Turret is in <<Defending>>");
 		
 		//this.transform.LookAt (this.turretComponents.player.transform.position);
-		
-		/*if (Input.GetKeyDown (KeyCode.B)) {
 
-			Debug.Log ("Turret switches from <<Defending>> to <<Falling Into Line>>");
-			return StrategyState.FallingIntoLine;
-
-		} else*/
 		
 		if (!this.turretComponents.playerHasBeenDetected) {
 			
