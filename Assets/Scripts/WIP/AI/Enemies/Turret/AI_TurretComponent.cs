@@ -66,8 +66,6 @@ public class AI_TurretComponent : MonoBehaviour {
 	[Tooltip ("DO NOT TOUCH!")]
 	public Delegates delegates;
 	[Tooltip ("DO NOT TOUCH!")]
-	public BoxCollider col;                         	// Reference to the box collider trigger component
-	[Tooltip ("DO NOT TOUCH!")]
 	public LineRenderer attackRay;
 
 
@@ -96,7 +94,6 @@ public class AI_TurretComponent : MonoBehaviour {
 		this.delegates = new Delegates ();
 		this.delegates.CO_TurretCoroutine = this.CO_TurretDelayedTime;
 
-		this.col = this.InitializeAreaCollider ();
 		this.attackRay = this.GetComponentInChildren <LineRenderer> (true);
 		this.turretScanner = this.GetComponentInChildren <AI_TurretScanner> (true);
 		this.player = GameObject.FindGameObjectWithTag ("Player");
@@ -114,75 +111,6 @@ public class AI_TurretComponent : MonoBehaviour {
 
 		this.attackCoroutine = this.KillPreviousCoroutine (this.attackCoroutine);
 		this.slipOutCoroutine = this.KillPreviousCoroutine (this.slipOutCoroutine);
-
-	}
-
-
-	public void OnTriggerStay (Collider other) {
-		
-		// If the player has entered the trigger box...
-		if (other.gameObject == this.player) {
-
-			if (this.playerHasBeenDetected) {
-
-				// By default the player is not in sight.
-				this.playerInSight = false;
-				
-				// Compute a vector from the enemy to the player...
-				this.direction = other.transform.position - this.transform.position;
-				
-				// ... and if a raycast towards the player hits something...
-				if (Physics.Raycast (this.transform.position, this.direction.normalized, out this.hit)) {
-					
-					// ... and if the raycast hits the player...
-					if (this.hit.collider.gameObject == this.player) {
-						
-						// ... the player is in sight...
-						this.playerInSight = true;
-
-						if (!this.turretIsShoothing) {
-
-							this.SwitchCoroutine (out this.slipOutCoroutine, out this.attackCoroutine, this.slipOutCoroutine, this.attackCoroutine,
-								this.delegates.CO_TurretCoroutine, this.scanningTime, this.delegates.TurretAttackPostDelay);
-
-						} else {
-
-							// ... and may be attacked.
-							Debug.LogWarning ("Shooting!");
-
-						}
-							
-					} else {
-
-						this.turretIsShoothing = false;
-
-						this.SwitchCoroutine (out this.attackCoroutine, out this.slipOutCoroutine, this.attackCoroutine, this.slipOutCoroutine,
-							this.delegates.CO_TurretCoroutine, this.slipOutTime, this.delegates.TurretSlipOutPostDelay);
-
-					}
-					
-				}
-
-			}
-
-		}
-		
-	}
-
-
-	public void OnTriggerExit (Collider other) {
-
-		// If the player leaves the trigger zone...
-		if (other.gameObject == this.player) {
-
-			// ... the player is not in sight.
-			this.playerInSight = false;
-			this.turretIsShoothing = false;
-
-			this.SwitchCoroutine (out this.attackCoroutine, out this.slipOutCoroutine, this.attackCoroutine, this.slipOutCoroutine,
-				this.delegates.CO_TurretCoroutine, this.slipOutTime, this.delegates.TurretSlipOutPostDelay);
-
-		}
 
 	}
 	#endregion
@@ -207,20 +135,6 @@ public class AI_TurretComponent : MonoBehaviour {
 		if (coroutine != null)
 			this.StopCoroutine (coroutine);
 		
-		return null;
-
-	}
-
-
-	public BoxCollider InitializeAreaCollider () {
-
-		BoxCollider[] boxColliders = this.GetComponentsInChildren <BoxCollider> ();
-
-		foreach (BoxCollider boxCollider in boxColliders)
-			if (boxCollider.name == "TriggerBox")
-				return boxCollider;
-
-		Debug.LogError ("Turret cannot initialize its Area BoxCollider (check both names in Children GameObjects and Script String in the specific initialization method)!");
 		return null;
 
 	}

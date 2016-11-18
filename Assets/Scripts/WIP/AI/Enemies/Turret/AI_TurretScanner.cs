@@ -16,7 +16,7 @@ public class AI_TurretScanner : MonoBehaviour {
 	public Vector3 distance;
 
 
-	[Header ("Classes")]
+	[Header ("Scripts")]
 
 	[Tooltip ("DO NOT TOUCH!")]
 	public AI_TurretComponent turretComponents;
