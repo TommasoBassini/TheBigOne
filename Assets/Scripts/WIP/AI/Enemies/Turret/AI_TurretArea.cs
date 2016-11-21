@@ -96,8 +96,8 @@ public class AI_TurretArea : MonoBehaviour {
 
 						if (!this.turretComponents.turretIsShoothing) {
 
-							this.SwitchCoroutine (out this.slipOutCoroutine, out this.attackCoroutine, ref this.turretComponents.turretIsShoothing,
-								this.slipOutCoroutine, this.attackCoroutine, this.delegates.CO_TurretCoroutine, this.turretComponents.scanningTime, this.delegates.TurretAttackPostDelay);
+							this.SwitchCoroutine (out this.slipOutCoroutine, out this.attackCoroutine, ref this.turretComponents.turretIsShoothing, this.slipOutCoroutine,
+								this.attackCoroutine, this.delegates.CO_TurretCoroutine, ref this.turretComponents.scanningTime, this.delegates.TurretAttackPostDelay);
 
 						} else {
 
@@ -108,15 +108,15 @@ public class AI_TurretArea : MonoBehaviour {
 
 					} else {
 
-						this.SwitchCoroutine (out this.attackCoroutine, out this.slipOutCoroutine, ref this.turretComponents.turretIsShoothing,
-							this.attackCoroutine, this.slipOutCoroutine, this.delegates.CO_TurretCoroutine, this.turretComponents.slipOutTime, this.delegates.TurretSlipOutPostDelay);
+						this.SwitchCoroutine (out this.attackCoroutine, out this.slipOutCoroutine, ref this.turretComponents.turretIsShoothing, this.attackCoroutine,
+							this.slipOutCoroutine, this.delegates.CO_TurretCoroutine, ref this.turretComponents.slipOutTime, this.delegates.TurretSlipOutPostDelay);
 
 					}
 
 				} else {
 
-					this.SwitchCoroutine (out this.attackCoroutine, out this.slipOutCoroutine, ref this.turretComponents.turretIsShoothing,
-						this.attackCoroutine, this.slipOutCoroutine, this.delegates.CO_TurretCoroutine, this.turretComponents.slipOutTime, this.delegates.TurretSlipOutPostDelay);
+					this.SwitchCoroutine (out this.attackCoroutine, out this.slipOutCoroutine, ref this.turretComponents.turretIsShoothing, this.attackCoroutine,
+						this.slipOutCoroutine, this.delegates.CO_TurretCoroutine, ref this.turretComponents.slipOutTime, this.delegates.TurretSlipOutPostDelay);
 					
 				}
 
@@ -135,8 +135,8 @@ public class AI_TurretArea : MonoBehaviour {
 			// ... the player is not in sight.
 			this.turretComponents.playerInSight = false;
 
-			this.SwitchCoroutine (out this.attackCoroutine, out this.slipOutCoroutine, ref this.turretComponents.turretIsShoothing,
-				this.attackCoroutine, this.slipOutCoroutine, this.delegates.CO_TurretCoroutine, this.turretComponents.slipOutTime, this.delegates.TurretSlipOutPostDelay);
+			this.SwitchCoroutine (out this.attackCoroutine, out this.slipOutCoroutine, ref this.turretComponents.turretIsShoothing, this.attackCoroutine,
+				this.slipOutCoroutine, this.delegates.CO_TurretCoroutine, ref this.turretComponents.slipOutTime, this.delegates.TurretSlipOutPostDelay);
 			
 		}
 
@@ -145,8 +145,8 @@ public class AI_TurretArea : MonoBehaviour {
 
 
 	#region TURRET_AREA_METHODS
-	public void SwitchCoroutine (out Coroutine stoppedCoroutine, out Coroutine initializedCoroutine, ref bool turretIsShoothing, Coroutine toStopCoroutine, Coroutine toStartCoroutine,
-		CO_EnemyCoroutineDelegate <AI_TurretArea> CO_DelegatedMethod, float waitingTime, EnemyStateDelegate <AI_TurretArea> DelegatedMethod) {
+	public void SwitchCoroutine (out Coroutine stoppedCoroutine, out Coroutine initializedCoroutine, ref bool turretIsShoothing, Coroutine toStopCoroutine,
+		Coroutine toStartCoroutine, CO_EnemyCoroutineDelegate <AI_TurretArea> CO_DelegatedMethod, ref float waitingTime, EnemyStateDelegate <AI_TurretArea> DelegatedMethod) {
 
 		stoppedCoroutine = this.KillPreviousCoroutine (toStopCoroutine);
 

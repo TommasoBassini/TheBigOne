@@ -20,8 +20,9 @@ public class AI_TurretDefending : MonoBehaviour, IAI_ImplementedStrategy {
 	public StrategyState ExecuteImplementedStrategy () {
 
 		Debug.Log ("Turret is in <<Defending>>");
-		
-		this.transform.LookAt (this.turretComponents.player.transform.position);
+
+		if (this.turretComponents.playerInSight)
+			this.transform.LookAt (this.turretComponents.player.transform.position);
 
 		
 		if (!this.turretComponents.playerHasBeenDetected) {
