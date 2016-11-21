@@ -21,7 +21,7 @@ public class AI_TurretGuarding : MonoBehaviour, IAI_ImplementedStrategy {
 
 		Debug.Log ("Turret is in <<Guarding>>");
 		
-		//this.transform.LookAt (this.turretComponents.turretScanner.transform.localPosition);
+		this.transform.LookAt (this.turretComponents.turretScanner.transform.position);
 
 		
 		if (this.turretComponents.playerInSight) {

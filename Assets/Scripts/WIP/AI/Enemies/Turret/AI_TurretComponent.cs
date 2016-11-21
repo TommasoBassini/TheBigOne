@@ -53,8 +53,8 @@ public class AI_TurretComponent : MonoBehaviour {
 	#region TURRET_MONOBEHAVIOUR_METHODS
 	public void Awake() {
 
+		this.turretScanner = this.GetComponentInParent <AI_TurretArea> ().GetComponentInChildren <AI_TurretScanner> ();
 		this.attackRay = this.GetComponentInChildren <LineRenderer> (true);
-		this.turretScanner = this.GetComponentInChildren <AI_TurretScanner> (true);
 		this.player = GameObject.FindGameObjectWithTag ("Player");
 
 	}

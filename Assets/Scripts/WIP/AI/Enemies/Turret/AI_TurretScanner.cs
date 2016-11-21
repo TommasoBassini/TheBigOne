@@ -26,7 +26,7 @@ public class AI_TurretScanner : MonoBehaviour {
 	#region TURRET_SCANNER_MONOBEHAVIOUR_METHODS
 	public void Awake () {
 
-		this.turretComponents = this.GetComponentInParent <AI_TurretComponent> ();
+		this.turretComponents = this.GetComponentInParent <AI_TurretArea> ().GetComponentInChildren <AI_TurretComponent> ();
 
 	}
 

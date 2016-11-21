@@ -57,14 +57,14 @@ public class AI_TurretArea : MonoBehaviour {
 	public void Awake () {
 
 		this.delegates = new Delegates ();
-		this.delegates.CO_TurretCoroutine = this.CO_TurretDelayedTime;
-		
-		this.turretComponents = GetComponentInParent <AI_TurretComponent> ();
+		this.turretComponents = this.GetComponentInChildren <AI_TurretComponent> ();
 
 	}
 
 
 	public void Start () {
+		
+		this.delegates.CO_TurretCoroutine = this.CO_TurretDelayedTime;
 
 		this.attackCoroutine = this.KillPreviousCoroutine (this.attackCoroutine);
 		this.slipOutCoroutine = this.KillPreviousCoroutine (this.slipOutCoroutine);
