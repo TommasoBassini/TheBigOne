@@ -27,15 +27,6 @@ public class AI_DroneComponent : MonoBehaviour {
 						// ... the player is in sight...
 						droneReference.playerInSight = true;
 						
-						if (droneReference.direction.sqrMagnitude < Mathf.Pow (droneReference.attackDistance, 2f)) {
-							
-							// ... and may be attacked.
-							droneReference.StopAgent ();
-							Debug.LogWarning ("Shooting!");
-							
-						} else if (droneReference.agentHasBeenStopped)
-							droneReference.ResumeAgent ();
-						
 					} else if (droneReference.agentHasBeenStopped)
 						droneReference.ResumeAgent ();
 					
@@ -109,8 +100,6 @@ public class AI_DroneComponent : MonoBehaviour {
 	public Coroutine inputCheckingCoroutine;
 	[Tooltip ("DO NOT TOUCH!")]
 	public Coroutine enemyStunnedCoroutine;
-	[Tooltip ("DO NOT TOUCH!")]
-	public LineRenderer attackRay;
 
 
 	[Header ("GameObjects")]
@@ -131,7 +120,6 @@ public class AI_DroneComponent : MonoBehaviour {
 
 		this.agent = this.GetComponent <NavMeshAgent> ();
         this.col = this.GetComponent <SphereCollider> ();
-		this.attackRay = this.GetComponentInChildren <LineRenderer> (true);
         this.player = GameObject.FindGameObjectWithTag ("Player");
 
     }

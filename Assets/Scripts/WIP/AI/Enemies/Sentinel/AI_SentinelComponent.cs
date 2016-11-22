@@ -31,15 +31,6 @@ public class AI_SentinelComponent : MonoBehaviour {
 						// ... the player is in sight...
 						sentinelReference.playerInSight = true;
 						
-						if (sentinelReference.direction.sqrMagnitude < Mathf.Pow (sentinelReference.attackDistance, 2f)) {
-							
-							// ... and may be attacked.
-							sentinelReference.StopAgent ();
-							Debug.LogWarning ("Shooting!");
-							
-						} else if (sentinelReference.agentHasBeenStopped)
-							sentinelReference.ResumeAgent ();
-						
 					} else if (sentinelReference.agentHasBeenStopped)
 						sentinelReference.ResumeAgent ();
 					
@@ -140,8 +131,6 @@ public class AI_SentinelComponent : MonoBehaviour {
 	public Coroutine inputCheckingCoroutine;
 	[Tooltip ("DO NOT TOUCH!")]
 	public Coroutine enemyStunnedCoroutine;
-	[Tooltip ("DO NOT TOUCH!")]
-	public LineRenderer attackRay;
 
 
 	[Header ("Scripts")]
@@ -162,7 +151,6 @@ public class AI_SentinelComponent : MonoBehaviour {
 
 		this.agent = this.GetComponent <NavMeshAgent> ();
 		this.InitializeSphereColliders (out this.viewCol, out this.runCol, out this.walkCol, out this.crouchCol);
-		this.attackRay = this.GetComponentInChildren <LineRenderer> (true);
 		this.player = GameObject.FindGameObjectWithTag ("Player").GetComponent <FirstPersonController> ();
 
 	}
