@@ -95,12 +95,16 @@ public class AI_SentinelComponent : MonoBehaviour {
 	[Range (0.1f, 360f)] public float fieldOfViewAngle = 110f;               // Number of degrees, centred on forward, for the enemy see
 	[Tooltip ("Determines the attack distance of the enemy (from 0.1f to 10f)")]
 	[Range (0.1f, 50f)] public float attackDistance = 20f;
+	[Tooltip ("Determines the running speed of the enemy")]
+	[Range (0.1f, 10f)] public float runningSpeed = 10f;
 	[Tooltip ("Determines the Inspecting checking time of the enemy (from 0.1f to 10f)")]
 	[Range (0.1f, 10f)] public float inspectingCheckingTime = 5f;
 	[Tooltip ("Determines the time wich the Sentinel scans around it if lost the player (from 0.1f to 10f)")]
 	[Range (0.1f, 10f)] public float scanningTime = 5f;
 	[Tooltip ("Determines the stunning time of the enemy if hit by an EMI (from 0.1f to 10f)")]
 	[Range (0.1f, 10f)] public float stunnedTime = 5f;
+	[Tooltip ("Determines the walking speed of the enemy")]
+	[Range (0.1f, 10f)] public float walkingSpeed = 5f;
 	[Tooltip ("Determines the Input checking time of the enemy (from 0.1f to 10f)")]
 	[Range (0.1f, 10f)] public float inputCheckingTime = 0.5f;
 	[Tooltip ("DO NOT TOUCH!")]
@@ -170,6 +174,7 @@ public class AI_SentinelComponent : MonoBehaviour {
 		this.agent.autoBraking = false;
 
 		this.destPoint = 0;
+		this.agent.speed = this.walkingSpeed;
 
 		this.inputCheckingCoroutine = this.KillPreviousCoroutine (this.inputCheckingCoroutine);
 		this.enemyStunnedCoroutine = this.KillPreviousCoroutine (this.enemyStunnedCoroutine);

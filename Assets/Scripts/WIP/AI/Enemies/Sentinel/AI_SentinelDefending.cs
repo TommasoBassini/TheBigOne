@@ -42,6 +42,7 @@ public class AI_SentinelDefending : MonoBehaviour, IAI_ImplementedStrategy {
 
 			Debug.Log ("Sentinel is in <<Defending>>");
 
+			this.sentinelComponents.agent.speed = this.sentinelComponents.runningSpeed;
 
 			if (this.sentinelComponents.sentinelHasEnlargedItsHearingColliders)
 				this.ResetHearingCollidersRadius ();

@@ -50,6 +50,7 @@ public class AI_SentinelFallingIntoLine : MonoBehaviour, IAI_ImplementedStrategy
 
 			Debug.Log ("Sentinel is in <<Falling Into Line>>");
 
+			this.sentinelComponents.agent.speed = this.sentinelComponents.walkingSpeed;
 
 			if (this.sentinelComponents.sentinelHasEnlargedItsHearingColliders)
 				this.ResetHearingCollidersRadius ();
