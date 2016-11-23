@@ -69,7 +69,7 @@ public class AI_TurretScanner : MonoBehaviour {
 		if (other.gameObject == this.turretComponents.player) {
 			
 			this.turretComponents.playerHasBeenDetected = true;
-			this.transform.localPosition = Vector3.zero;
+			this.transform.position = Vector3.zero;
 			this.EnableTurretScanner (false);
 			
 		}

@@ -94,7 +94,7 @@ public class AI_SentinelComponent : MonoBehaviour {
 	[Tooltip ("Determines the plane angle in wich the enemy could spot the player (from 0.1f to 360f)")]
 	[Range (0.1f, 360f)] public float fieldOfViewAngle = 110f;               // Number of degrees, centred on forward, for the enemy see
 	[Tooltip ("Determines the attack distance of the enemy (from 0.1f to 10f)")]
-	[Range (0.1f, 10f)] public float attackDistance = 5f;
+	[Range (0.1f, 50f)] public float attackDistance = 20f;
 	[Tooltip ("Determines the Inspecting checking time of the enemy (from 0.1f to 10f)")]
 	[Range (0.1f, 10f)] public float inspectingCheckingTime = 5f;
 	[Tooltip ("Determines the time wich the Sentinel scans around it if lost the player (from 0.1f to 10f)")]
