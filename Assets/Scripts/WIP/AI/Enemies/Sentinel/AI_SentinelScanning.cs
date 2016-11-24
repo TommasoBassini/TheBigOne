@@ -64,8 +64,11 @@ public class AI_SentinelScanning : MonoBehaviour, IAI_ImplementedStrategy {
 			Debug.Log ("Sentinel is in <<Scanning>>");
 
 
+			if (!this.sentinelComponents.sentinelHasEnlargedItsHearingColliders)
+				this.sentinelComponents.agent.destination = this.sentinelComponents.player.transform.position;
+
 			if (!this.sentinelComponents.sentinelIsScanning) {
-			
+
 				this.sentinelComponents.sentinelIsScanning = this.EnlargeHearingCollidersRadius ();
 				this.scanningCoroutine = this.StartCoroutine_Auto (this.CO_ScanningCoroutine ());
 
